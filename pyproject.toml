@@ -18,7 +18,8 @@ dependencies = [
     "spacy~=3.7.0",
     "rank-bm25",
     "sentry-sdk",
-    "langsmith"
+    "langsmith",
+    "python-dotenv>=1.2.2",
 ]
 
 [build-system]
