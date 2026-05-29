@@ -16,6 +16,7 @@ dependencies = [
     "psycopg2-binary",
     "sentence-transformers~=3.0.0",
     "spacy~=3.7.0",
+    "numpy<2.0.0",
     "rank-bm25",
     "sentry-sdk",
     "langsmith",
@@ -29,3 +30,8 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["agents", "scrapers", "db", "nlp", "llm", "delivery"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+]
