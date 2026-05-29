@@ -52,7 +52,7 @@ def test_groq_ping():
     assert api_key is not None, "GROQ_API_KEY is not set"
     client = Groq(api_key=api_key)
     completion = client.chat.completions.create(
-        model="llama3-8b-8192",
+        model="llama-3.1-8b-instant",
         messages=[{"role": "user", "content": "Hi"}],
         max_tokens=5
     )
@@ -61,10 +61,14 @@ def test_groq_ping():
 def test_gemini_ping():
     api_key = os.getenv("GEMINI_API_KEY")
     assert api_key is not None, "GEMINI_API_KEY is not set"
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-2.0-flash')
-    response = model.generate_content("Hi")
-    assert response.text is not None
+    response = httpx.post(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent",
+        headers={"Content-Type": "application/json", "X-goog-api-key": api_key},
+        json={"contents": [{"parts": [{"text": "Hi"}]}]},
+        timeout=30,
+    )
+    assert response.status_code == 200
+    assert response.json()["candidates"][0]["content"]["parts"][0]["text"] is not None
 
 def test_rss_parse():
     # Fetch arXiv cs.AI feed
