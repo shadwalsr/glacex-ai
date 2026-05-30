@@ -3,7 +3,6 @@ import asyncio
 import logging
 from datetime import datetime, timezone, timedelta
 from dotenv import load_dotenv
-import httpx
 import sentry_sdk
 from supabase import create_client, Client
 
@@ -57,28 +56,17 @@ async def process_rss_source(source):
         logger.error(f"Failed to process RSS source {source['name']}: {e}")
         sentry_sdk.capture_exception(e)
 
-async def process_httpx_source(source, client: httpx.AsyncClient):
+async def process_httpx_source(source):
     """
-    Scrapes a single static page, checks for duplicates, and inserts.
+    Scrapes a single static page and inserts results into the database.
+    The scraper manages its own httpx.AsyncClient with per-domain rate limiting.
     """
     try:
-        articles = await scrape_httpx(source, client)
+        articles = await scrape_httpx(source)
         if not articles:
             return
 
-        insert_data = []
-        for a in articles:
-            insert_data.append({
-                "source_id": source["id"],
-                "url": a["url"],
-                "title": a["title"],
-                "raw_html": a["raw_html"],
-                "clean_text": a["clean_text"],
-                "published_at": None,
-                "status": "raw"
-            })
-
-        supabase.table("articles").upsert(insert_data, on_conflict="url", ignore_duplicates=True).execute()
+        supabase.table("articles").upsert(articles, on_conflict="url", ignore_duplicates=True).execute()
         logger.info(f"[SUCCESS] Ingested HTTPX source {source['name']}")
     except Exception as e:
         logger.error(f"Failed to process HTTPX source {source['name']}: {e}")
@@ -137,12 +125,12 @@ async def main_ingestion():
         playwright_sources = [s for s in to_scrape if s["type"] == "playwright"]
 
         # 4. Run RSS and HTTPX concurrently
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            rss_tasks = [process_rss_source(s) for s in rss_sources]
-            httpx_tasks = [process_httpx_source(s, client) for s in httpx_sources]
-            
-            logger.info(f"Launching {len(rss_tasks)} RSS tasks and {len(httpx_tasks)} HTTPX tasks concurrently...")
-            await asyncio.gather(*(rss_tasks + httpx_tasks), return_exceptions=True)
+        # httpx_scraper owns its client; pass source dict only
+        rss_tasks = [process_rss_source(s) for s in rss_sources]
+        httpx_tasks = [process_httpx_source(s) for s in httpx_sources]
+
+        logger.info(f"Launching {len(rss_tasks)} RSS tasks and {len(httpx_tasks)} HTTPX tasks concurrently...")
+        await asyncio.gather(*(rss_tasks + httpx_tasks), return_exceptions=True)
 
         # 5. Run Playwright sequentially
         logger.info(f"Launching {len(playwright_sources)} Playwright tasks sequentially...")
