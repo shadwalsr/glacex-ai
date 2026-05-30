@@ -1,101 +1,52 @@
-import xml.etree.ElementTree as ET
 import logging
-from datetime import datetime
 import httpx
+import feedparser
+import sentry_sdk
+from datetime import datetime, timezone
+import time
 
 logger = logging.getLogger(__name__)
 
-def parse_rss_xml(xml_content):
+async def scrape_rss(source: dict) -> list[dict]:
     """
-    Parses RSS/Atom/RDF feeds in a namespace-agnostic manner.
-    Returns a list of dicts: [{'title': ..., 'url': ..., 'published_at': ...}]
+    Scrapes an RSS feed source using feedparser and httpx.
+    On failure, logs to Sentry and returns an empty list (never raises).
     """
     try:
-        root = ET.fromstring(xml_content)
-    except Exception as e:
-        logger.error(f"Failed to parse XML: {e}")
-        return []
+        async with httpx.AsyncClient(timeout=15) as client:
+            resp = await client.get(source["url"], headers={"User-Agent": "GlaceX/1.0"}, follow_redirects=True)
+            resp.raise_for_status()
 
-    articles = []
-    
-    # Locate all items or entries
-    items = []
-    for elem in root.iter():
-        tag_lower = elem.tag.lower()
-        if tag_lower.endswith('item') or tag_lower.endswith('entry'):
-            items.append(elem)
+        # Parse the feed content using feedparser
+        feed = feedparser.parse(resp.text)
+        items = []
+        for entry in feed.entries[:50]:  # cap at 50 per run
+            # Convert published_parsed struct_time to datetime
+            published_at = None
+            struct_time = entry.get("published_parsed")
+            if struct_time:
+                try:
+                    published_at = datetime(*struct_time[:6], tzinfo=timezone.utc).isoformat()
+                except Exception:
+                    published_at = None
 
-    for item in items:
-        title = None
-        url = None
-        published_at_str = None
-        
-        for child in item:
-            tag_name = child.tag.lower().split('}')[-1]
-            if tag_name == 'title':
-                title = child.text
-            elif tag_name == 'link':
-                # Atom links can be in href attribute
-                if child.attrib.get('href'):
-                    url = child.attrib.get('href')
-                else:
-                    url = child.text
-            elif tag_name in ['pubdate', 'published', 'updated', 'date']:
-                published_at_str = child.text
+            url = entry.get("link")
+            title = entry.get("title")
+            
+            if not url or not title:
+                continue
 
-        # Standard cleanups
-        if title:
-            title = title.strip()
-        if url:
-            url = url.strip()
-
-        # Parse date if available
-        published_at = None
-        if published_at_str:
-            try:
-                # Basic attempts to parse ISO/RFC2822 dates
-                # In python 3.11+, fromisoformat supports Z and offsets
-                published_at_str = published_at_str.strip()
-                # Remove timezone names like EST/GMT if present to avoid parser failure
-                # Simple replacement for common formats:
-                if "," in published_at_str: # RFC 2822 (e.g. "Mon, 02 Jun 2016 02:23:45 MST")
-                    # Try built-in parsing or standard fallback
-                    # We can use email.utils.parsedate_to_datetime
-                    import email.utils
-                    published_at = email.utils.parsedate_to_datetime(published_at_str)
-                else:
-                    # Try fromisoformat (handles 'Z' and '+00:00')
-                    # Replace Z with +00:00 for older python compatibility if needed, but 3.11+ handles it.
-                    published_at = datetime.fromisoformat(published_at_str)
-            except Exception:
-                published_at = None
-
-        if url and title:
-            articles.append({
-                "title": title,
-                "url": url,
-                "published_at": published_at
+            items.append({
+                "source_id": source["id"],
+                "url": url.strip(),
+                "title": title.strip(),
+                "raw_html": entry.get("summary", "") or entry.get("description", ""),
+                "clean_text": entry.get("summary", "") or entry.get("description", ""),
+                "published_at": published_at,
+                "status": "raw"
             })
-            
-    return articles
-
-async def scrape_rss(source, client: httpx.AsyncClient):
-    """
-    Scrapes an RSS feed source.
-    """
-    url = source["url"]
-    name = source["name"]
-    logger.info(f"Starting RSS scrape for {name} ({url})")
-    
-    try:
-        response = await client.get(url, follow_redirects=True, timeout=30.0)
-        if response.status_code != 200:
-            logger.error(f"Failed to fetch RSS feed {name} ({url}): HTTP {response.status_code}")
-            return []
-            
-        articles = parse_rss_xml(response.content)
-        logger.info(f"Successfully scraped {len(articles)} articles from {name}")
-        return articles
+        return items
     except Exception as e:
-        logger.error(f"Error scraping RSS source {name}: {e}")
+        logger.error(f"Error scraping RSS source {source.get('name') or source.get('id')}: {e}")
+        sentry_sdk.capture_exception(e)
         return []

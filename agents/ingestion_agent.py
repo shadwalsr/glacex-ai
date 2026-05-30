@@ -4,7 +4,6 @@ import logging
 from datetime import datetime, timezone, timedelta
 from dotenv import load_dotenv
 import httpx
-import trafilatura
 import sentry_sdk
 from supabase import create_client, Client
 
@@ -42,130 +41,75 @@ def parse_db_timestamp(ts_str):
     except Exception:
         return None
 
-async def fetch_full_content(url, client: httpx.AsyncClient, semaphore: asyncio.Semaphore):
+async def process_rss_source(source):
     """
-    Helper to fetch raw HTML and extract clean text from an article URL with concurrency limit.
+    Scrapes RSS feed, and inserts new articles into the database.
+    Does not raise exceptions.
     """
-    async with semaphore:
-        try:
-            headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-            }
-            response = await client.get(url, headers=headers, follow_redirects=True, timeout=20.0)
-            if response.status_code == 200:
-                raw_html = response.text
-                clean_text = trafilatura.extract(raw_html) or ""
-                return raw_html, clean_text
-        except Exception as e:
-            logger.warning(f"Failed to fetch content for {url}: {e}")
-        return None, None
-
-async def process_rss_source(source, client: httpx.AsyncClient, semaphore: asyncio.Semaphore):
-    """
-    Scrapes RSS feed, checks DB for new articles, fetches body for new ones, and inserts.
-    """
-    source_id = source["id"]
-    feed_articles = await scrape_rss(source, client)
-    if not feed_articles:
-        return
-
-    # Check which URLs already exist in the database
-    urls = [a["url"] for a in feed_articles]
     try:
-        existing_res = supabase.table("articles").select("url").in_("url", urls).execute()
-        existing_urls = {r["url"] for r in existing_res.data}
+        insert_data = await scrape_rss(source)
+        if not insert_data:
+            return
+
+        supabase.table("articles").upsert(insert_data, on_conflict="url", ignore_duplicates=True).execute()
+        logger.info(f"[SUCCESS] Ingested {len(insert_data)} articles from RSS source {source['name']}")
     except Exception as e:
-        logger.error(f"Error checking existing URLs for {source['name']}: {e}")
-        existing_urls = set()
-
-    # Filter out existing articles
-    new_articles = [a for a in feed_articles if a["url"] not in existing_urls]
-    # Limit number of parallel fetches to avoid rate limits
-    new_articles = new_articles[:15]
-
-    if not new_articles:
-        logger.info(f"No new articles to fetch for RSS source: {source['name']}")
-        return
-
-    logger.info(f"Fetching full body for {len(new_articles)} new articles from {source['name']}")
-    
-    # Concurrently fetch full page content for new articles
-    tasks = [fetch_full_content(a["url"], client, semaphore) for a in new_articles]
-    results = await asyncio.gather(*tasks)
-
-    insert_data = []
-    for article, (raw_html, clean_text) in zip(new_articles, results):
-        pub_at = article["published_at"].isoformat() if article["published_at"] else None
-        insert_data.append({
-            "source_id": source_id,
-            "url": article["url"],
-            "title": article["title"],
-            "raw_html": raw_html,
-            "clean_text": clean_text,
-            "published_at": pub_at,
-            "status": "raw"
-        })
-
-    if insert_data:
-        try:
-            supabase.table("articles").upsert(insert_data, on_conflict="url", ignore_duplicates=True).execute()
-            logger.info(f"[SUCCESS] Ingested {len(insert_data)} articles from RSS source {source['name']}")
-        except Exception as e:
-            logger.error(f"Failed to insert articles for {source['name']}: {e}")
+        logger.error(f"Failed to process RSS source {source['name']}: {e}")
+        sentry_sdk.capture_exception(e)
 
 async def process_httpx_source(source, client: httpx.AsyncClient):
     """
     Scrapes a single static page, checks for duplicates, and inserts.
     """
-    source_id = source["id"]
-    articles = await scrape_httpx(source, client)
-    if not articles:
-        return
-
-    insert_data = []
-    for a in articles:
-        insert_data.append({
-            "source_id": source_id,
-            "url": a["url"],
-            "title": a["title"],
-            "raw_html": a["raw_html"],
-            "clean_text": a["clean_text"],
-            "published_at": None,
-            "status": "raw"
-        })
-
     try:
+        articles = await scrape_httpx(source, client)
+        if not articles:
+            return
+
+        insert_data = []
+        for a in articles:
+            insert_data.append({
+                "source_id": source["id"],
+                "url": a["url"],
+                "title": a["title"],
+                "raw_html": a["raw_html"],
+                "clean_text": a["clean_text"],
+                "published_at": None,
+                "status": "raw"
+            })
+
         supabase.table("articles").upsert(insert_data, on_conflict="url", ignore_duplicates=True).execute()
         logger.info(f"[SUCCESS] Ingested HTTPX source {source['name']}")
     except Exception as e:
-        logger.error(f"Failed to insert HTTPX source {source['name']}: {e}")
+        logger.error(f"Failed to process HTTPX source {source['name']}: {e}")
+        sentry_sdk.capture_exception(e)
 
 async def process_playwright_source(source):
     """
     Scrapes a dynamic page using Playwright, checks for duplicates, and inserts.
     """
-    source_id = source["id"]
-    articles = await scrape_playwright(source)
-    if not articles:
-        return
-
-    insert_data = []
-    for a in articles:
-        insert_data.append({
-            "source_id": source_id,
-            "url": a["url"],
-            "title": a["title"],
-            "raw_html": a["raw_html"],
-            "clean_text": a["clean_text"],
-            "published_at": None,
-            "status": "raw"
-        })
-
     try:
+        articles = await scrape_playwright(source)
+        if not articles:
+            return
+
+        insert_data = []
+        for a in articles:
+            insert_data.append({
+                "source_id": source["id"],
+                "url": a["url"],
+                "title": a["title"],
+                "raw_html": a["raw_html"],
+                "clean_text": a["clean_text"],
+                "published_at": None,
+                "status": "raw"
+            })
+
         supabase.table("articles").upsert(insert_data, on_conflict="url", ignore_duplicates=True).execute()
         logger.info(f"[SUCCESS] Ingested Playwright source {source['name']}")
     except Exception as e:
-        logger.error(f"Failed to insert Playwright source {source['name']}: {e}")
+        logger.error(f"Failed to process Playwright source {source['name']}: {e}")
+        sentry_sdk.capture_exception(e)
 
 async def main_ingestion():
     logger.info("Phase 1: Ingestion starting...")
@@ -192,18 +136,15 @@ async def main_ingestion():
         httpx_sources = [s for s in to_scrape if s["type"] == "httpx"]
         playwright_sources = [s for s in to_scrape if s["type"] == "playwright"]
 
-        # Limit concurrency for network fetches
-        semaphore = asyncio.Semaphore(5)
-
         # 4. Run RSS and HTTPX concurrently
         async with httpx.AsyncClient(timeout=30.0) as client:
-            rss_tasks = [process_rss_source(s, client, semaphore) for s in rss_sources]
+            rss_tasks = [process_rss_source(s) for s in rss_sources]
             httpx_tasks = [process_httpx_source(s, client) for s in httpx_sources]
             
             logger.info(f"Launching {len(rss_tasks)} RSS tasks and {len(httpx_tasks)} HTTPX tasks concurrently...")
             await asyncio.gather(*(rss_tasks + httpx_tasks), return_exceptions=True)
 
-        # 5. Run Playwright sequentially (since browser is single-threaded / resource heavy)
+        # 5. Run Playwright sequentially
         logger.info(f"Launching {len(playwright_sources)} Playwright tasks sequentially...")
         for s in playwright_sources:
             try:
@@ -211,7 +152,7 @@ async def main_ingestion():
             except Exception as e:
                 logger.error(f"Failed during Playwright scraping of {s['name']}: {e}")
 
-        # 6. Update last_scraped timestamp for all processed sources
+        # 6. Update last_scraped timestamp for all processed sources (even on failures)
         now_str = datetime.now(timezone.utc).isoformat()
         source_ids = [s["id"] for s in to_scrape]
         for s_id in source_ids:
