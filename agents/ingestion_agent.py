@@ -10,6 +10,7 @@ from agents.observability import init_observability
 from scrapers.rss.rss_scraper import scrape_rss
 from scrapers.httpx.httpx_scraper import scrape_httpx
 from scrapers.playwright.playwright_scraper import scrape_playwright
+from playwright.async_api import async_playwright
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -72,28 +73,18 @@ async def process_httpx_source(source):
         logger.error(f"Failed to process HTTPX source {source['name']}: {e}")
         sentry_sdk.capture_exception(e)
 
-async def process_playwright_source(source):
+async def process_playwright_source(source, browser):
     """
-    Scrapes a dynamic page using Playwright, checks for duplicates, and inserts.
+    Scrapes a dynamic page using a shared Playwright Browser instance.
+    The browser is created once in main_ingestion and passed here to avoid
+    per-source Chromium startup costs.
     """
     try:
-        articles = await scrape_playwright(source)
+        articles = await scrape_playwright(source, browser)
         if not articles:
             return
 
-        insert_data = []
-        for a in articles:
-            insert_data.append({
-                "source_id": source["id"],
-                "url": a["url"],
-                "title": a["title"],
-                "raw_html": a["raw_html"],
-                "clean_text": a["clean_text"],
-                "published_at": None,
-                "status": "raw"
-            })
-
-        supabase.table("articles").upsert(insert_data, on_conflict="url", ignore_duplicates=True).execute()
+        supabase.table("articles").upsert(articles, on_conflict="url", ignore_duplicates=True).execute()
         logger.info(f"[SUCCESS] Ingested Playwright source {source['name']}")
     except Exception as e:
         logger.error(f"Failed to process Playwright source {source['name']}: {e}")
@@ -132,13 +123,23 @@ async def main_ingestion():
         logger.info(f"Launching {len(rss_tasks)} RSS tasks and {len(httpx_tasks)} HTTPX tasks concurrently...")
         await asyncio.gather(*(rss_tasks + httpx_tasks), return_exceptions=True)
 
-        # 5. Run Playwright sequentially
-        logger.info(f"Launching {len(playwright_sources)} Playwright tasks sequentially...")
-        for s in playwright_sources:
-            try:
-                await process_playwright_source(s)
-            except Exception as e:
-                logger.error(f"Failed during Playwright scraping of {s['name']}: {e}")
+        # 5. Run Playwright sources sequentially, sharing ONE browser instance
+        #    --no-sandbox is required on GitHub Actions (Linux non-root runner)
+        #    --disable-gpu avoids Mesa/rendering issues in headless CI
+        if playwright_sources:
+            logger.info(f"Launching {len(playwright_sources)} Playwright tasks sequentially (shared browser)...")
+            async with async_playwright() as p:
+                browser = await p.chromium.launch(
+                    headless=True,
+                    args=["--no-sandbox", "--disable-gpu"]
+                )
+                try:
+                    for s in playwright_sources:
+                        await process_playwright_source(s, browser)
+                finally:
+                    await browser.close()
+        else:
+            logger.info("No Playwright sources scheduled.")
 
         # 6. Update last_scraped timestamp for all processed sources (even on failures)
         now_str = datetime.now(timezone.utc).isoformat()
