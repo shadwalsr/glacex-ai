@@ -41,39 +41,39 @@ def parse_db_timestamp(ts_str):
     except Exception:
         return None
 
-async def process_rss_source(source):
+async def process_rss_source(source) -> list[dict]:
     """
-    Scrapes RSS feed, and inserts new articles into the database.
+    Scrapes RSS feed, and returns the scraped articles.
     Does not raise exceptions.
     """
     try:
         insert_data = await scrape_rss(source)
         if not insert_data:
-            return
-
-        supabase.table("articles").upsert(insert_data, on_conflict="url", ignore_duplicates=True).execute()
-        logger.info(f"[SUCCESS] Ingested {len(insert_data)} articles from RSS source {source['name']}")
+            return []
+        logger.info(f"[SUCCESS] Scraped {len(insert_data)} articles from RSS source {source['name']}")
+        return insert_data
     except Exception as e:
         logger.error(f"Failed to process RSS source {source['name']}: {e}")
         sentry_sdk.capture_exception(e)
+        return []
 
-async def process_httpx_source(source):
+async def process_httpx_source(source) -> list[dict]:
     """
-    Scrapes a single static page and inserts results into the database.
+    Scrapes a single static page and returns results.
     The scraper manages its own httpx.AsyncClient with per-domain rate limiting.
     """
     try:
         articles = await scrape_httpx(source)
         if not articles:
-            return
-
-        supabase.table("articles").upsert(articles, on_conflict="url", ignore_duplicates=True).execute()
-        logger.info(f"[SUCCESS] Ingested HTTPX source {source['name']}")
+            return []
+        logger.info(f"[SUCCESS] Scraped HTTPX source {source['name']}")
+        return articles
     except Exception as e:
         logger.error(f"Failed to process HTTPX source {source['name']}: {e}")
         sentry_sdk.capture_exception(e)
+        return []
 
-async def process_playwright_source(source, browser):
+async def process_playwright_source(source, browser) -> list[dict]:
     """
     Scrapes a dynamic page using a shared Playwright Browser instance.
     The browser is created once in main_ingestion and passed here to avoid
@@ -82,13 +82,18 @@ async def process_playwright_source(source, browser):
     try:
         articles = await scrape_playwright(source, browser)
         if not articles:
-            return
-
-        supabase.table("articles").upsert(articles, on_conflict="url", ignore_duplicates=True).execute()
-        logger.info(f"[SUCCESS] Ingested Playwright source {source['name']}")
+            return []
+        logger.info(f"[SUCCESS] Scraped Playwright source {source['name']}")
+        return articles
     except Exception as e:
         logger.error(f"Failed to process Playwright source {source['name']}: {e}")
         sentry_sdk.capture_exception(e)
+        return []
+
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
 
 async def main_ingestion():
     logger.info("Phase 1: Ingestion starting...")
@@ -115,13 +120,21 @@ async def main_ingestion():
         httpx_sources = [s for s in to_scrape if s["type"] == "httpx"]
         playwright_sources = [s for s in to_scrape if s["type"] == "playwright"]
 
+        all_scraped = []
+
         # 4. Run RSS and HTTPX concurrently
         # httpx_scraper owns its client; pass source dict only
         rss_tasks = [process_rss_source(s) for s in rss_sources]
         httpx_tasks = [process_httpx_source(s) for s in httpx_sources]
 
-        logger.info(f"Launching {len(rss_tasks)} RSS tasks and {len(httpx_tasks)} HTTPX tasks concurrently...")
-        await asyncio.gather(*(rss_tasks + httpx_tasks), return_exceptions=True)
+        if rss_tasks or httpx_tasks:
+            logger.info(f"Launching {len(rss_tasks)} RSS tasks and {len(httpx_tasks)} HTTPX tasks concurrently...")
+            results = await asyncio.gather(*(rss_tasks + httpx_tasks), return_exceptions=True)
+            for r in results:
+                if isinstance(r, list):
+                    all_scraped.extend(r)
+                elif isinstance(r, Exception):
+                    logger.error(f"A concurrent scraper task failed with exception: {r}")
 
         # 5. Run Playwright sources sequentially, sharing ONE browser instance
         #    --no-sandbox is required on GitHub Actions (Linux non-root runner)
@@ -135,11 +148,39 @@ async def main_ingestion():
                 )
                 try:
                     for s in playwright_sources:
-                        await process_playwright_source(s, browser)
+                        articles = await process_playwright_source(s, browser)
+                        all_scraped.extend(articles)
                 finally:
                     await browser.close()
         else:
             logger.info("No Playwright sources scheduled.")
+
+        # 6. Deduplicate against known URLs in the database
+        logger.info(f"Scraped {len(all_scraped)} total articles. Loading known URLs from Supabase...")
+        try:
+            db_res = supabase.table("articles").select("url").execute()
+            known_urls = {r["url"] for r in db_res.data if r.get("url")}
+        except Exception as e:
+            logger.error(f"Failed to fetch known URLs from Supabase: {e}")
+            known_urls = set()
+
+        new_items = [
+            item for item in all_scraped
+            if item.get("url") and item["url"] not in known_urls
+        ]
+        logger.info(f"Filtered down to {len(new_items)} new articles to insert.")
+
+        # 7. Bulk insert new items in chunks of 500
+        inserted_count = 0
+        for chunk in chunks(new_items, 500):
+            try:
+                supabase.table("articles").upsert(chunk, on_conflict="url").execute()
+                inserted_count += len(chunk)
+            except Exception as e:
+                logger.error(f"Failed to upsert chunk of {len(chunk)} items: {e}")
+                sentry_sdk.capture_exception(e)
+
+        logger.info(f"[SUCCESS] Successfully ingested {inserted_count} new articles.")
 
         # 6. Update last_scraped timestamp for all processed sources (even on failures)
         now_str = datetime.now(timezone.utc).isoformat()
