@@ -201,15 +201,18 @@ async def main_ingestion():
 
         logger.info(f"[SUCCESS] Successfully ingested {inserted_count} new articles.")
 
-        # 6. Update last_scraped timestamp for all processed sources (even on failures)
-        now_str = datetime.now(timezone.utc).isoformat()
-        source_ids = [s["id"] for s in to_scrape]
-        for s_id in source_ids:
+        # 8. Update sources.last_scraped and ingestion metrics. Mark every source as completed.
+        now_str = datetime.utcnow().isoformat()
+        for source in to_scrape:
             try:
-                supabase.table("sources").update({"last_scraped": now_str}).eq("id", s_id).execute()
+                supabase.table("sources").update({
+                    "last_scraped": now_str
+                }).eq("id", source["id"]).execute()
             except Exception as e:
-                logger.error(f"Failed to update last_scraped for source {s_id}: {e}")
+                logger.error(f"Failed to update last_scraped for source {source['id']}: {e}")
 
+        # Log ingestion summary
+        print(f"Ingested: {inserted_count} new articles from {len(to_scrape)} sources")
         logger.info("[SUCCESS] Phase 1: Ingestion finished successfully.")
 
     except Exception as e:
