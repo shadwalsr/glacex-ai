@@ -40,18 +40,11 @@ async def _domain_throttle(domain: str, min_gap: float = 1.0) -> None:
             await asyncio.sleep(wait)
         _domain_last_hit[domain] = time.monotonic()
 
-async def scrape_httpx(source: dict) -> list[dict]:
+async def fetch_full_page(url: str) -> tuple[str | None, str | None]:
     """
-    Scrapes a static web page, extracts clean markdown content via trafilatura.
-
-    Resilience rules:
-    - Per-domain throttle: 1.0 s minimum gap between requests to same host.
-    - Respects Retry-After header if the server returns a 429.
-    - On any failure: logs to Sentry, returns empty list (never raises).
+    Fetches a page, respects rate-limits/Retry-After, and extracts clean markdown.
+    Returns (clean_text, raw_html) or (None, None) on failure.
     """
-    url = source["url"]
-    name = source.get("name", url)
-
     try:
         domain = urlparse(url).netloc
         # Enforce rate limit before opening the connection
@@ -68,10 +61,10 @@ async def scrape_httpx(source: dict) -> list[dict]:
             if resp.status_code == 429:
                 retry_after = float(resp.headers.get("Retry-After", 60))
                 logger.warning(
-                    f"[429] {name} asked us to back off for {retry_after:.0f}s — waiting then skipping this run."
+                    f"[429] {url} asked us to back off for {retry_after:.0f}s — waiting then skipping."
                 )
                 await asyncio.sleep(retry_after)
-                return []
+                return None, None
 
             resp.raise_for_status()
 
@@ -85,20 +78,38 @@ async def scrape_httpx(source: dict) -> list[dict]:
         )
 
         if not clean or len(clean) < 200:
-            logger.info(f"Skipping {name} — extracted text too short (< 200 chars), probably not an article.")
-            return []
+            logger.info(f"Page content too short (< 200 chars), probably not an article: {url}")
+            return None, None
 
-        return [{
-            "source_id": source["id"],
-            "url": url,
-            "title": name,
-            "raw_html": resp.text[:50_000],  # cap raw HTML storage at 50k chars
-            "clean_text": clean,
-            "published_at": None,
-            "status": "raw",
-        }]
+        return clean, resp.text[:50_000]
 
     except Exception as e:
-        logger.error(f"Error scraping HTTPX source {name}: {e}")
+        logger.error(f"Error fetching full page {url}: {e}")
         sentry_sdk.capture_exception(e)
+        return None, None
+
+async def scrape_httpx(source: dict) -> list[dict]:
+    """
+    Scrapes a static web page, extracts clean markdown content via trafilatura.
+
+    Resilience rules:
+    - Per-domain throttle: 1.0 s minimum gap between requests to same host.
+    - Respects Retry-After header if the server returns a 429.
+    - On any failure: logs to Sentry, returns empty list (never raises).
+    """
+    url = source["url"]
+    name = source.get("name", url)
+
+    clean, raw_html = await fetch_full_page(url)
+    if not clean:
         return []
+
+    return [{
+        "source_id": source["id"],
+        "url": url,
+        "title": name,
+        "raw_html": raw_html,
+        "clean_text": clean,
+        "published_at": None,
+        "status": "raw",
+    }]

@@ -8,7 +8,7 @@ from supabase import create_client, Client
 
 from agents.observability import init_observability
 from scrapers.rss.rss_scraper import scrape_rss
-from scrapers.httpx.httpx_scraper import scrape_httpx
+from scrapers.httpx.httpx_scraper import scrape_httpx, fetch_full_page
 from scrapers.playwright.playwright_scraper import scrape_playwright
 from playwright.async_api import async_playwright
 
@@ -169,6 +169,25 @@ async def main_ingestion():
             if item.get("url") and item["url"] not in known_urls
         ]
         logger.info(f"Filtered down to {len(new_items)} new articles to insert.")
+
+        # 6.5. Enrich new RSS articles with full page content (excluding arXiv)
+        rss_source_ids = {s["id"] for s in rss_sources}
+        arxiv_source_ids = {s["id"] for s in rss_sources if "arxiv.org" in s["url"].lower()}
+
+        async def enrich_rss_item(item):
+            if item["source_id"] in rss_source_ids and item["source_id"] not in arxiv_source_ids:
+                logger.info(f"Enriching RSS item: {item['url']}")
+                clean, raw_html = await fetch_full_page(item["url"])
+                if clean:
+                    item["clean_text"] = clean
+                    item["raw_html"] = raw_html
+                else:
+                    logger.warning(f"Could not retrieve full content for {item['url']}; keeping feed summary.")
+
+        enrich_tasks = [enrich_rss_item(item) for item in new_items]
+        if enrich_tasks:
+            logger.info(f"Concurrently fetching full page content for {len(enrich_tasks)} new RSS items...")
+            await asyncio.gather(*enrich_tasks, return_exceptions=True)
 
         # 7. Bulk insert new items in chunks of 500
         inserted_count = 0
