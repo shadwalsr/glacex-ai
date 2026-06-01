@@ -1,0 +1,65 @@
+name: Feedback Webhook Handler
+
+# Triggered when an ntfy.sh notification action button is clicked.
+# ntfy sends: POST https://api.github.com/repos/{owner}/{repo}/dispatches
+# with body: {"event_type": "feedback", "client_payload": {"article_id": "...", "rating": "good|noise"}}
+on:
+  repository_dispatch:
+    types: [feedback]
+
+jobs:
+  record-feedback:
+    name: Record Signal Quality Feedback
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v2
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Validate feedback payload
+        id: validate
+        run: |
+          ARTICLE_ID="${{ github.event.client_payload.article_id }}"
+          RATING="${{ github.event.client_payload.rating }}"
+
+          echo "article_id=${ARTICLE_ID}" >> $GITHUB_OUTPUT
+          echo "rating=${RATING}" >> $GITHUB_OUTPUT
+
+          if [ -z "${ARTICLE_ID}" ]; then
+            echo "::error::Missing article_id in client_payload"
+            exit 1
+          fi
+
+          if [[ "${RATING}" != "good" && "${RATING}" != "noise" ]]; then
+            echo "::error::Invalid rating '${RATING}'. Must be 'good' or 'noise'."
+            exit 1
+          fi
+
+          echo "✅ Payload validated: article_id=${ARTICLE_ID}, rating=${RATING}"
+
+      - name: Write feedback to Supabase
+        env:
+          ARTICLE_ID: ${{ steps.validate.outputs.article_id }}
+          RATING: ${{ steps.validate.outputs.rating }}
+        run: |
+          uv run python scripts/record_feedback.py \
+            --article-id "${ARTICLE_ID}" \
+            --rating "${RATING}"

@@ -1,0 +1,54 @@
+name: Monthly Database Archiving
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'  # Runs at 00:00 UTC on the 1st of every month
+  workflow_dispatch:     # Allows manual triggering
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install uv and Dependencies
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          uv pip install -r pyproject.toml --system
+
+      - name: Run Archival Job
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ENVIRONMENT: production
+        run: |
+          python scripts/archive_job.py
+
+      - name: Commit and Push to Archive Branch
+        run: |
+          # If there are any modified or new jsonl files in archive/ folder
+          if [ -d "archive" ] && [ "$(ls -A archive)" ]; then
+            git config --global user.name "GlaceX Bot"
+            git config --global user.email "bot@glacex.ai"
+            
+            # Switch/create archive branch
+            git checkout -b archive || git checkout archive
+            
+            # Add new jsonl logs
+            git add archive/*.jsonl
+            git commit -m "chore: automated monthly articles archive $(date +%Y-%m)"
+            
+            # Push changes to github repository archive branch
+            git push origin archive
+          else
+            echo "No archive files generated. Skipping push."
+          fi

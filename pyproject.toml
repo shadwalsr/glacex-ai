@@ -23,6 +23,9 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "pyyaml>=6.0.3",
     "feedparser~=6.0.10",
+    "json-repair>=0.59.10",
+    "pydantic>=2.13.4",
+    "tenacity>=8.3.0",
 ]
 
 [build-system]
@@ -35,4 +38,6 @@ packages = ["agents", "scrapers", "db", "nlp", "llm", "delivery"]
 [dependency-groups]
 dev = [
     "pytest>=9.0.3",
+    "pytest-asyncio>=1.4.0",
+    "respx>=0.23.1",
 ]

@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import sentry_sdk
 from supabase import create_client, Client
 
-from agents.observability import init_observability
+from agents.observability import init_observability, init_pipeline_run, update_pipeline_run_metric, resolve_active_run_id, start_phase_checkpoint, complete_phase_checkpoint, is_phase_completed
 from scrapers.rss.rss_scraper import scrape_rss
 from scrapers.httpx.httpx_scraper import scrape_httpx, fetch_full_page
 from scrapers.playwright.playwright_scraper import scrape_playwright
@@ -41,54 +41,98 @@ def parse_db_timestamp(ts_str):
     except Exception:
         return None
 
-async def process_rss_source(source) -> list[dict]:
-    """
-    Scrapes RSS feed, and returns the scraped articles.
-    Does not raise exceptions.
-    """
+def log_ingestion_outcome(source_id: str, status: str, items_scraped: int, error_message: str = None):
     try:
-        insert_data = await scrape_rss(source)
-        if not insert_data:
-            return []
-        logger.info(f"[SUCCESS] Scraped {len(insert_data)} articles from RSS source {source['name']}")
-        return insert_data
+        supabase.table("raw_ingestion_log").insert({
+            "source_id": source_id,
+            "status": status,
+            "items_scraped": items_scraped,
+            "error_message": error_message,
+            "duration_s": 0
+        }).execute()
+    except Exception as e:
+        logger.error(f"Failed to write to raw_ingestion_log: {e}")
+
+async def process_rss_source(source) -> tuple[list[dict], bool]:
+    """
+    Scrapes RSS feed, and returns the scraped articles and success status.
+    """
+    from urllib.parse import urlparse
+    from agents.circuit_breaker import PersistentCircuitBreaker, CircuitBreakerOpenException
+    parsed = urlparse(source.get("url") or "")
+    domain = parsed.netloc or "unknown"
+    breaker = PersistentCircuitBreaker(f"scraped_site:{domain}")
+    try:
+        async def do_scrape():
+            return await scrape_rss(source)
+        
+        insert_data = await breaker.call_async(do_scrape)
+        logger.info(f"[SUCCESS] Scraped {len(insert_data) if insert_data else 0} articles from RSS source {source['name']}")
+        log_ingestion_outcome(source["id"], "success", len(insert_data) if insert_data else 0)
+        return (insert_data or []), True
+    except CircuitBreakerOpenException:
+        logger.warning(f"Circuit breaker for scraped_site:{domain} is OPEN. Bypassing source {source['name']}.")
+        log_ingestion_outcome(source["id"], "bypassed", 0, f"Circuit breaker '{domain}' is OPEN")
+        return [], False
     except Exception as e:
         logger.error(f"Failed to process RSS source {source['name']}: {e}")
         sentry_sdk.capture_exception(e)
-        return []
+        log_ingestion_outcome(source["id"], "failed", 0, str(e))
+        return [], False
 
-async def process_httpx_source(source) -> list[dict]:
+async def process_httpx_source(source) -> tuple[list[dict], bool]:
     """
-    Scrapes a single static page and returns results.
-    The scraper manages its own httpx.AsyncClient with per-domain rate limiting.
+    Scrapes a single static page and returns results and success status.
     """
+    from urllib.parse import urlparse
+    from agents.circuit_breaker import PersistentCircuitBreaker, CircuitBreakerOpenException
+    parsed = urlparse(source.get("url") or "")
+    domain = parsed.netloc or "unknown"
+    breaker = PersistentCircuitBreaker(f"scraped_site:{domain}")
     try:
-        articles = await scrape_httpx(source)
-        if not articles:
-            return []
+        async def do_scrape():
+            return await scrape_httpx(source)
+            
+        articles = await breaker.call_async(do_scrape)
         logger.info(f"[SUCCESS] Scraped HTTPX source {source['name']}")
-        return articles
+        log_ingestion_outcome(source["id"], "success", len(articles) if articles else 0)
+        return (articles or []), True
+    except CircuitBreakerOpenException:
+        logger.warning(f"Circuit breaker for scraped_site:{domain} is OPEN. Bypassing source {source['name']}.")
+        log_ingestion_outcome(source["id"], "bypassed", 0, f"Circuit breaker '{domain}' is OPEN")
+        return [], False
     except Exception as e:
         logger.error(f"Failed to process HTTPX source {source['name']}: {e}")
         sentry_sdk.capture_exception(e)
-        return []
+        log_ingestion_outcome(source["id"], "failed", 0, str(e))
+        return [], False
 
-async def process_playwright_source(source, browser) -> list[dict]:
+async def process_playwright_source(source, browser) -> tuple[list[dict], bool]:
     """
     Scrapes a dynamic page using a shared Playwright Browser instance.
-    The browser is created once in main_ingestion and passed here to avoid
-    per-source Chromium startup costs.
     """
+    from urllib.parse import urlparse
+    from agents.circuit_breaker import PersistentCircuitBreaker, CircuitBreakerOpenException
+    parsed = urlparse(source.get("url") or "")
+    domain = parsed.netloc or "unknown"
+    breaker = PersistentCircuitBreaker(f"scraped_site:{domain}")
     try:
-        articles = await scrape_playwright(source, browser)
-        if not articles:
-            return []
+        async def do_scrape():
+            return await scrape_playwright(source, browser)
+            
+        articles = await breaker.call_async(do_scrape)
         logger.info(f"[SUCCESS] Scraped Playwright source {source['name']}")
-        return articles
+        log_ingestion_outcome(source["id"], "success", len(articles) if articles else 0)
+        return (articles or []), True
+    except CircuitBreakerOpenException:
+        logger.warning(f"Circuit breaker for scraped_site:{domain} is OPEN. Bypassing source {source['name']}.")
+        log_ingestion_outcome(source["id"], "bypassed", 0, f"Circuit breaker '{domain}' is OPEN")
+        return [], False
     except Exception as e:
         logger.error(f"Failed to process Playwright source {source['name']}: {e}")
         sentry_sdk.capture_exception(e)
-        return []
+        log_ingestion_outcome(source["id"], "failed", 0, str(e))
+        return [], False
 
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
@@ -97,6 +141,16 @@ def chunks(lst, n):
 
 async def main_ingestion():
     logger.info("Phase 1: Ingestion starting...")
+    # Initialize pipeline run tracking state locally or resume
+    run_id = resolve_active_run_id()
+    logger.info(f"Using pipeline run id: {run_id}")
+    
+    if is_phase_completed(run_id, "ingest"):
+        logger.info("Phase 1 (ingest) already completed for this run. Skipping.")
+        return
+        
+    start_phase_checkpoint(run_id, "ingest")
+    
     try:
         # 1. Fetch active sources
         res = supabase.table("sources").select("*").eq("active", True).execute()
@@ -113,6 +167,8 @@ async def main_ingestion():
         logger.info(f"Found {len(sources)} active sources. {len(to_scrape)} scheduled for scraping.")
         if not to_scrape:
             logger.info("No sources scheduled to scrape. Exiting.")
+            update_pipeline_run_metric(sources_total=0, sources_successful=0, ingested=0)
+            complete_phase_checkpoint(run_id, "ingest", 0)
             return
 
         # 3. Partition
@@ -121,9 +177,10 @@ async def main_ingestion():
         playwright_sources = [s for s in to_scrape if s["type"] == "playwright"]
 
         all_scraped = []
+        sources_total = len(to_scrape)
+        sources_successful = 0
 
         # 4. Run RSS and HTTPX concurrently
-        # httpx_scraper owns its client; pass source dict only
         rss_tasks = [process_rss_source(s) for s in rss_sources]
         httpx_tasks = [process_httpx_source(s) for s in httpx_sources]
 
@@ -131,25 +188,34 @@ async def main_ingestion():
             logger.info(f"Launching {len(rss_tasks)} RSS tasks and {len(httpx_tasks)} HTTPX tasks concurrently...")
             results = await asyncio.gather(*(rss_tasks + httpx_tasks), return_exceptions=True)
             for r in results:
-                if isinstance(r, list):
-                    all_scraped.extend(r)
+                if isinstance(r, tuple):
+                    articles, success = r
+                    all_scraped.extend(articles)
+                    if success:
+                        sources_successful += 1
                 elif isinstance(r, Exception):
                     logger.error(f"A concurrent scraper task failed with exception: {r}")
 
-        # 5. Run Playwright sources sequentially, sharing ONE browser instance
-        #    --no-sandbox is required on GitHub Actions (Linux non-root runner)
-        #    --disable-gpu avoids Mesa/rendering issues in headless CI
+        # 5. Run Playwright sources concurrently, sharing ONE browser instance
         if playwright_sources:
-            logger.info(f"Launching {len(playwright_sources)} Playwright tasks sequentially (shared browser)...")
+            logger.info(f"Launching {len(playwright_sources)} Playwright tasks concurrently (shared browser)...")
             async with async_playwright() as p:
                 browser = await p.chromium.launch(
                     headless=True,
                     args=["--no-sandbox", "--disable-gpu"]
                 )
                 try:
-                    for s in playwright_sources:
-                        articles = await process_playwright_source(s, browser)
-                        all_scraped.extend(articles)
+                    pw_tasks = [process_playwright_source(s, browser) for s in playwright_sources]
+                    results = await asyncio.gather(*pw_tasks, return_exceptions=True)
+                    for idx, r in enumerate(results):
+                        s = playwright_sources[idx]
+                        if isinstance(r, tuple):
+                            articles, success = r
+                            all_scraped.extend(articles)
+                            if success:
+                                sources_successful += 1
+                        elif isinstance(r, Exception):
+                            logger.error(f"Playwright scraper for {s['name']} failed with exception: {r}")
                 finally:
                     await browser.close()
         else:
@@ -176,32 +242,57 @@ async def main_ingestion():
 
         async def enrich_rss_item(item):
             if item["source_id"] in rss_source_ids and item["source_id"] not in arxiv_source_ids:
-                logger.info(f"Enriching RSS item: {item['url']}")
-                clean, raw_html = await fetch_full_page(item["url"])
-                if clean:
-                    item["clean_text"] = clean
-                    item["raw_html"] = raw_html
-                else:
-                    logger.warning(f"Could not retrieve full content for {item['url']}; keeping feed summary.")
+                from urllib.parse import urlparse
+                from agents.circuit_breaker import PersistentCircuitBreaker, CircuitBreakerOpenException
+                parsed = urlparse(item.get("url") or "")
+                domain = parsed.netloc or "unknown"
+                breaker = PersistentCircuitBreaker(f"scraped_site:{domain}")
+                try:
+                    async def do_fetch():
+                        return await fetch_full_page(item["url"])
+                    
+                    logger.info(f"Enriching RSS item: {item['url']}")
+                    res = await breaker.call_async(do_fetch)
+                    if res and isinstance(res, tuple) and len(res) == 2:
+                        clean, raw_html = res
+                        if clean:
+                            item["clean_text"] = clean
+                            item["raw_html"] = raw_html
+                        else:
+                            logger.warning(f"Could not retrieve full content for {item['url']}; keeping feed summary.")
+                except CircuitBreakerOpenException:
+                    logger.warning(f"Circuit breaker for scraped_site:{domain} is OPEN. Bypassing enrichment for {item['url']}.")
+                except Exception as e:
+                    logger.warning(f"Failed to enrich item {item['url']}: {e}")
 
         enrich_tasks = [enrich_rss_item(item) for item in new_items]
         if enrich_tasks:
             logger.info(f"Concurrently fetching full page content for {len(enrich_tasks)} new RSS items...")
             await asyncio.gather(*enrich_tasks, return_exceptions=True)
 
-        # 7. Bulk insert new items in chunks of 500
+        # 7. Bulk insert new items in chunks of 500 using text_hash upsert
+        import hashlib
+        for item in new_items:
+            content = item.get("clean_text") or item.get("title") or ""
+            item["text_hash"] = hashlib.sha256(content.encode("utf-8")).hexdigest()
+
         inserted_count = 0
         for chunk in chunks(new_items, 500):
             try:
-                supabase.table("articles").upsert(chunk, on_conflict="url").execute()
+                supabase.rpc("bulk_upsert_articles", {"p_articles": chunk}).execute()
                 inserted_count += len(chunk)
             except Exception as e:
                 logger.error(f"Failed to upsert chunk of {len(chunk)} items: {e}")
                 sentry_sdk.capture_exception(e)
 
         logger.info(f"[SUCCESS] Successfully ingested {inserted_count} new articles.")
+        update_pipeline_run_metric(
+            sources_total=sources_total,
+            sources_successful=sources_successful,
+            ingested=inserted_count
+        )
 
-        # 8. Update sources.last_scraped and ingestion metrics. Mark every source as completed.
+        # 8. Update sources.last_scraped. Mark every source as completed.
         now_str = datetime.utcnow().isoformat()
         for source in to_scrape:
             try:
@@ -214,6 +305,7 @@ async def main_ingestion():
         # Log ingestion summary
         print(f"Ingested: {inserted_count} new articles from {len(to_scrape)} sources")
         logger.info("[SUCCESS] Phase 1: Ingestion finished successfully.")
+        complete_phase_checkpoint(run_id, "ingest", inserted_count)
 
     except Exception as e:
         sentry_sdk.capture_exception(e)
@@ -221,6 +313,10 @@ async def main_ingestion():
         raise e
 
 def run_ingestion():
+    from agents.circuit_breaker import is_supabase_open
+    if is_supabase_open():
+        logger.error("Supabase circuit breaker is OPEN. Aborting run gracefully.")
+        return
     asyncio.run(main_ingestion())
 
 if __name__ == "__main__":

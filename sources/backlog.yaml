@@ -1,0 +1,37 @@
+# Backlog of Candidate Sources under Evaluation (Reviewed Monthly)
+backlog:
+  # Conferences
+  - name: "NeurIPS Proceedings"
+    url: "https://papers.nips.cc/paper/feed.xml"
+    type: "rss"
+    category: "conference"
+    notes: "High-volume ML research papers published annually."
+  - name: "ICML Proceedings"
+    url: "https://proceedings.mlr.press/feed.xml"
+    type: "rss"
+    category: "conference"
+    notes: "Top-tier machine learning theory and application papers."
+  - name: "ICLR Blog"
+    url: "https://iclr-blogletters.github.io/feed.xml"
+    type: "rss"
+    category: "conference"
+    notes: "Deep learning representation learning conference updates."
+
+  # Podcasts (Transcripts)
+  - name: "Lex Fridman Podcast"
+    url: "https://lexfridman.com/feed/podcast/"
+    type: "rss"
+    category: "podcast"
+    notes: "Long-form interviews with AI practitioners and researchers."
+  - name: "Dwarkesh Podcast"
+    url: "https://www.dwarkeshpatel.com/feed"
+    type: "rss"
+    category: "podcast"
+    notes: "In-depth research-focused interviews on AI scaling and alignment."
+
+  # Open Source Trending
+  - name: "GitHub Trending Python"
+    url: "https://github-rss.multiprocess.io/trending/python.xml"
+    type: "rss"
+    category: "repository"
+    notes: "Monitors daily trending Python repos on GitHub."

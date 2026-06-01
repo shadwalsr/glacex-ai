@@ -17,7 +17,7 @@ def seed_sources():
 
     print("Connecting to Supabase...")
     try:
-        with open("sources.yaml", "r") as f:
+        with open(os.path.join(os.path.dirname(__file__), "..", "config", "sources.yaml"), "r") as f:
             data = yaml.safe_load(f)
             sources = data.get("sources", [])
 

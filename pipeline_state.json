@@ -1,0 +1,16 @@
+{
+  "run_id": "ff97e3f7-c13b-4192-8837-b430199a9d24",
+  "sources_total": 0,
+  "sources_successful": 0,
+  "ingested": 0,
+  "embedded": 0,
+  "duplicates": 0,
+  "analyzed": 0,
+  "total_llm_attempts": 0,
+  "failed_llm_validations": 0,
+  "new_signals": 0,
+  "delivered": 0,
+  "prompt_version": "classify_v1",
+  "classification_accuracy": null,
+  "start_time": "2026-06-01T18:08:29.413198+00:00"
+}

@@ -8,7 +8,7 @@ from supabase import create_client, Client
 from sentence_transformers import SentenceTransformer
 import spacy
 
-from agents.observability import init_observability
+from agents.observability import init_observability, update_pipeline_run_metric, resolve_active_run_id, start_phase_checkpoint, complete_phase_checkpoint, is_phase_completed
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -124,17 +124,17 @@ def process_batch(batch: list[dict]):
 
         # Use full title + clean text for entity extraction
         ner_text = f"{title}\n{clean_text}"
-        # Cap text to 50k chars to avoid memory issues with huge pages in spaCy
-        doc = nlp(ner_text[:50000])
+        # Cap text to 10000 chars for speed
+        doc = nlp(ner_text[:10000])
 
-        unique_entities = []
-        seen_entities = set()
-        for ent in doc.ents:
-            text_cleaned = ent.text.strip()
-            label = ent.label_
-            if text_cleaned and (text_cleaned.lower(), label) not in seen_entities:
-                seen_entities.add((text_cleaned.lower(), label))
-                unique_entities.append({"text": text_cleaned, "label": label})
+        raw_entities = {
+            "orgs":    [e.text for e in doc.ents if e.label_ == "ORG"],
+            "persons": [e.text for e in doc.ents if e.label_ == "PERSON"],
+            "products":[e.text for e in doc.ents if e.label_ == "PRODUCT"],
+            "gpe":     [e.text for e in doc.ents if e.label_ == "GPE"],
+        }
+        # Deduplicate each list
+        unique_entities = {k: list(set(v)) for k, v in raw_entities.items()}
 
         # Chunk using smart token-based chunking strategy
         text_chunks = get_smart_chunks(article, embedding_model.tokenizer)
@@ -180,19 +180,42 @@ def process_batch(batch: list[dict]):
             sentry_sdk.capture_exception(e)
             return
 
-    # Update article status and entities
+    # Update entities individually
     for article_id, entities in updates_to_run:
         try:
             supabase.table("articles").update({
-                "status": "embedded",
                 "entities": entities
             }).eq("id", article_id).execute()
         except Exception as e:
-            logger.error(f"Failed to update status/entities for article {article_id}: {e}")
+            logger.error(f"Failed to update entities for article {article_id}: {e}")
             sentry_sdk.capture_exception(e)
+
+    # Bulk status update to mark completion
+    try:
+        article_ids = [a["id"] for a in batch]
+        if article_ids:
+            supabase.table("articles")\
+                .update({"status": "embedded"})\
+                .in_("id", article_ids)\
+                .execute()
+    except Exception as e:
+        logger.error(f"Failed to bulk update status to embedded: {e}")
+        sentry_sdk.capture_exception(e)
 
 def run_nlp():
     logger.info("Phase 2: NLP Embed & NER starting...")
+    from agents.circuit_breaker import is_supabase_open
+    if is_supabase_open():
+        logger.error("Supabase circuit breaker is OPEN. Aborting run gracefully.")
+        return
+
+    run_id = resolve_active_run_id()
+    if is_phase_completed(run_id, "nlp"):
+        logger.info("Phase 2 (nlp) already completed for this run. Skipping.")
+        return
+
+    start_phase_checkpoint(run_id, "nlp")
+
     try:
         # Fetch up to 200 raw articles
         res = supabase.table("articles")\
@@ -207,6 +230,7 @@ def run_nlp():
         
         if not articles:
             logger.info("No raw articles found with pending embeddings. Exiting.")
+            complete_phase_checkpoint(run_id, "nlp", 0)
             return
 
         # Process in batches of 50
@@ -216,6 +240,8 @@ def run_nlp():
             processed_count += len(batch)
 
         logger.info(f"[SUCCESS] Processed and embedded {processed_count} articles.")
+        update_pipeline_run_metric(embedded=processed_count)
+        complete_phase_checkpoint(run_id, "nlp", processed_count)
 
     except Exception as e:
         logger.error(f"NLP phase failed: {e}")

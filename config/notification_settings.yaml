@@ -1,0 +1,7 @@
+high_threshold: 85
+digest_threshold: 60
+max_per_run: 10
+quiet_hours:
+  enabled: true
+  start: 22
+  end: 6

@@ -7,7 +7,9 @@ on:
 jobs:
   pipeline:
     runs-on: ubuntu-latest
-    timeout-minutes: 50      # hard cap — free tier has 60 min/job limit
+    timeout-minutes: 20      # hard ceiling to protect budget
+    strategy:
+      fail-fast: false
     env:
       SUPABASE_URL:      ${{ secrets.SUPABASE_URL }}
       SUPABASE_DB_URL:   ${{ secrets.SUPABASE_DB_URL }}
@@ -21,6 +23,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Cache Python virtualenv
+      id: venv-cache
+      uses: actions/cache@v4
+      with:
+        path: .venv
+        key: ${{ runner.os }}-venv-${{ hashFiles('uv.lock') }}
+
     - name: Cache NLP models
       uses: actions/cache@v4
       with:
@@ -28,6 +37,13 @@ jobs:
           ~/.cache/huggingface
           ~/.cache/spacy
         key: ${{ runner.os }}-nlp-${{ hashFiles('pyproject.toml') }}
+
+    - name: Cache Playwright browsers
+      id: playwright-cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/ms-playwright
+        key: ${{ runner.os }}-playwright-${{ hashFiles('uv.lock') }}
 
     - name: Install uv
       uses: astral-sh/setup-uv@v2
@@ -41,10 +57,19 @@ jobs:
         python-version-file: "pyproject.toml"
 
     - name: Install dependencies
+      if: steps.venv-cache.outputs.cache-hit != 'true'
       run: uv sync
 
-    - name: Install Playwright browsers
+    - name: Install Playwright OS dependencies
+      if: steps.playwright-cache.outputs.cache-hit == 'true'
+      run: uv run playwright install-deps chromium
+
+    - name: Install Playwright browsers (with deps)
+      if: steps.playwright-cache.outputs.cache-hit != 'true'
       run: uv run playwright install chromium --with-deps
+
+    - name: Validate YAML sources and backlog
+      run: uv run python scripts/validate_sources.py
 
     - name: Validate environment
       run: uv run python scripts/validate_env.py

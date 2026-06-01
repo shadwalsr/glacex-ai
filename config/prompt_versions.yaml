@@ -1,0 +1,6 @@
+# Active prompt versions for the GlaceX pipeline.
+# Change a version here and commit → active on next run.
+# Never delete old prompt files from prompts/.
+classify_prompt: classify_v1
+extract_prompt: extract_v2
+digest_prompt: digest_v1

@@ -1,0 +1,24 @@
+-- Migration: add user_feedback table for signal quality feedback loop
+-- Triggered by ntfy.sh action buttons → GitHub Actions webhook → this table.
+
+CREATE TABLE IF NOT EXISTS public.user_feedback (
+    id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    article_id UUID NOT NULL REFERENCES public.articles(id) ON DELETE CASCADE,
+    rating     TEXT NOT NULL CHECK (rating IN ('good', 'noise')),
+    rated_at   TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+
+    -- One feedback rating per article (idempotent upserts; last-writer-wins)
+    CONSTRAINT user_feedback_article_id_unique UNIQUE (article_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_feedback_rated_at ON public.user_feedback (rated_at);
+CREATE INDEX IF NOT EXISTS idx_user_feedback_rating   ON public.user_feedback (rating);
+
+ALTER TABLE public.user_feedback ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow service_role full access to user_feedback"
+    ON public.user_feedback
+    FOR ALL
+    TO service_role
+    USING (true)
+    WITH CHECK (true);

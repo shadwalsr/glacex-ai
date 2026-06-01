@@ -1,0 +1,73 @@
+name: Monthly Feedback Analysis
+
+# Runs on the first day of each month at 09:00 UTC.
+# Computes signal quality precision KPI and alerts via ntfy.sh if precision < 70%.
+on:
+  schedule:
+    - cron: '0 9 1 * *'   # 1st of every month, 09:00 UTC
+  workflow_dispatch:        # manual trigger for testing
+
+jobs:
+  analyse:
+    name: Analyse Signal Quality KPI
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      SUPABASE_DB_URL:      ${{ secrets.SUPABASE_DB_URL }}
+      SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      NTFY_TOPIC:           ${{ secrets.NTFY_TOPIC }}
+      NTFY_TOKEN:           ${{ secrets.NTFY_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v2
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run feedback analysis (JSON output)
+        id: kpi
+        run: |
+          RESULT=$(uv run python scripts/analyze_feedback.py --months 1 --json)
+          echo "result=${RESULT}" >> $GITHUB_OUTPUT
+
+          PRECISION=$(echo "${RESULT}" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('precision_pct') or -1)")
+          echo "precision=${PRECISION}" >> $GITHUB_OUTPUT
+
+          BELOW_ALERT=$(echo "${RESULT}" | python3 -c "import sys,json; d=json.load(sys.stdin); print(str(d.get('below_alert_threshold', False)).lower())")
+          echo "below_alert=${BELOW_ALERT}" >> $GITHUB_OUTPUT
+
+      - name: Print human-readable report
+        run: uv run python scripts/analyze_feedback.py --months 1
+
+      - name: Alert via ntfy.sh if precision below 70%
+        if: steps.kpi.outputs.below_alert == 'true' && env.NTFY_TOPIC != ''
+        run: |
+          PRECISION="${{ steps.kpi.outputs.precision }}"
+          curl -s \
+            -H "Title: 🚨 Signal Quality Alert — Precision ${PRECISION}%" \
+            -H "Priority: 4" \
+            -H "Tags: warning,chart_with_downwards_trend" \
+            -H "Message: Monthly precision is ${PRECISION}% — below the 70% alert threshold. Review LLM prompts and classification thresholds." \
+            ${NTFY_TOKEN:+-H "Authorization: Bearer ${NTFY_TOKEN}"} \
+            "https://ntfy.sh/${NTFY_TOPIC}"
+
+      - name: Upload KPI report as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: feedback-kpi-${{ github.run_id }}
+          path: /tmp/kpi_report.json
+          if-no-files-found: ignore

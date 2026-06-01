@@ -10,11 +10,20 @@ logger = logging.getLogger(__name__)
 async def scrape_rss(source: dict) -> list[dict]:
     """
     Scrapes an RSS feed source using feedparser and httpx.
-    On failure, logs to Sentry and returns an empty list (never raises).
     """
     try:
+        last_scraped = source.get("last_scraped")
+        from scrapers.httpx.httpx_scraper import to_http_date
+        if_modified_since = to_http_date(last_scraped)
+        headers = {"User-Agent": "GlaceX/1.0"}
+        if if_modified_since:
+            headers["If-Modified-Since"] = if_modified_since
+
         async with httpx.AsyncClient(timeout=15) as client:
-            resp = await client.get(source["url"], headers={"User-Agent": "GlaceX/1.0"}, follow_redirects=True)
+            resp = await client.get(source["url"], headers=headers, follow_redirects=True)
+            if resp.status_code == 304:
+                logger.info(f"RSS feed not modified (304) since {if_modified_since}: {source['url']}")
+                return []
             resp.raise_for_status()
 
         # Parse the feed content using feedparser

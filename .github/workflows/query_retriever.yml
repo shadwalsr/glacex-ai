@@ -1,0 +1,43 @@
+name: Query Retrieval
+on:
+  repository_dispatch:
+    types: [query]
+    # Manual trigger via `gh api` with `event_type: query`
+
+jobs:
+  retrieve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+      NTFY_TOKEN: ${{ secrets.NTFY_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v2
+        with:
+          enable-cache: true
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run query retriever
+        env:
+          QUERY: ${{ github.event.client_payload.query }}
+        run: |
+          python scripts/query_retriever.py "$QUERY"
+
+      - name: Notify via ntfy
+        if: env.NTFY_TOPIC && env.NTFY_TOKEN
+        run: |
+          curl -X POST -H "Title: GlaceX Query Result" -H "Authorization: Bearer $NTFY_TOKEN" -d "$(cat /tmp/query_result.md)" https://ntfy.sh/$NTFY_TOPIC

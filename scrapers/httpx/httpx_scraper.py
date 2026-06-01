@@ -40,7 +40,7 @@ async def _domain_throttle(domain: str, min_gap: float = 1.0) -> None:
             await asyncio.sleep(wait)
         _domain_last_hit[domain] = time.monotonic()
 
-async def fetch_full_page(url: str) -> tuple[str | None, str | None]:
+async def fetch_full_page(url: str, if_modified_since: str = None) -> tuple[str | None, str | None]:
     """
     Fetches a page, respects rate-limits/Retry-After, and extracts clean markdown.
     Returns (clean_text, raw_html) or (None, None) on failure.
@@ -50,12 +50,21 @@ async def fetch_full_page(url: str) -> tuple[str | None, str | None]:
         # Enforce rate limit before opening the connection
         await _domain_throttle(domain)
 
+        headers = {"User-Agent": "Mozilla/5.0 GlaceX/1.0"}
+        if if_modified_since:
+            headers["If-Modified-Since"] = if_modified_since
+
         async with httpx.AsyncClient(
             timeout=20,
             follow_redirects=True,
-            headers={"User-Agent": "Mozilla/5.0 GlaceX/1.0"},
+            headers=headers,
         ) as client:
             resp = await client.get(url)
+
+            # Handle 304 Not Modified
+            if resp.status_code == 304:
+                logger.info(f"Page not modified (304) since {if_modified_since}: {url}")
+                return None, None
 
             # Handle 429 Too Many Requests — honour Retry-After
             if resp.status_code == 429:
@@ -88,6 +97,17 @@ async def fetch_full_page(url: str) -> tuple[str | None, str | None]:
         sentry_sdk.capture_exception(e)
         return None, None
 
+def to_http_date(dt_str):
+    if not dt_str:
+        return None
+    try:
+        from datetime import datetime
+        import email.utils
+        dt = datetime.fromisoformat(dt_str.replace("Z", "+00:00"))
+        return email.utils.format_datetime(dt)
+    except Exception:
+        return None
+
 async def scrape_httpx(source: dict) -> list[dict]:
     """
     Scrapes a static web page, extracts clean markdown content via trafilatura.
@@ -99,8 +119,10 @@ async def scrape_httpx(source: dict) -> list[dict]:
     """
     url = source["url"]
     name = source.get("name", url)
+    last_scraped = source.get("last_scraped")
+    if_modified_since = to_http_date(last_scraped)
 
-    clean, raw_html = await fetch_full_page(url)
+    clean, raw_html = await fetch_full_page(url, if_modified_since)
     if not clean:
         return []
 

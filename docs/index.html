@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GlaceX.ai - Pipeline Health Dashboard</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0b0f19;
+      color: #f3f4f6;
+    }
+    .glass-card {
+      background: rgba(17, 24, 39, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px rgba(255, 255, 255, 0.08) solid;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+  <!-- Header -->
+  <header class="w-full max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4">
+    <div class="flex items-center gap-3">
+      <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-emerald-400 flex items-center justify-center font-bold text-white text-xl shadow-lg shadow-indigo-500/20">G</div>
+      <div>
+        <h1 class="text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-indigo-400">GlaceX.ai</h1>
+        <p class="text-xs text-indigo-400 font-medium uppercase tracking-wider">Pipeline Health & Operations</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-3 glass-card px-4 py-2 rounded-full text-sm">
+      <span class="relative flex h-3 w-3">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+      </span>
+      <span class="text-gray-300 font-semibold" id="sys-status">Monitoring Live</span>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full max-w-7xl mx-auto px-6 pb-12">
+    <!-- Grid Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <!-- Card 1: Last Run Score -->
+      <div class="glass-card p-6 rounded-2xl flex flex-col justify-between relative overflow-hidden group hover:border-indigo-500/50 transition duration-300">
+        <div class="absolute -right-4 -top-4 w-24 h-24 bg-indigo-500/10 rounded-full blur-xl group-hover:bg-indigo-500/20 transition"></div>
+        <div>
+          <span class="text-gray-400 text-sm font-semibold">Latest Run Health</span>
+          <div class="text-4xl font-extrabold mt-2 text-white" id="stat-health-score">--</div>
+        </div>
+        <p class="text-xs text-indigo-300 mt-4" id="stat-health-breakdown">Source + Signal + LLM composite</p>
+      </div>
+
+      <!-- Card 2: Successful Sources -->
+      <div class="glass-card p-6 rounded-2xl flex flex-col justify-between relative overflow-hidden group hover:border-emerald-500/50 transition duration-300">
+        <div class="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition"></div>
+        <div>
+          <span class="text-gray-400 text-sm font-semibold">Source Success Rate</span>
+          <div class="text-4xl font-extrabold mt-2 text-white" id="stat-source-rate">--</div>
+        </div>
+        <p class="text-xs text-emerald-300 mt-4" id="stat-source-details">Successful / Total active</p>
+      </div>
+
+      <!-- Card 3: New Signals Yield -->
+      <div class="glass-card p-6 rounded-2xl flex flex-col justify-between relative overflow-hidden group hover:border-purple-500/50 transition duration-300">
+        <div class="absolute -right-4 -top-4 w-24 h-24 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/20 transition"></div>
+        <div>
+          <span class="text-gray-400 text-sm font-semibold">New Signals Yield</span>
+          <div class="text-4xl font-extrabold mt-2 text-white" id="stat-new-signals">--</div>
+        </div>
+        <p class="text-xs text-purple-300 mt-4" id="stat-signals-details">Target: 5 insights per run</p>
+      </div>
+
+      <!-- Card 4: LLM Success Rate -->
+      <div class="glass-card p-6 rounded-2xl flex flex-col justify-between relative overflow-hidden group hover:border-amber-500/50 transition duration-300">
+        <div class="absolute -right-4 -top-4 w-24 h-24 bg-amber-500/10 rounded-full blur-xl group-hover:bg-amber-500/20 transition"></div>
+        <div>
+          <span class="text-gray-400 text-sm font-semibold">LLM Extraction Success</span>
+          <div class="text-4xl font-extrabold mt-2 text-white" id="stat-llm-success">--</div>
+        </div>
+        <p class="text-xs text-amber-300 mt-4" id="stat-llm-details">Pydantic validation rate</p>
+      </div>
+    </div>
+
+    <!-- Main Table Card -->
+    <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
+      <div class="px-6 py-5 border-b border-gray-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 class="text-lg font-bold text-white">Pipeline Execution History</h2>
+          <p class="text-xs text-gray-400 mt-1">Showing the last 20 execution runs and computed health scores</p>
+        </div>
+        <button onclick="fetchData()" class="bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition duration-200">
+          Refresh Data
+        </button>
+      </div>
+
+      <div class="overflow-x-auto w-full">
+        <table class="w-full text-left text-sm text-gray-300">
+          <thead class="bg-gray-900/50 text-gray-400 uppercase text-xs font-semibold border-b border-gray-800">
+            <tr>
+              <th class="px-6 py-4">Run Time</th>
+              <th class="px-6 py-4">Run ID</th>
+              <th class="px-6 py-4 text-center">Ingested</th>
+              <th class="px-6 py-4 text-center">Embedded</th>
+              <th class="px-6 py-4 text-center">Duplicates</th>
+              <th class="px-6 py-4 text-center">Signals</th>
+              <th class="px-6 py-4 text-center">Duration</th>
+              <th class="px-6 py-4 text-right">Health Score</th>
+            </tr>
+          </thead>
+          <tbody id="runs-tbody" class="divide-y divide-gray-800/50">
+            <tr>
+              <td colspan="8" class="text-center py-12 text-gray-500">Loading pipeline statistics...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full border-t border-gray-900 py-6">
+    <div class="max-w-7xl mx-auto px-6 text-center text-xs text-gray-500">
+      &copy; 2026 GlaceX.ai. All rights reserved. Managed autonomously.
+    </div>
+  </footer>
+
+  <!-- Script to load data dynamically from Supabase Rest endpoint -->
+  <script>
+    const SUPABASE_URL = "https://ekamfrtwruungwxirkxp.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_oXct52-KAg8HHugD0a5h5A_Daxsg9Gv";
+
+    async function fetchData() {
+      const runsTbody = document.getElementById("runs-tbody");
+      runsTbody.innerHTML = `
+        <tr>
+          <td colspan="8" class="text-center py-12 text-gray-500">Refreshing pipeline statistics...</td>
+        </tr>
+      `;
+
+      try {
+        // Fetch pipeline_health joined with pipeline_runs
+        const response = await fetch(
+          `${SUPABASE_URL}/rest/v1/pipeline_health?select=*,pipeline_runs(*)&order=created_at.desc&limit=20`,
+          {
+            headers: {
+              "apikey": SUPABASE_KEY,
+              "Authorization": `Bearer ${SUPABASE_KEY}`
+            }
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Error fetching health logs: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        
+        if (!data || data.length === 0) {
+          runsTbody.innerHTML = `
+            <tr>
+              <td colspan="8" class="text-center py-12 text-gray-500">No execution runs found.</td>
+            </tr>
+          `;
+          return;
+        }
+
+        // Render Stats Cards with top item
+        const latest = data[0];
+        const runDetails = latest.pipeline_runs || {};
+
+        document.getElementById("stat-health-score").innerText = `${Math.round(latest.health_score * 100)}%`;
+        document.getElementById("stat-source-rate").innerText = `${latest.sources_successful}/${latest.sources_total}`;
+        document.getElementById("stat-new-signals").innerText = `${latest.new_signals}`;
+        document.getElementById("stat-llm-success").innerText = `${Math.round(latest.llm_success_rate * 100)}%`;
+
+        // Render color indicator for top health
+        const scoreElem = document.getElementById("stat-health-score");
+        scoreElem.className = "text-4xl font-extrabold mt-2";
+        if (latest.health_score >= 0.8) {
+          scoreElem.classList.add("text-emerald-400");
+        } else if (latest.health_score >= 0.5) {
+          scoreElem.classList.add("text-amber-400");
+        } else {
+          scoreElem.classList.add("text-rose-400");
+        }
+
+        // Populate table
+        runsTbody.innerHTML = "";
+        data.forEach(row => {
+          const run = row.pipeline_runs || {};
+          const rawDate = new Date(row.created_at);
+          const dateStr = rawDate.toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short' });
+          const shortRunId = row.run_id ? row.run_id.substring(0, 8) : "N/A";
+          
+          let healthBadgeColor = "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
+          if (row.health_score < 0.5) {
+            healthBadgeColor = "text-rose-400 bg-rose-500/10 border-rose-500/20";
+          } else if (row.health_score < 0.8) {
+            healthBadgeColor = "text-amber-400 bg-amber-500/10 border-amber-500/20";
+          }
+
+          runsTbody.innerHTML += `
+            <tr class="hover:bg-gray-900/30 transition">
+              <td class="px-6 py-4 font-medium text-white">${dateStr}</td>
+              <td class="px-6 py-4 font-mono text-xs text-gray-400">${shortRunId}...</td>
+              <td class="px-6 py-4 text-center">${run.ingested ?? 0}</td>
+              <td class="px-6 py-4 text-center">${run.embedded ?? 0}</td>
+              <td class="px-6 py-4 text-center">${run.duplicates ?? 0}</td>
+              <td class="px-6 py-4 text-center text-indigo-400 font-bold">${row.new_signals ?? 0}</td>
+              <td class="px-6 py-4 text-center text-gray-400">${run.duration_s ?? 0}s</td>
+              <td class="px-6 py-4 text-right">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${healthBadgeColor}">
+                  ${Math.round(row.health_score * 100)}%
+                </span>
+              </td>
+            </tr>
+          `;
+        });
+
+      } catch (err) {
+        console.error(err);
+        runsTbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="text-center py-12 text-rose-500 font-semibold">Error connecting to Supabase: ${err.message}</td>
+          </tr>
+        `;
+      }
+    }
+
+    // Load initial data
+    window.addEventListener("DOMContentLoaded", fetchData);
+  </script>
+</body>
+</html>
