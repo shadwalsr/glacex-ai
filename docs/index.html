@@ -3,11 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GlaceX.ai - Pipeline Health Dashboard</title>
+  <title>GlaceX.ai – Intelligent AI Curation Explorer</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Autonomous research discovery, signal curation, and technical intelligence for the AI safety and alignment ecosystem.">
+  
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -16,193 +21,928 @@
         extend: {
           fontFamily: {
             sans: ['Outfit', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
           },
         },
       },
     }
   </script>
+  
+  <!-- Custom Premium Minimalist Styling -->
   <style>
     body {
-      background-color: #0b0f19;
+      background-color: #070911;
       color: #f3f4f6;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     }
+    
+    /* Sleek scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #070911;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+
+    /* Premium frosted glass effects */
     .glass-card {
-      background: rgba(17, 24, 39, 0.7);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px rgba(255, 255, 255, 0.08) solid;
+      background: rgba(13, 18, 33, 0.45);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .glass-card:hover {
+      border-color: rgba(255, 255, 255, 0.1);
+      background: rgba(18, 25, 45, 0.55);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    .glass-input {
+      background: rgba(10, 15, 30, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-input:focus {
+      border-color: rgba(99, 102, 241, 0.5);
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
+      outline: none;
+    }
+
+    /* Active tab glowing underline bar */
+    .nav-tab {
+      position: relative;
+      color: #94a3b8;
+      transition: color 0.2s ease;
+    }
+    .nav-tab.active {
+      color: #ffffff;
+    }
+    .nav-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, #6366f1, #10b981);
+      border-radius: 999px;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+    }
+
+    /* Subtle custom glowing components */
+    .glow-indigo {
+      box-shadow: 0 0 20px -3px rgba(99, 102, 241, 0.15);
+    }
+    .glow-emerald {
+      box-shadow: 0 0 20px -3px rgba(16, 185, 129, 0.15);
+    }
+    .glow-amber {
+      box-shadow: 0 0 20px -3px rgba(245, 158, 11, 0.15);
+    }
+
+    /* Details Drawer Transitions */
+    .drawer-open {
+      transform: translateX(0);
+    }
+    .drawer-closed {
+      transform: translateX(100%);
+    }
+
+    /* Pulse animation for Live indicator */
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 0.4; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+    .pulse-glow {
+      animation: pulse-ring 2s infinite ease-in-out;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased">
+<body class="min-h-screen flex flex-col antialiased selection:bg-indigo-500/20 selection:text-indigo-200">
 
   <!-- Header -->
-  <header class="w-full max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4">
+  <header class="w-full max-w-7xl mx-auto px-6 pt-8 pb-4 flex flex-col md:flex-row justify-between items-center gap-6 border-b border-gray-900">
     <div class="flex items-center gap-3">
       <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-emerald-400 flex items-center justify-center font-bold text-white text-xl shadow-lg shadow-indigo-500/20">G</div>
       <div>
-        <h1 class="text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-indigo-400">GlaceX.ai</h1>
-        <p class="text-xs text-indigo-400 font-medium uppercase tracking-wider">Pipeline Health & Operations</p>
+        <h1 class="text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-100 to-indigo-300">GlaceX.ai</h1>
+        <p class="text-[10px] text-gray-400 font-semibold uppercase tracking-widest">Autonomous Intelligence Curation Engine</p>
       </div>
     </div>
-    <div class="flex items-center gap-3 glass-card px-4 py-2 rounded-full text-sm">
-      <span class="relative flex h-3 w-3">
-        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+    
+    <!-- Tab Navigation -->
+    <nav class="flex items-center gap-6 md:gap-8 text-sm font-semibold border-b border-transparent">
+      <button onclick="switchTab('feed')" id="tab-feed" class="nav-tab active py-2">Intelligence Feed</button>
+      <button onclick="switchTab('terminal')" id="tab-terminal" class="nav-tab py-2">Query Terminal</button>
+      <button onclick="switchTab('health')" id="tab-health" class="nav-tab py-2">Pipeline Operations</button>
+      <button onclick="switchTab('sources')" id="tab-sources" class="nav-tab py-2">Sources Registry</button>
+    </nav>
+
+    <!-- Operational State Status -->
+    <div class="flex items-center gap-2.5 glass-card px-4 py-1.5 rounded-full text-xs border border-gray-800">
+      <span class="relative flex h-2 w-2">
+        <span class="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 pulse-glow"></span>
+        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
       </span>
-      <span class="text-gray-300 font-semibold" id="sys-status">Monitoring Live</span>
+      <span class="text-gray-400 font-semibold uppercase tracking-wider text-[9px]" id="sys-status">Active Signal Monitoring</span>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="flex-1 w-full max-w-7xl mx-auto px-6 pb-12">
-    <!-- Grid Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-      <!-- Card 1: Last Run Score -->
-      <div class="glass-card p-6 rounded-2xl flex flex-col justify-between relative overflow-hidden group hover:border-indigo-500/50 transition duration-300">
-        <div class="absolute -right-4 -top-4 w-24 h-24 bg-indigo-500/10 rounded-full blur-xl group-hover:bg-indigo-500/20 transition"></div>
-        <div>
-          <span class="text-gray-400 text-sm font-semibold">Latest Run Health</span>
-          <div class="text-4xl font-extrabold mt-2 text-white" id="stat-health-score">--</div>
+  <!-- Main View Container -->
+  <main class="flex-1 w-full max-w-7xl mx-auto px-6 py-8">
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 1: INTELLIGENCE FEED -->
+    <!-- ========================================================================= -->
+    <section id="view-feed" class="tab-content transition-all duration-300">
+      <!-- Search & Filters -->
+      <div class="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 mb-8">
+        <!-- Search -->
+        <div class="relative flex-1 max-w-md">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-500">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          </span>
+          <input type="text" id="feed-search" oninput="filterFeed()" placeholder="Search titles, tags, or insights..." class="w-full pl-10 pr-4 py-2 text-sm rounded-xl text-white glass-input transition">
         </div>
-        <p class="text-xs text-indigo-300 mt-4" id="stat-health-breakdown">Source + Signal + LLM composite</p>
+        <!-- Filter Pills -->
+        <div class="flex flex-wrap items-center gap-2" id="category-filters">
+          <button onclick="setCategoryFilter('all')" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-indigo-600/25 border border-indigo-500/30 text-white shadow-sm transition">All Discoveries</button>
+          <button onclick="setCategoryFilter('paper')" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-900 border border-gray-800 text-gray-400 hover:text-white transition">Papers</button>
+          <button onclick="setCategoryFilter('tool')" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-900 border border-gray-800 text-gray-400 hover:text-white transition">Developer Tools</button>
+          <button onclick="setCategoryFilter('product')" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-900 border border-gray-800 text-gray-400 hover:text-white transition">Products</button>
+          <button onclick="setCategoryFilter('company')" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-900 border border-gray-800 text-gray-400 hover:text-white transition">Companies</button>
+        </div>
       </div>
 
-      <!-- Card 2: Successful Sources -->
-      <div class="glass-card p-6 rounded-2xl flex flex-col justify-between relative overflow-hidden group hover:border-emerald-500/50 transition duration-300">
-        <div class="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition"></div>
-        <div>
-          <span class="text-gray-400 text-sm font-semibold">Source Success Rate</span>
-          <div class="text-4xl font-extrabold mt-2 text-white" id="stat-source-rate">--</div>
+      <!-- Feed Grid -->
+      <div id="feed-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- JS Hydration -->
+        <div class="col-span-full text-center py-20 text-gray-500">
+          <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500 mb-4"></div>
+          <p class="text-sm font-semibold">Retrieving intelligence corpus...</p>
         </div>
-        <p class="text-xs text-emerald-300 mt-4" id="stat-source-details">Successful / Total active</p>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 2: QUERY TERMINAL (RAG & FULL TEXT SEARCH) -->
+    <!-- ========================================================================= -->
+    <section id="view-terminal" class="tab-content hidden transition-all duration-300">
+      <div class="max-w-4xl mx-auto">
+        <!-- Terminal Header -->
+        <div class="bg-[#0b0f19] border border-gray-800 rounded-t-2xl px-4 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-rose-500/80"></span>
+            <span class="w-3 h-3 rounded-full bg-amber-500/80"></span>
+            <span class="w-3 h-3 rounded-full bg-emerald-500/80"></span>
+            <span class="text-xs text-gray-500 font-mono ml-2">GlaceX Search Core v1.2</span>
+          </div>
+          <span class="text-[10px] text-gray-500 font-mono">SUPABASE_RETRIEVAL_CONNECTED</span>
+        </div>
+
+        <!-- Terminal Body -->
+        <div class="bg-[#04060b] border-x border-b border-gray-800 rounded-b-2xl p-6 glow-indigo">
+          <p class="text-indigo-400 font-mono text-xs mb-4">// Enter keywords or topics to parse the Supabase technical database.</p>
+          <div class="flex items-center gap-3 font-mono text-sm">
+            <span class="text-emerald-400 font-bold">glacex-search:~$</span>
+            <input type="text" id="terminal-input" onkeydown="handleTerminalSearch(event)" placeholder="Type query (e.g. 'attention mechanism') and press Enter..." class="flex-1 bg-transparent text-white focus:outline-none placeholder-gray-600 font-mono">
+            <button onclick="runTerminalSearch()" class="bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 rounded-lg px-4 py-1.5 text-xs font-semibold transition duration-200">
+              Query
+            </button>
+          </div>
+        </div>
+
+        <!-- Retrieval Results -->
+        <div id="terminal-results" class="mt-8 space-y-6">
+          <!-- JS Hydration -->
+          <div class="text-center py-12 text-gray-600 font-mono text-xs">
+            Waiting for query execution...
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 3: PIPELINE OPERATIONS -->
+    <!-- ========================================================================= -->
+    <section id="view-health" class="tab-content hidden transition-all duration-300">
+      <!-- Grid Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <!-- Stat 1 -->
+        <div class="glass-card p-6 rounded-2xl flex flex-col justify-between relative overflow-hidden group">
+          <div class="absolute -right-4 -top-4 w-24 h-24 bg-indigo-500/10 rounded-full blur-xl group-hover:bg-indigo-500/20 transition"></div>
+          <div>
+            <span class="text-gray-400 text-xs font-semibold uppercase tracking-wider">Latest Run Health</span>
+            <div class="text-3xl font-extrabold mt-2 text-white" id="stat-health-score">--</div>
+          </div>
+          <p class="text-[10px] text-indigo-300 mt-4" id="stat-health-breakdown">Source + Signal + LLM composite</p>
+        </div>
+
+        <!-- Stat 2 -->
+        <div class="glass-card p-6 rounded-2xl flex flex-col justify-between relative overflow-hidden group">
+          <div class="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition"></div>
+          <div>
+            <span class="text-gray-400 text-xs font-semibold uppercase tracking-wider">Source Scrapes</span>
+            <div class="text-3xl font-extrabold mt-2 text-white" id="stat-source-rate">--</div>
+          </div>
+          <p class="text-[10px] text-emerald-300 mt-4" id="stat-source-details">Successful / Total active</p>
+        </div>
+
+        <!-- Stat 3 -->
+        <div class="glass-card p-6 rounded-2xl flex flex-col justify-between relative overflow-hidden group">
+          <div class="absolute -right-4 -top-4 w-24 h-24 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/20 transition"></div>
+          <div>
+            <span class="text-gray-400 text-xs font-semibold uppercase tracking-wider">Signal Yield</span>
+            <div class="text-3xl font-extrabold mt-2 text-white" id="stat-new-signals">--</div>
+          </div>
+          <p class="text-[10px] text-purple-300 mt-4" id="stat-signals-details">Target: 5 insights per run</p>
+        </div>
+
+        <!-- Stat 4 -->
+        <div class="glass-card p-6 rounded-2xl flex flex-col justify-between relative overflow-hidden group">
+          <div class="absolute -right-4 -top-4 w-24 h-24 bg-amber-500/10 rounded-full blur-xl group-hover:bg-amber-500/20 transition"></div>
+          <div>
+            <span class="text-gray-400 text-xs font-semibold uppercase tracking-wider">LLM Parsing Rate</span>
+            <div class="text-3xl font-extrabold mt-2 text-white" id="stat-llm-success">--</div>
+          </div>
+          <p class="text-[10px] text-amber-300 mt-4" id="stat-llm-details">Pydantic validation rate</p>
+        </div>
       </div>
 
-      <!-- Card 3: New Signals Yield -->
-      <div class="glass-card p-6 rounded-2xl flex flex-col justify-between relative overflow-hidden group hover:border-purple-500/50 transition duration-300">
-        <div class="absolute -right-4 -top-4 w-24 h-24 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/20 transition"></div>
-        <div>
-          <span class="text-gray-400 text-sm font-semibold">New Signals Yield</span>
-          <div class="text-4xl font-extrabold mt-2 text-white" id="stat-new-signals">--</div>
+      <!-- Execution History Table -->
+      <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
+        <div class="px-6 py-5 border-b border-gray-900 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 class="text-md font-bold text-white uppercase tracking-wider text-xs">Pipeline Execution History</h2>
+            <p class="text-[10px] text-gray-400 mt-1">Computes chronological run performance and structured health records</p>
+          </div>
+          <button onclick="fetchHealthData()" class="bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 text-xs font-semibold px-4 py-2 rounded-lg transition duration-200">
+            Refresh Metrics
+          </button>
         </div>
-        <p class="text-xs text-purple-300 mt-4" id="stat-signals-details">Target: 5 insights per run</p>
-      </div>
 
-      <!-- Card 4: LLM Success Rate -->
-      <div class="glass-card p-6 rounded-2xl flex flex-col justify-between relative overflow-hidden group hover:border-amber-500/50 transition duration-300">
-        <div class="absolute -right-4 -top-4 w-24 h-24 bg-amber-500/10 rounded-full blur-xl group-hover:bg-amber-500/20 transition"></div>
-        <div>
-          <span class="text-gray-400 text-sm font-semibold">LLM Extraction Success</span>
-          <div class="text-4xl font-extrabold mt-2 text-white" id="stat-llm-success">--</div>
+        <div class="overflow-x-auto w-full">
+          <table class="w-full text-left text-xs text-gray-300">
+            <thead class="bg-[#0b0f19]/70 text-gray-400 uppercase text-[10px] font-semibold border-b border-gray-900">
+              <tr>
+                <th class="px-6 py-4">Run Time</th>
+                <th class="px-6 py-4">Run ID</th>
+                <th class="px-6 py-4 text-center">Ingested</th>
+                <th class="px-6 py-4 text-center">Embedded</th>
+                <th class="px-6 py-4 text-center">Duplicates</th>
+                <th class="px-6 py-4 text-center">Signals</th>
+                <th class="px-6 py-4 text-center">Duration</th>
+                <th class="px-6 py-4 text-right">Health Score</th>
+              </tr>
+            </thead>
+            <tbody id="runs-tbody" class="divide-y divide-gray-900/60">
+              <tr>
+                <td colspan="8" class="text-center py-12 text-gray-500 font-mono">Loading operations matrix...</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <p class="text-xs text-amber-300 mt-4" id="stat-llm-details">Pydantic validation rate</p>
       </div>
-    </div>
+    </section>
 
-    <!-- Main Table Card -->
-    <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
-      <div class="px-6 py-5 border-b border-gray-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <!-- ========================================================================= -->
+    <!-- VIEW 4: SOURCES REGISTRY -->
+    <!-- ========================================================================= -->
+    <section id="view-sources" class="tab-content hidden transition-all duration-300">
+      <div class="px-6 py-5 border-b border-gray-900 flex justify-between items-center mb-8">
         <div>
-          <h2 class="text-lg font-bold text-white">Pipeline Execution History</h2>
-          <p class="text-xs text-gray-400 mt-1">Showing the last 20 execution runs and computed health scores</p>
+          <h2 class="text-md font-bold text-white uppercase tracking-wider text-xs">Data Stream Sources</h2>
+          <p class="text-[10px] text-gray-400 mt-1">Configured pipeline inputs spanning newsletter archives, RSS feeds, and technical journals</p>
         </div>
-        <button onclick="fetchData()" class="bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition duration-200">
-          Refresh Data
+        <button onclick="fetchSourcesData()" class="bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 text-xs font-semibold px-4 py-2 rounded-lg transition duration-200">
+          Sync Streams
         </button>
       </div>
 
-      <div class="overflow-x-auto w-full">
-        <table class="w-full text-left text-sm text-gray-300">
-          <thead class="bg-gray-900/50 text-gray-400 uppercase text-xs font-semibold border-b border-gray-800">
-            <tr>
-              <th class="px-6 py-4">Run Time</th>
-              <th class="px-6 py-4">Run ID</th>
-              <th class="px-6 py-4 text-center">Ingested</th>
-              <th class="px-6 py-4 text-center">Embedded</th>
-              <th class="px-6 py-4 text-center">Duplicates</th>
-              <th class="px-6 py-4 text-center">Signals</th>
-              <th class="px-6 py-4 text-center">Duration</th>
-              <th class="px-6 py-4 text-right">Health Score</th>
-            </tr>
-          </thead>
-          <tbody id="runs-tbody" class="divide-y divide-gray-800/50">
-            <tr>
-              <td colspan="8" class="text-center py-12 text-gray-500">Loading pipeline statistics...</td>
-            </tr>
-          </tbody>
-        </table>
+      <div id="sources-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- JS Hydration -->
+        <div class="col-span-full text-center py-20 text-gray-500 font-mono text-xs">
+          Gathering registry components...
+        </div>
       </div>
-    </div>
+    </section>
+
   </main>
 
+  <!-- ========================================================================= -->
+  <!-- SIDE DRAWER PANEL FOR ARTICLE DETAILS -->
+  <!-- ========================================================================= -->
+  <!-- Backdrop -->
+  <div id="drawer-backdrop" onclick="closeDrawer()" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 hidden transition-opacity duration-300 ease-in-out opacity-0"></div>
+
+  <!-- Drawer Body -->
+  <div id="detail-drawer" class="fixed top-0 right-0 h-full w-full max-w-lg md:max-w-2xl bg-[#090b14]/95 border-l border-gray-900 shadow-2xl z-50 transform drawer-closed transition-transform duration-300 ease-out flex flex-col">
+    <!-- Header -->
+    <div class="px-6 py-5 border-b border-gray-900 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span id="drawer-category" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border">PAPER</span>
+        <span id="drawer-source" class="text-xs text-indigo-400 font-semibold">arXiv Library</span>
+      </div>
+      <button onclick="closeDrawer()" class="text-gray-400 hover:text-white transition p-1 rounded-lg hover:bg-gray-900">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <!-- Scrollable Content -->
+    <div class="flex-1 overflow-y-auto px-6 py-6 space-y-8 select-text">
+      <!-- Title -->
+      <div>
+        <h2 id="drawer-title" class="text-xl md:text-2xl font-extrabold tracking-tight text-white leading-tight">Attention Mechanisms in 2025: Advancements and Pitfalls</h2>
+        <p id="drawer-date" class="text-[10px] text-gray-500 mt-2 font-mono">Published on June 01, 2026</p>
+      </div>
+
+      <!-- LLM Assessment Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Importance Gauge -->
+        <div class="bg-[#0c0e18] border border-gray-900 rounded-xl p-4 flex flex-col justify-between">
+          <span class="text-gray-500 text-[10px] uppercase font-bold tracking-wider">Importance Index</span>
+          <div class="flex items-baseline gap-1 mt-2">
+            <span id="drawer-importance" class="text-3xl font-extrabold text-indigo-400">85</span>
+            <span class="text-gray-600 text-xs">/100</span>
+          </div>
+          <!-- Tiny Bar -->
+          <div class="w-full bg-gray-900 rounded-full h-1.5 mt-2">
+            <div id="drawer-importance-bar" class="bg-indigo-500 h-1.5 rounded-full" style="width: 85%"></div>
+          </div>
+        </div>
+
+        <!-- Technical Depth -->
+        <div class="bg-[#0c0e18] border border-gray-900 rounded-xl p-4 flex flex-col justify-between">
+          <span class="text-gray-500 text-[10px] uppercase font-bold tracking-wider">Technical Depth</span>
+          <div class="text-lg font-bold text-white mt-2 flex items-center gap-2">
+            <span class="h-2 w-2 rounded-full bg-cyan-400"></span>
+            <span id="drawer-depth">Deep Technical</span>
+          </div>
+          <span class="text-[9px] text-gray-500 mt-1 block">Architecture focused</span>
+        </div>
+
+        <!-- Relevance -->
+        <div class="bg-[#0c0e18] border border-gray-900 rounded-xl p-4 flex flex-col justify-between">
+          <span class="text-gray-500 text-[10px] uppercase font-bold tracking-wider">AI Relevancy</span>
+          <div class="text-lg font-bold text-emerald-400 mt-2 flex items-center gap-2">
+            <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>Verified</span>
+          </div>
+          <span class="text-[9px] text-gray-500 mt-1 block">Meets strict filters</span>
+        </div>
+      </div>
+
+      <!-- LLM Justification Reason -->
+      <div class="bg-indigo-950/10 border border-indigo-900/20 rounded-xl p-5">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-300 mb-2">Classification Assessment</h3>
+        <p id="drawer-reason" class="text-xs text-gray-400 leading-relaxed font-sans">
+          This publication outlines critical breakthroughs in long-context transformer efficiency, detailing optimizations directly relevant to low-latency local inference servers.
+        </p>
+      </div>
+
+      <!-- Deep Insights Section -->
+      <div id="drawer-insights-container" class="space-y-6">
+        <!-- Headline -->
+        <div class="border-l-2 border-indigo-500 pl-4">
+          <h4 class="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Key Discovery Headline</h4>
+          <p id="drawer-headline" class="text-sm font-bold text-white mt-1">Linear-Complexity Sliding Window Attention Yields 4x Throughput Boost</p>
+        </div>
+
+        <!-- TL;DR Bullets -->
+        <div>
+          <h4 class="text-[10px] uppercase font-bold text-gray-500 tracking-wider mb-2">Technical TL;DR Summaries</h4>
+          <ul id="drawer-tldr" class="space-y-2 text-xs text-gray-400 leading-relaxed list-disc pl-4">
+            <li>Reduces attention overhead for long sequences using a local hardware kernel.</li>
+            <li>Fully backwards compatible with standard Llama architecture configurations.</li>
+          </ul>
+        </div>
+
+        <!-- Practical Utility -->
+        <div>
+          <h4 class="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Practical Utility & Execution</h4>
+          <p id="drawer-utility" class="text-xs text-gray-400 leading-relaxed mt-1 font-sans">
+            Ready-to-use Triton kernels are provided, offering immediate integration pathways for standard Hugging Face pipelines.
+          </p>
+        </div>
+
+        <!-- Ecosystem Impact -->
+        <div>
+          <h4 class="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Ecosystem Impact Assessment</h4>
+          <p id="drawer-impact" class="text-xs text-gray-400 leading-relaxed mt-1 font-sans">
+            Sets a new benchmark for low-memory transformer runs, heavily undermining pure software KV caching products.
+          </p>
+        </div>
+      </div>
+
+      <!-- Entities Extracted -->
+      <div>
+        <h4 class="text-[10px] uppercase font-bold text-gray-500 tracking-wider mb-2">Extracted Entities & Concepts</h4>
+        <div id="drawer-entities" class="flex flex-wrap gap-1.5">
+          <span class="px-2 py-1 rounded bg-gray-900 border border-gray-800 text-[10px] text-gray-400 font-mono">Triton</span>
+          <span class="px-2 py-1 rounded bg-gray-900 border border-gray-800 text-[10px] text-gray-400 font-mono">Transformers</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Footer and Feedback loops -->
+    <div class="px-6 py-5 border-t border-gray-900 bg-[#070911]/90 flex items-center justify-between gap-4">
+      <a id="drawer-external-link" href="#" target="_blank" class="flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 font-semibold transition">
+        <span>View Original source</span>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+      </a>
+      
+      <!-- Rating widget -->
+      <div class="flex items-center gap-2" id="drawer-feedback-widget">
+        <button onclick="submitFeedback('good')" id="btn-feedback-good" class="flex items-center gap-1 bg-emerald-500/10 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 text-xs px-3 py-1.5 rounded-lg font-semibold transition duration-150">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span>Keep Signal</span>
+        </button>
+        <button onclick="submitFeedback('noise')" id="btn-feedback-noise" class="flex items-center gap-1 bg-rose-500/10 hover:bg-rose-500/25 border border-rose-500/30 text-rose-400 text-xs px-3 py-1.5 rounded-lg font-semibold transition duration-150">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span>Filter Noise</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
-  <footer class="w-full border-t border-gray-900 py-6">
-    <div class="max-w-7xl mx-auto px-6 text-center text-xs text-gray-500">
-      &copy; 2026 GlaceX.ai. All rights reserved. Managed autonomously.
+  <footer class="w-full border-t border-gray-900 py-6 mt-12 bg-[#05060b]">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-gray-400">GlaceX.ai</span>
+        <span>&copy; 2026. Managed autonomously via cron systems.</span>
+      </div>
+      <div class="flex items-center gap-6">
+        <span>Connected Node: SUPABASE_US_EAST</span>
+        <a href="https://github.com/shadwalsr/glacex-ai" target="_blank" class="hover:text-white transition">GitHub Repo</a>
+      </div>
     </div>
   </footer>
 
-  <!-- Script to load data dynamically from Supabase Rest endpoint -->
+  <!-- Application Logic & Integration Scripts -->
   <script>
+    // Supabase Configuration
     const SUPABASE_URL = "https://ekamfrtwruungwxirkxp.supabase.co";
     const SUPABASE_KEY = "sb_publishable_oXct52-KAg8HHugD0a5h5A_Daxsg9Gv";
 
-    async function fetchData() {
+    // Application state
+    let articleStore = [];
+    let currentCategoryFilter = 'all';
+    let activeDrawerArticleId = null;
+
+    // Direct fetch options with apikey headers
+    const supabaseHeaders = {
+      "apikey": SUPABASE_KEY,
+      "Authorization": `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json"
+    };
+
+    // 1. Tab Switching Functionality
+    function switchTab(tabId) {
+      document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+      document.getElementById(`view-${tabId}`).classList.remove('hidden');
+
+      // Trigger respective tab loads
+      if (tabId === 'feed' && articleStore.length === 0) {
+        fetchFeedData();
+      } else if (tabId === 'health') {
+        fetchHealthData();
+      } else if (tabId === 'sources') {
+        fetchSourcesData();
+      }
+    }
+
+    // 2. Fetch Intelligence Feed Articles (Joined with classifications, insights and feedback)
+    async function fetchFeedData() {
+      const feedContainer = document.getElementById("feed-container");
+      feedContainer.innerHTML = `
+        <div class="col-span-full text-center py-20 text-gray-500">
+          <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500 mb-4"></div>
+          <p class="text-sm font-semibold">Retrieving intelligence corpus...</p>
+        </div>
+      `;
+
+      try {
+        const response = await fetch(
+          `${SUPABASE_URL}/rest/v1/articles?select=*,classifications(*),insights(*),user_feedback(rating)&order=scraped_at.desc&limit=100`,
+          { headers: supabaseHeaders }
+        );
+
+        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+        
+        articleStore = await response.json();
+        renderFeed();
+      } catch (err) {
+        console.error(err);
+        feedContainer.innerHTML = `
+          <div class="col-span-full text-center py-20 text-rose-500">
+            <p class="text-sm font-bold">Failed to load active intelligence feed</p>
+            <p class="text-xs text-gray-500 mt-1">${err.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    // 3. Render Curation Feed Cards
+    function renderFeed() {
+      const feedContainer = document.getElementById("feed-container");
+      feedContainer.innerHTML = "";
+
+      const query = document.getElementById("feed-search").value.toLowerCase();
+      
+      const filtered = articleStore.filter(article => {
+        // Category Filter
+        const classification = article.classifications?.[0];
+        const category = classification?.category?.toLowerCase() || "";
+        if (currentCategoryFilter !== 'all' && category !== currentCategoryFilter) {
+          return false;
+        }
+
+        // Search Query filter
+        if (query) {
+          const title = (article.title || "").toLowerCase();
+          const cleanText = (article.clean_text || "").toLowerCase();
+          const headline = (article.insights?.[0]?.headline || "").toLowerCase();
+          const tags = (article.insights?.[0]?.tags || []).join(" ").toLowerCase();
+          
+          if (!title.includes(query) && !cleanText.includes(query) && !headline.includes(query) && !tags.includes(query)) {
+            return false;
+          }
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        feedContainer.innerHTML = `
+          <div class="col-span-full text-center py-24 text-gray-500">
+            <svg class="w-10 h-10 mx-auto text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <p class="text-sm font-semibold">No curation signals found matching criteria.</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(article => {
+        const classification = article.classifications?.[0] || {};
+        const insight = article.insights?.[0] || {};
+        const feedback = article.user_feedback?.[0] || {};
+        
+        const importance = classification.importance ?? 0;
+        const category = classification.category || "General";
+        const publishedDate = article.published_at 
+          ? new Date(article.published_at).toLocaleDateString(undefined, {month: 'short', day: 'numeric'}) 
+          : "Recently";
+
+        // Dot color based on importance score
+        let dotColor = "bg-gray-500 shadow-gray-500/20";
+        let cardGlow = "";
+        if (importance >= 75) {
+          dotColor = "bg-emerald-400 shadow-emerald-400/35 glow-emerald";
+          cardGlow = "hover:border-emerald-500/20";
+        } else if (importance >= 50) {
+          dotColor = "bg-indigo-400 shadow-indigo-400/35 glow-indigo";
+          cardGlow = "hover:border-indigo-500/20";
+        } else if (importance > 0) {
+          dotColor = "bg-amber-400 shadow-amber-400/35 glow-amber";
+          cardGlow = "hover:border-amber-500/20";
+        }
+
+        // Ratings tag if rated
+        let feedbackBadge = "";
+        if (feedback.rating === 'good') {
+          feedbackBadge = `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">Saved</span>`;
+        } else if (feedback.rating === 'noise') {
+          feedbackBadge = `<span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">Muted</span>`;
+        }
+
+        const tagsHtml = (insight.tags || []).slice(0, 3).map(tag => 
+          `<span class="bg-gray-900 border border-gray-800 text-gray-500 text-[9px] px-2 py-0.5 rounded">${tag}</span>`
+        ).join("");
+
+        feedContainer.innerHTML += `
+          <div onclick="openDrawer('${article.id}')" class="glass-card rounded-2xl p-6 flex flex-col justify-between cursor-pointer ${cardGlow}">
+            <div>
+              <!-- Badge info -->
+              <div class="flex items-center justify-between gap-4 mb-4">
+                <div class="flex items-center gap-2">
+                  <span class="inline-flex h-2 w-2 rounded-full ${dotColor}"></span>
+                  <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">${category}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  ${feedbackBadge}
+                  <span class="text-[10px] text-gray-500 font-mono">${publishedDate}</span>
+                </div>
+              </div>
+              
+              <!-- Content title -->
+              <h3 class="text-sm font-bold text-white line-clamp-2 leading-snug group-hover:text-indigo-300 transition duration-150 mb-2">${article.title || "No Title Available"}</h3>
+              <p class="text-xs text-gray-400 line-clamp-3 mb-4 leading-relaxed font-sans">${insight.headline || classification.reason || "Structured summary pending pipeline run."}</p>
+            </div>
+
+            <!-- Card Bottom Metrics -->
+            <div class="pt-4 border-t border-gray-900 flex items-center justify-between">
+              <div class="flex items-center gap-1.5">
+                ${tagsHtml}
+              </div>
+              <div class="flex items-baseline gap-0.5">
+                <span class="text-sm font-extrabold text-white">${importance}</span>
+                <span class="text-[9px] text-gray-600 font-bold">/100</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // Category Selector
+    function setCategoryFilter(cat) {
+      currentCategoryFilter = cat;
+      document.querySelectorAll('#category-filters button').forEach(btn => {
+        btn.className = "cat-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-900 border border-gray-800 text-gray-400 hover:text-white transition";
+      });
+      event.target.className = "cat-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-indigo-600/25 border border-indigo-500/30 text-white shadow-sm transition";
+      renderFeed();
+    }
+
+    function filterFeed() {
+      renderFeed();
+    }
+
+    // 4. Drawer Control
+    function openDrawer(articleId) {
+      const article = articleStore.find(a => a.id === articleId);
+      if (!article) return;
+
+      activeDrawerArticleId = articleId;
+
+      const classification = article.classifications?.[0] || {};
+      const insight = article.insights?.[0] || {};
+      const feedback = article.user_feedback?.[0] || {};
+
+      // Hydrate values
+      document.getElementById("drawer-title").innerText = article.title || "No Title";
+      document.getElementById("drawer-source").innerText = article.url ? new URL(article.url).hostname : "Static Data";
+      document.getElementById("drawer-date").innerText = article.published_at 
+        ? `Ingested on ${new Date(article.published_at).toLocaleString()}` 
+        : `Archived on ${new Date(article.scraped_at).toLocaleDateString()}`;
+
+      const category = classification.category || "General";
+      const drawerCategory = document.getElementById("drawer-category");
+      drawerCategory.innerText = category;
+      drawerCategory.className = "px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border";
+      if (category.toLowerCase() === 'paper') drawerCategory.classList.add("bg-indigo-500/10", "border-indigo-500/20", "text-indigo-400");
+      else if (category.toLowerCase() === 'tool') drawerCategory.classList.add("bg-cyan-500/10", "border-cyan-500/20", "text-cyan-400");
+      else drawerCategory.classList.add("bg-gray-800", "border-gray-700", "text-gray-400");
+
+      const importance = classification.importance ?? 0;
+      document.getElementById("drawer-importance").innerText = importance;
+      document.getElementById("drawer-importance-bar").style.width = `${importance}%`;
+      document.getElementById("drawer-depth").innerText = classification.technical_depth 
+        ? `${classification.technical_depth.charAt(0).toUpperCase() + classification.technical_depth.slice(1)}`
+        : "Standard Depth";
+
+      document.getElementById("drawer-reason").innerText = classification.reason || "Classification pending analysis.";
+
+      // Deep Insights
+      if (insight.headline) {
+        document.getElementById("drawer-insights-container").classList.remove("hidden");
+        document.getElementById("drawer-headline").innerText = insight.headline;
+        
+        const tldrContainer = document.getElementById("drawer-tldr");
+        tldrContainer.innerHTML = "";
+        (insight.tldr || ["No technical TL;DR defined."]).forEach(bullet => {
+          tldrContainer.innerHTML += `<li>${bullet}</li>`;
+        });
+
+        document.getElementById("drawer-utility").innerText = insight.practical_utility || "Practical execution notes omitted.";
+        document.getElementById("drawer-impact").innerText = insight.ecosystem_impact || "Ecosystem changes not computed.";
+      } else {
+        document.getElementById("drawer-insights-container").classList.add("hidden");
+      }
+
+      // Entities tags
+      const entitiesContainer = document.getElementById("drawer-entities");
+      entitiesContainer.innerHTML = "";
+      const allTags = [...(insight.tags || []), ...(insight.related_entities || [])];
+      if (allTags.length > 0) {
+        allTags.forEach(tag => {
+          entitiesContainer.innerHTML += `<span class="px-2 py-1 rounded bg-[#0b0f19] border border-gray-800 text-[10px] text-gray-400 font-mono">${tag}</span>`;
+        });
+      } else {
+        entitiesContainer.innerHTML = `<span class="text-xs text-gray-600">No named entities mapped.</span>`;
+      }
+
+      // External link
+      document.getElementById("drawer-external-link").href = article.url || "#";
+
+      // Feedback button states
+      updateFeedbackButtonsState(feedback.rating);
+
+      // Slide-in Animation trigger
+      document.getElementById("drawer-backdrop").classList.remove("hidden");
+      setTimeout(() => {
+        document.getElementById("drawer-backdrop").classList.add("opacity-100");
+        document.getElementById("detail-drawer").classList.remove("drawer-closed");
+        document.getElementById("detail-drawer").classList.add("drawer-open");
+      }, 50);
+    }
+
+    function closeDrawer() {
+      document.getElementById("detail-drawer").classList.remove("drawer-open");
+      document.getElementById("detail-drawer").classList.add("drawer-closed");
+      document.getElementById("drawer-backdrop").classList.remove("opacity-100");
+      setTimeout(() => {
+        document.getElementById("drawer-backdrop").classList.add("hidden");
+        activeDrawerArticleId = null;
+      }, 300);
+    }
+
+    // 5. Submit User Feedback loop directly into the Supabase database
+    async function submitFeedback(rating) {
+      if (!activeDrawerArticleId) return;
+
+      updateFeedbackButtonsState(rating);
+
+      try {
+        const response = await fetch(
+          `${SUPABASE_URL}/rest/v1/user_feedback`,
+          {
+            method: "POST",
+            headers: {
+              ...supabaseHeaders,
+              "Prefer": "resolution=merge-duplicates"
+            },
+            body: JSON.stringify({
+              article_id: activeDrawerArticleId,
+              rating: rating
+            })
+          }
+        );
+
+        if (!response.ok) throw new Error("Failed to post feedback record.");
+
+        // Locally update the article's rating in state
+        const idx = articleStore.findIndex(a => a.id === activeDrawerArticleId);
+        if (idx !== -1) {
+          articleStore[idx].user_feedback = [{ rating: rating }];
+          renderFeed();
+        }
+      } catch (err) {
+        console.error(err);
+        alert(`Error logging signal feedback: ${err.message}`);
+      }
+    }
+
+    function updateFeedbackButtonsState(currentRating) {
+      const goodBtn = document.getElementById("btn-feedback-good");
+      const noiseBtn = document.getElementById("btn-feedback-noise");
+
+      goodBtn.className = "flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-semibold transition duration-150 border border-emerald-500/30 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/25";
+      noiseBtn.className = "flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-semibold transition duration-150 border border-rose-500/30 text-rose-400 bg-rose-500/10 hover:bg-rose-500/25";
+
+      if (currentRating === 'good') {
+        goodBtn.className = "flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-semibold transition duration-150 border border-emerald-500/40 text-white bg-emerald-600 glow-emerald";
+      } else if (currentRating === 'noise') {
+        noiseBtn.className = "flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-semibold transition duration-150 border border-rose-500/40 text-white bg-rose-600 glow-amber";
+      }
+    }
+
+    // 6. Terminal Query View Functionality
+    function handleTerminalSearch(event) {
+      if (event.key === 'Enter') {
+        runTerminalSearch();
+      }
+    }
+
+    async function runTerminalSearch() {
+      const query = document.getElementById("terminal-input").value.trim();
+      const resultsContainer = document.getElementById("terminal-results");
+
+      if (!query) {
+        resultsContainer.innerHTML = `<div class="text-center py-8 text-gray-500 font-mono text-xs">// Error: Empty search vector supplied.</div>`;
+        return;
+      }
+
+      resultsContainer.innerHTML = `
+        <div class="text-center py-12 text-indigo-400 font-mono text-xs">
+          <div class="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-indigo-500 mb-2"></div>
+          <div>executing: SELECT * FROM articles WHERE title ILIKE '%${query}%'...</div>
+        </div>
+      `;
+
+      try {
+        // Run full-text search across titles and clean text
+        const response = await fetch(
+          `${SUPABASE_URL}/rest/v1/articles?select=*,classifications(*),insights(*),user_feedback(rating)&or=(title.ilike.*${encodeURIComponent(query)}*,clean_text.ilike.*${encodeURIComponent(query)}*)&limit=10`,
+          { headers: supabaseHeaders }
+        );
+
+        if (!response.ok) throw new Error("Search RPC execution failed.");
+
+        const matches = await response.json();
+
+        if (matches.length === 0) {
+          resultsContainer.innerHTML = `
+            <div class="bg-[#0b0f19]/35 border border-gray-900 rounded-xl p-8 text-center text-gray-500 font-mono text-xs">
+              // SQL execution completed successfully. Zero rows returned.
+            </div>
+          `;
+          return;
+        }
+
+        resultsContainer.innerHTML = `<p class="font-mono text-xs text-gray-500 mb-4">// Query returned ${matches.length} matching rows:</p>`;
+        
+        matches.forEach(item => {
+          const classification = item.classifications?.[0] || {};
+          const insight = item.insights?.[0] || {};
+          const sub = classification.subcategory ? ` > ${classification.subcategory}` : "";
+          const linkStr = item.url ? `<a href="${item.url}" target="_blank" class="text-indigo-400 hover:underline">Link</a>` : "";
+
+          resultsContainer.innerHTML += `
+            <div class="bg-[#080b15]/65 border border-gray-900 rounded-xl p-5 hover:border-gray-800 transition">
+              <div class="flex items-center justify-between text-[10px] text-gray-500 font-mono mb-2">
+                <span>[ID: ${item.id.substring(0,8)}] ${classification.category || "UNCATEGORIZED"}${sub}</span>
+                <span>Importance: ${classification.importance ?? "--"}</span>
+              </div>
+              <h4 class="text-sm font-bold text-white mb-2">${item.title}</h4>
+              <p class="text-xs text-gray-400 leading-relaxed font-sans mb-3">${insight.headline || classification.reason || "Unstructured textual body matches keyword filters."}</p>
+              <div class="flex items-center justify-between border-t border-gray-900 pt-3 text-[10px] font-mono text-gray-500">
+                <span>scraped_at: ${new Date(item.scraped_at).toLocaleString()}</span>
+                ${linkStr}
+              </div>
+            </div>
+          `;
+        });
+
+      } catch (err) {
+        console.error(err);
+        resultsContainer.innerHTML = `
+          <div class="bg-rose-950/10 border border-rose-900/30 rounded-xl p-6 text-center text-rose-400 font-mono text-xs">
+            // SQL ERROR: Failed to interface database cluster.
+            <div class="text-gray-500 mt-2">${err.message}</div>
+          </div>
+        `;
+      }
+    }
+
+    // 7. Operations Stats & Logs
+    async function fetchHealthData() {
       const runsTbody = document.getElementById("runs-tbody");
       runsTbody.innerHTML = `
         <tr>
-          <td colspan="8" class="text-center py-12 text-gray-500">Refreshing pipeline statistics...</td>
+          <td colspan="8" class="text-center py-12 text-gray-500 font-mono">Loading operations matrix...</td>
         </tr>
       `;
 
       try {
-        // Fetch pipeline_health joined with pipeline_runs
         const response = await fetch(
           `${SUPABASE_URL}/rest/v1/pipeline_health?select=*,pipeline_runs(*)&order=created_at.desc&limit=20`,
-          {
-            headers: {
-              "apikey": SUPABASE_KEY,
-              "Authorization": `Bearer ${SUPABASE_KEY}`
-            }
-          }
+          { headers: supabaseHeaders }
         );
 
-        if (!response.ok) {
-          throw new Error(`Error fetching health logs: ${response.statusText}`);
-        }
+        if (!response.ok) throw new Error(`HTTP Error: ${response.statusText}`);
 
         const data = await response.json();
         
         if (!data || data.length === 0) {
           runsTbody.innerHTML = `
             <tr>
-              <td colspan="8" class="text-center py-12 text-gray-500">No execution runs found.</td>
+              <td colspan="8" class="text-center py-12 text-gray-500 font-mono">No execution runs found.</td>
             </tr>
           `;
           return;
         }
 
-        // Render Stats Cards with top item
+        // Hydrate Stats Panels
         const latest = data[0];
-        const runDetails = latest.pipeline_runs || {};
-
         document.getElementById("stat-health-score").innerText = `${Math.round(latest.health_score * 100)}%`;
         document.getElementById("stat-source-rate").innerText = `${latest.sources_successful}/${latest.sources_total}`;
         document.getElementById("stat-new-signals").innerText = `${latest.new_signals}`;
         document.getElementById("stat-llm-success").innerText = `${Math.round(latest.llm_success_rate * 100)}%`;
 
-        // Render color indicator for top health
+        // Render color indicators
         const scoreElem = document.getElementById("stat-health-score");
-        scoreElem.className = "text-4xl font-extrabold mt-2";
-        if (latest.health_score >= 0.8) {
-          scoreElem.classList.add("text-emerald-400");
-        } else if (latest.health_score >= 0.5) {
-          scoreElem.classList.add("text-amber-400");
-        } else {
-          scoreElem.classList.add("text-rose-400");
-        }
+        scoreElem.className = "text-3xl font-extrabold mt-2";
+        if (latest.health_score >= 0.8) scoreElem.classList.add("text-emerald-400");
+        else if (latest.health_score >= 0.5) scoreElem.classList.add("text-amber-400");
+        else scoreElem.classList.add("text-rose-400");
 
-        // Populate table
+        // Hydrate Execution Table
         runsTbody.innerHTML = "";
         data.forEach(row => {
           const run = row.pipeline_runs || {};
@@ -211,42 +951,112 @@
           const shortRunId = row.run_id ? row.run_id.substring(0, 8) : "N/A";
           
           let healthBadgeColor = "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
-          if (row.health_score < 0.5) {
-            healthBadgeColor = "text-rose-400 bg-rose-500/10 border-rose-500/20";
-          } else if (row.health_score < 0.8) {
-            healthBadgeColor = "text-amber-400 bg-amber-500/10 border-amber-500/20";
-          }
+          if (row.health_score < 0.5) healthBadgeColor = "text-rose-400 bg-rose-500/10 border-rose-500/20";
+          else if (row.health_score < 0.8) healthBadgeColor = "text-amber-400 bg-amber-500/10 border-amber-500/20";
 
           runsTbody.innerHTML += `
-            <tr class="hover:bg-gray-900/30 transition">
-              <td class="px-6 py-4 font-medium text-white">${dateStr}</td>
-              <td class="px-6 py-4 font-mono text-xs text-gray-400">${shortRunId}...</td>
-              <td class="px-6 py-4 text-center">${run.ingested ?? 0}</td>
-              <td class="px-6 py-4 text-center">${run.embedded ?? 0}</td>
-              <td class="px-6 py-4 text-center">${run.duplicates ?? 0}</td>
+            <tr class="hover:bg-[#0b0f19]/30 transition">
+              <td class="px-6 py-4 font-semibold text-white">${dateStr}</td>
+              <td class="px-6 py-4 font-mono text-xs text-gray-500">${shortRunId}...</td>
+              <td class="px-6 py-4 text-center text-gray-400">${run.ingested ?? 0}</td>
+              <td class="px-6 py-4 text-center text-gray-400">${run.embedded ?? 0}</td>
+              <td class="px-6 py-4 text-center text-gray-400">${run.duplicates ?? 0}</td>
               <td class="px-6 py-4 text-center text-indigo-400 font-bold">${row.new_signals ?? 0}</td>
-              <td class="px-6 py-4 text-center text-gray-400">${run.duration_s ?? 0}s</td>
+              <td class="px-6 py-4 text-center text-gray-500">${run.duration_s ?? 0}s</td>
               <td class="px-6 py-4 text-right">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${healthBadgeColor}">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${healthBadgeColor}">
                   ${Math.round(row.health_score * 100)}%
                 </span>
               </td>
             </tr>
           `;
         });
-
       } catch (err) {
         console.error(err);
         runsTbody.innerHTML = `
           <tr>
-            <td colspan="8" class="text-center py-12 text-rose-500 font-semibold">Error connecting to Supabase: ${err.message}</td>
+            <td colspan="8" class="text-center py-12 text-rose-500 font-mono">Error querying operational logs: ${err.message}</td>
           </tr>
         `;
       }
     }
 
-    // Load initial data
-    window.addEventListener("DOMContentLoaded", fetchData);
+    // 8. Sources Registries View
+    async function fetchSourcesData() {
+      const grid = document.getElementById("sources-grid");
+      grid.innerHTML = `
+        <div class="col-span-full text-center py-20 text-gray-500 font-mono text-xs">
+          Gathering registry components...
+        </div>
+      `;
+
+      try {
+        const response = await fetch(
+          `${SUPABASE_URL}/rest/v1/sources?select=*&order=created_at.asc`,
+          { headers: supabaseHeaders }
+        );
+
+        if (!response.ok) throw new Error("Registry search failed.");
+
+        const sources = await response.json();
+
+        if (sources.length === 0) {
+          grid.innerHTML = `
+            <div class="col-span-full text-center py-20 text-gray-500 font-mono text-xs">
+              No scraping data streams registered.
+            </div>
+          `;
+          return;
+        }
+
+        grid.innerHTML = "";
+        sources.forEach(stream => {
+          const scraperType = stream.type || "httpx";
+          const activeBadge = stream.active 
+            ? `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">Active</span>`
+            : `<span class="bg-gray-800 text-gray-500 border border-gray-700 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">Muted</span>`;
+
+          let typeColor = "text-indigo-400 bg-indigo-500/5 border-indigo-500/10";
+          if (scraperType === 'playwright') typeColor = "text-cyan-400 bg-cyan-500/5 border-cyan-500/10";
+          else if (scraperType === 'rss') typeColor = "text-emerald-400 bg-emerald-500/5 border-emerald-500/10";
+
+          const category = stream.category || "General";
+          const parsedUrl = stream.url ? new URL(stream.url).hostname : "Unknown stream";
+
+          grid.innerHTML += `
+            <div class="glass-card rounded-2xl p-6 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-4">
+                  <span class="px-2 py-0.5 rounded text-[9px] font-bold border uppercase ${typeColor}">${scraperType}</span>
+                  ${activeBadge}
+                </div>
+                
+                <h3 class="text-sm font-bold text-white mb-1 line-clamp-1">${stream.name}</h3>
+                <a href="${stream.url}" target="_blank" class="text-[10px] text-gray-500 font-mono hover:text-indigo-400 transition block mb-4 truncate">${parsedUrl}</a>
+              </div>
+
+              <div class="pt-4 border-t border-gray-900 flex items-center justify-between text-[9px] font-mono text-gray-400">
+                <span>CAT: ${category.toUpperCase()}</span>
+                <span>Last Run: ${stream.last_scraped ? new Date(stream.last_scraped).toLocaleDateString() : "Never"}</span>
+              </div>
+            </div>
+          `;
+        });
+
+      } catch (err) {
+        console.error(err);
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-20 text-rose-500 font-mono text-xs">
+            Failed to load data streams: ${err.message}
+          </div>
+        `;
+      }
+    }
+
+    // Initialize application values on load
+    window.addEventListener("DOMContentLoaded", () => {
+      fetchFeedData();
+    });
   </script>
 </body>
 </html>
