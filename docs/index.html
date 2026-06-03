@@ -28,31 +28,21 @@
     }
   </script>
   
-  <!-- Custom Premium Minimalist Styling -->
   <style>
+    /* ── Base ── */
     body {
       background-color: #070911;
       color: #f3f4f6;
       font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     }
-    
-    /* Sleek scrollbar styling */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #070911;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1e293b;
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #334155;
-    }
 
-    /* Premium frosted glass effects */
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #070911; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+    /* ── Glass card ── */
     .glass-card {
       background: rgba(13, 18, 33, 0.45);
       backdrop-filter: blur(16px);
@@ -60,11 +50,9 @@
       border: 1px solid rgba(255, 255, 255, 0.05);
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    
     .glass-card:hover {
       border-color: rgba(255, 255, 255, 0.1);
       background: rgba(18, 25, 45, 0.55);
-      transform: translateY(-2px);
       box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5);
     }
 
@@ -72,23 +60,22 @@
       background: rgba(10, 15, 30, 0.6);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
-
     .glass-input:focus {
       border-color: rgba(99, 102, 241, 0.5);
       box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
       outline: none;
     }
 
-    /* Active tab glowing underline bar */
+    /* ── Nav tabs ── */
     .nav-tab {
       position: relative;
       color: #94a3b8;
       transition: color 0.2s ease;
       white-space: nowrap;
+      cursor: pointer;
     }
-    .nav-tab.active {
-      color: #ffffff;
-    }
+    .nav-tab:hover { color: #cbd5e1; }
+    .nav-tab.active { color: #ffffff; }
     .nav-tab.active::after {
       content: '';
       position: absolute;
@@ -101,84 +88,102 @@
       box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
     }
 
-    /* Subtle custom glowing components */
-    .glow-indigo {
-      box-shadow: 0 0 20px -3px rgba(99, 102, 241, 0.15);
+    /* ── Subtle glows ── */
+    .glow-indigo { box-shadow: 0 0 20px -3px rgba(99, 102, 241, 0.15); }
+    .glow-emerald { box-shadow: 0 0 20px -3px rgba(16, 185, 129, 0.15); }
+    .glow-amber { box-shadow: 0 0 20px -3px rgba(245, 158, 11, 0.15); }
+
+    /* ── Drawer ── IMPORTANT: no Tailwind transform class on drawer element */
+    #drawer-backdrop {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
     }
-    .glow-emerald {
-      box-shadow: 0 0 20px -3px rgba(16, 185, 129, 0.15);
-    }
-    .glow-amber {
-      box-shadow: 0 0 20px -3px rgba(245, 158, 11, 0.15);
+    #drawer-backdrop.is-visible {
+      opacity: 1;
+      pointer-events: auto;
     }
 
-    /* Details Drawer Transitions */
-    .drawer-open {
-      transform: translateX(0);
-    }
-    .drawer-closed {
+    #detail-drawer {
       transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform;
+    }
+    #detail-drawer.is-open {
+      transform: translateX(0) !important;
     }
 
-    /* Pulse animation for Live indicator */
+    /* ── Pulse live indicator ── */
     @keyframes pulse-ring {
       0% { transform: scale(0.95); opacity: 0.8; }
       50% { transform: scale(1.15); opacity: 0.4; }
       100% { transform: scale(0.95); opacity: 0.8; }
     }
-    .pulse-glow {
-      animation: pulse-ring 2s infinite ease-in-out;
+    .pulse-glow { animation: pulse-ring 2s infinite ease-in-out; }
+
+    /* ── Category pills ── */
+    .cat-pill { cursor: pointer; }
+    .cat-pill.is-active {
+      background: rgba(99, 102, 241, 0.25) !important;
+      border-color: rgba(99, 102, 241, 0.3) !important;
+      color: #ffffff !important;
     }
 
-    /* Active category pill */
-    .cat-pill-active {
-      background: rgba(99, 102, 241, 0.25);
-      border-color: rgba(99, 102, 241, 0.3);
-      color: #ffffff;
-      box-shadow: 0 0 12px rgba(99, 102, 241, 0.1);
-    }
-    .cat-pill-inactive {
-      background: rgba(17, 24, 39, 1);
-      border-color: rgba(31, 41, 55, 1);
-      color: #9ca3af;
-    }
-    .cat-pill-inactive:hover {
-      color: #ffffff;
-    }
+    /* ── Mobile nav scroll ── */
+    .nav-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    .nav-scroll::-webkit-scrollbar { display: none; }
 
-    /* Mobile nav scroll */
-    .nav-scroll {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-    .nav-scroll::-webkit-scrollbar {
-      display: none;
-    }
-
-    /* Card click ripple */
-    .card-clickable {
+    /* ── Card interactivity ── */
+    .feed-card {
       cursor: pointer;
       user-select: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .card-clickable:active {
-      transform: scale(0.98) !important;
+    .feed-card:hover {
+      border-color: rgba(255, 255, 255, 0.1);
+      background: rgba(18, 25, 45, 0.55);
+      box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5);
     }
+    .feed-card:active { transform: scale(0.98); }
 
-    /* Fade-in animation */
+    /* ── Staggered fade-in ── */
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(12px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .fade-in-up {
-      animation: fadeInUp 0.4s ease-out both;
+    .fade-in { animation: fadeInUp 0.35s ease-out both; }
+
+    /* ── Close button ── */
+    .close-btn {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      color: #9ca3af;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+      background: transparent;
+      border: none;
+      z-index: 60;
+      position: relative;
     }
+    .close-btn:hover {
+      color: #ffffff;
+      background: rgba(31, 41, 55, 0.8);
+    }
+    .close-btn:active {
+      transform: scale(0.9);
+    }
+    .close-btn svg { pointer-events: none; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-indigo-500/20 selection:text-indigo-200">
 
-  <!-- Header -->
+  <!-- ═══════════ HEADER ═══════════ -->
   <header class="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-4 flex flex-col gap-4 border-b border-gray-900">
-    <!-- Top row: Logo + Status -->
     <div class="flex justify-between items-center">
       <div class="flex items-center gap-3">
         <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-emerald-400 flex items-center justify-center font-bold text-white text-xl shadow-lg shadow-indigo-500/20 flex-shrink-0">G</div>
@@ -187,8 +192,6 @@
           <p class="text-[10px] text-gray-400 font-semibold uppercase tracking-widest hidden sm:block">Autonomous Intelligence Curation Engine</p>
         </div>
       </div>
-
-      <!-- Operational State Status -->
       <div class="flex items-center gap-2.5 glass-card px-3 sm:px-4 py-1.5 rounded-full text-xs border border-gray-800 flex-shrink-0">
         <span class="relative flex h-2 w-2">
           <span class="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 pulse-glow"></span>
@@ -197,8 +200,6 @@
         <span class="text-gray-400 font-semibold uppercase tracking-wider text-[9px]" id="sys-status">Active</span>
       </div>
     </div>
-    
-    <!-- Tab Navigation (horizontally scrollable on mobile) -->
     <nav class="flex items-center gap-4 sm:gap-8 text-sm font-semibold overflow-x-auto nav-scroll pb-1 -mb-1" id="main-nav">
       <button data-tab="feed" class="nav-tab active py-2 flex-shrink-0">Intelligence Feed</button>
       <button data-tab="terminal" class="nav-tab py-2 flex-shrink-0">Query Terminal</button>
@@ -207,33 +208,26 @@
     </nav>
   </header>
 
-  <!-- Main View Container -->
+  <!-- ═══════════ MAIN CONTENT ═══════════ -->
   <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
 
-    <!-- ========================================================================= -->
-    <!-- VIEW 1: INTELLIGENCE FEED -->
-    <!-- ========================================================================= -->
-    <section id="view-feed" class="tab-content transition-all duration-300">
-      <!-- Search & Filters -->
+    <!-- VIEW: INTELLIGENCE FEED -->
+    <section id="view-feed" class="tab-view">
       <div class="flex flex-col gap-4 mb-8">
-        <!-- Search -->
         <div class="relative w-full max-w-md">
           <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-500">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
           </span>
           <input type="text" id="feed-search" placeholder="Search titles, tags, or insights..." class="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl text-white glass-input transition">
         </div>
-        <!-- Filter Pills -->
         <div class="flex flex-wrap items-center gap-2" id="category-filters">
-          <button data-category="all" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold border transition cat-pill-active">All Discoveries</button>
-          <button data-category="paper" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold border transition cat-pill-inactive">Papers</button>
-          <button data-category="tool" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold border transition cat-pill-inactive">Developer Tools</button>
-          <button data-category="product" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold border transition cat-pill-inactive">Products</button>
-          <button data-category="company" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold border transition cat-pill-inactive">Companies</button>
+          <button data-category="all" class="cat-pill is-active px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-900 border border-gray-800 text-gray-400 transition">All Discoveries</button>
+          <button data-category="paper" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-900 border border-gray-800 text-gray-400 hover:text-white transition">Papers</button>
+          <button data-category="tool" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-900 border border-gray-800 text-gray-400 hover:text-white transition">Developer Tools</button>
+          <button data-category="product" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-900 border border-gray-800 text-gray-400 hover:text-white transition">Products</button>
+          <button data-category="company" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-900 border border-gray-800 text-gray-400 hover:text-white transition">Companies</button>
         </div>
       </div>
-
-      <!-- Feed Grid -->
       <div id="feed-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
         <div class="col-span-full text-center py-20 text-gray-500">
           <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500 mb-4"></div>
@@ -242,12 +236,9 @@
       </div>
     </section>
 
-    <!-- ========================================================================= -->
-    <!-- VIEW 2: QUERY TERMINAL (RAG & FULL TEXT SEARCH) -->
-    <!-- ========================================================================= -->
-    <section id="view-terminal" class="tab-content hidden transition-all duration-300">
+    <!-- VIEW: QUERY TERMINAL -->
+    <section id="view-terminal" class="tab-view hidden">
       <div class="max-w-4xl mx-auto">
-        <!-- Terminal Header -->
         <div class="bg-[#0b0f19] border border-gray-800 rounded-t-2xl px-4 py-3 flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-rose-500/80"></span>
@@ -257,88 +248,57 @@
           </div>
           <span class="text-[10px] text-gray-500 font-mono hidden sm:inline">SUPABASE_RETRIEVAL_CONNECTED</span>
         </div>
-
-        <!-- Terminal Body -->
         <div class="bg-[#04060b] border-x border-b border-gray-800 rounded-b-2xl p-4 sm:p-6 glow-indigo">
           <p class="text-indigo-400 font-mono text-xs mb-4">// Enter keywords or topics to parse the Supabase technical database.</p>
           <div class="flex items-center gap-3 font-mono text-sm">
             <span class="text-emerald-400 font-bold hidden sm:inline">glacex-search:~$</span>
             <span class="text-emerald-400 font-bold sm:hidden">$</span>
             <input type="text" id="terminal-input" placeholder="Type query and press Enter..." class="flex-1 bg-transparent text-white focus:outline-none placeholder-gray-600 font-mono min-w-0">
-            <button id="btn-terminal-search" class="bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 rounded-lg px-4 py-1.5 text-xs font-semibold transition duration-200 flex-shrink-0">
-              Query
-            </button>
+            <button onclick="runTerminalSearch()" class="bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 rounded-lg px-4 py-1.5 text-xs font-semibold transition duration-200 flex-shrink-0">Query</button>
           </div>
         </div>
-
-        <!-- Retrieval Results -->
         <div id="terminal-results" class="mt-8 space-y-6">
-          <div class="text-center py-12 text-gray-600 font-mono text-xs">
-            Waiting for query execution...
-          </div>
+          <div class="text-center py-12 text-gray-600 font-mono text-xs">Waiting for query execution...</div>
         </div>
       </div>
     </section>
 
-    <!-- ========================================================================= -->
-    <!-- VIEW 3: PIPELINE OPERATIONS -->
-    <!-- ========================================================================= -->
-    <section id="view-health" class="tab-content hidden transition-all duration-300">
-      <!-- Grid Stats -->
+    <!-- VIEW: PIPELINE OPERATIONS -->
+    <section id="view-health" class="tab-view hidden">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8">
-        <!-- Stat 1 -->
         <div class="glass-card p-4 sm:p-6 rounded-2xl flex flex-col justify-between relative overflow-hidden group">
           <div class="absolute -right-4 -top-4 w-24 h-24 bg-indigo-500/10 rounded-full blur-xl group-hover:bg-indigo-500/20 transition"></div>
-          <div>
-            <span class="text-gray-400 text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Latest Run Health</span>
-            <div class="text-2xl sm:text-3xl font-extrabold mt-2 text-white" id="stat-health-score">--</div>
-          </div>
-          <p class="text-[10px] text-indigo-300 mt-3 sm:mt-4" id="stat-health-breakdown">Source + Signal + LLM composite</p>
+          <span class="text-gray-400 text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Latest Run Health</span>
+          <div class="text-2xl sm:text-3xl font-extrabold mt-2 text-white" id="stat-health-score">--</div>
+          <p class="text-[10px] text-indigo-300 mt-3">Source + Signal + LLM composite</p>
         </div>
-
-        <!-- Stat 2 -->
         <div class="glass-card p-4 sm:p-6 rounded-2xl flex flex-col justify-between relative overflow-hidden group">
           <div class="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition"></div>
-          <div>
-            <span class="text-gray-400 text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Source Scrapes</span>
-            <div class="text-2xl sm:text-3xl font-extrabold mt-2 text-white" id="stat-source-rate">--</div>
-          </div>
-          <p class="text-[10px] text-emerald-300 mt-3 sm:mt-4" id="stat-source-details">Successful / Total active</p>
+          <span class="text-gray-400 text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Source Scrapes</span>
+          <div class="text-2xl sm:text-3xl font-extrabold mt-2 text-white" id="stat-source-rate">--</div>
+          <p class="text-[10px] text-emerald-300 mt-3">Successful / Total active</p>
         </div>
-
-        <!-- Stat 3 -->
         <div class="glass-card p-4 sm:p-6 rounded-2xl flex flex-col justify-between relative overflow-hidden group">
           <div class="absolute -right-4 -top-4 w-24 h-24 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/20 transition"></div>
-          <div>
-            <span class="text-gray-400 text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Signal Yield</span>
-            <div class="text-2xl sm:text-3xl font-extrabold mt-2 text-white" id="stat-new-signals">--</div>
-          </div>
-          <p class="text-[10px] text-purple-300 mt-3 sm:mt-4" id="stat-signals-details">Target: 5 insights per run</p>
+          <span class="text-gray-400 text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Signal Yield</span>
+          <div class="text-2xl sm:text-3xl font-extrabold mt-2 text-white" id="stat-new-signals">--</div>
+          <p class="text-[10px] text-purple-300 mt-3">Target: 5 insights per run</p>
         </div>
-
-        <!-- Stat 4 -->
         <div class="glass-card p-4 sm:p-6 rounded-2xl flex flex-col justify-between relative overflow-hidden group">
           <div class="absolute -right-4 -top-4 w-24 h-24 bg-amber-500/10 rounded-full blur-xl group-hover:bg-amber-500/20 transition"></div>
-          <div>
-            <span class="text-gray-400 text-[10px] sm:text-xs font-semibold uppercase tracking-wider">LLM Parsing Rate</span>
-            <div class="text-2xl sm:text-3xl font-extrabold mt-2 text-white" id="stat-llm-success">--</div>
-          </div>
-          <p class="text-[10px] text-amber-300 mt-3 sm:mt-4" id="stat-llm-details">Pydantic validation rate</p>
+          <span class="text-gray-400 text-[10px] sm:text-xs font-semibold uppercase tracking-wider">LLM Parsing Rate</span>
+          <div class="text-2xl sm:text-3xl font-extrabold mt-2 text-white" id="stat-llm-success">--</div>
+          <p class="text-[10px] text-amber-300 mt-3">Pydantic validation rate</p>
         </div>
       </div>
-
-      <!-- Execution History Table -->
       <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
         <div class="px-4 sm:px-6 py-5 border-b border-gray-900 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h2 class="text-xs font-bold text-white uppercase tracking-wider">Pipeline Execution History</h2>
             <p class="text-[10px] text-gray-400 mt-1">Chronological run performance and health records</p>
           </div>
-          <button id="btn-refresh-health" class="bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 text-xs font-semibold px-4 py-2 rounded-lg transition duration-200 flex-shrink-0">
-            Refresh Metrics
-          </button>
+          <button onclick="fetchHealthData()" class="bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 text-xs font-semibold px-4 py-2 rounded-lg transition duration-200 flex-shrink-0">Refresh Metrics</button>
         </div>
-
         <div class="overflow-x-auto w-full">
           <table class="w-full text-left text-xs text-gray-300">
             <thead class="bg-[#0b0f19]/70 text-gray-400 uppercase text-[10px] font-semibold border-b border-gray-900">
@@ -354,168 +314,137 @@
               </tr>
             </thead>
             <tbody id="runs-tbody" class="divide-y divide-gray-900/60">
-              <tr>
-                <td colspan="8" class="text-center py-12 text-gray-500 font-mono">Loading operations matrix...</td>
-              </tr>
+              <tr><td colspan="8" class="text-center py-12 text-gray-500 font-mono">Loading operations matrix...</td></tr>
             </tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- ========================================================================= -->
-    <!-- VIEW 4: SOURCES REGISTRY -->
-    <!-- ========================================================================= -->
-    <section id="view-sources" class="tab-content hidden transition-all duration-300">
+    <!-- VIEW: SOURCES REGISTRY -->
+    <section id="view-sources" class="tab-view hidden">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h2 class="text-xs font-bold text-white uppercase tracking-wider">Data Stream Sources</h2>
           <p class="text-[10px] text-gray-400 mt-1">Configured pipeline inputs spanning newsletter archives, RSS feeds, and technical journals</p>
         </div>
-        <button id="btn-sync-sources" class="bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 text-xs font-semibold px-4 py-2 rounded-lg transition duration-200 flex-shrink-0">
-          Sync Streams
-        </button>
+        <button onclick="fetchSourcesData()" class="bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 text-xs font-semibold px-4 py-2 rounded-lg transition duration-200 flex-shrink-0">Sync Streams</button>
       </div>
-
       <div id="sources-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-        <div class="col-span-full text-center py-20 text-gray-500 font-mono text-xs">
-          Gathering registry components...
-        </div>
+        <div class="col-span-full text-center py-20 text-gray-500 font-mono text-xs">Gathering registry components...</div>
       </div>
     </section>
-
   </main>
 
-  <!-- ========================================================================= -->
-  <!-- SIDE DRAWER PANEL FOR ARTICLE DETAILS -->
-  <!-- ========================================================================= -->
-  <!-- Backdrop -->
-  <div id="drawer-backdrop" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 hidden transition-opacity duration-300 ease-in-out opacity-0"></div>
+  <!-- ═══════════ DRAWER OVERLAY ═══════════ -->
+  <div id="drawer-backdrop" onclick="closeDrawer()" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 hidden"></div>
 
-  <!-- Drawer Body -->
-  <div id="detail-drawer" class="fixed top-0 right-0 h-full w-full max-w-lg md:max-w-2xl bg-[#090b14]/95 border-l border-gray-900 shadow-2xl z-50 transform drawer-closed transition-transform duration-300 ease-out flex flex-col">
-    <!-- Header -->
-    <div class="px-4 sm:px-6 py-5 border-b border-gray-900 flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <span id="drawer-category" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border">PAPER</span>
-        <span id="drawer-source" class="text-xs text-indigo-400 font-semibold truncate max-w-[200px]">arXiv Library</span>
+  <!-- ═══════════ DRAWER PANEL ═══════════ -->
+  <div id="detail-drawer" class="fixed top-0 right-0 h-full w-full max-w-lg md:max-w-2xl bg-[#090b14] border-l border-gray-900 shadow-2xl z-50 flex flex-col overflow-hidden">
+    <!-- Drawer Header -->
+    <div class="px-4 sm:px-6 py-4 border-b border-gray-900 flex items-center justify-between flex-shrink-0">
+      <div class="flex items-center gap-2 min-w-0">
+        <span id="drawer-category" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border flex-shrink-0 bg-gray-800 border-gray-700 text-gray-400">PAPER</span>
+        <span id="drawer-source" class="text-xs text-indigo-400 font-semibold truncate">Source</span>
       </div>
-      <button id="btn-close-drawer" class="text-gray-400 hover:text-white transition p-2 rounded-lg hover:bg-gray-900 flex-shrink-0">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+      <!-- Close button: onclick is the PRIMARY handler -->
+      <button onclick="closeDrawer()" class="close-btn" aria-label="Close drawer" title="Close">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
     </div>
 
-    <!-- Scrollable Content -->
+    <!-- Drawer Scrollable Content -->
     <div class="flex-1 overflow-y-auto px-4 sm:px-6 py-6 space-y-8 select-text">
-      <!-- Title -->
       <div>
-        <h2 id="drawer-title" class="text-lg sm:text-xl md:text-2xl font-extrabold tracking-tight text-white leading-tight">Attention Mechanisms in 2025</h2>
-        <p id="drawer-date" class="text-[10px] text-gray-500 mt-2 font-mono">Published on June 01, 2026</p>
+        <h2 id="drawer-title" class="text-lg sm:text-xl md:text-2xl font-extrabold tracking-tight text-white leading-tight">Title</h2>
+        <p id="drawer-date" class="text-[10px] text-gray-500 mt-2 font-mono">Date</p>
       </div>
 
-      <!-- LLM Assessment Stats -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-        <!-- Importance Gauge -->
-        <div class="bg-[#0c0e18] border border-gray-900 rounded-xl p-4 flex flex-col justify-between">
+      <!-- Assessment Metrics -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="bg-[#0c0e18] border border-gray-900 rounded-xl p-4">
           <span class="text-gray-500 text-[10px] uppercase font-bold tracking-wider">Importance Index</span>
           <div class="flex items-baseline gap-1 mt-2">
-            <span id="drawer-importance" class="text-3xl font-extrabold text-indigo-400">85</span>
+            <span id="drawer-importance" class="text-3xl font-extrabold text-indigo-400">0</span>
             <span class="text-gray-600 text-xs">/100</span>
           </div>
           <div class="w-full bg-gray-900 rounded-full h-1.5 mt-2">
-            <div id="drawer-importance-bar" class="bg-indigo-500 h-1.5 rounded-full transition-all duration-500" style="width: 85%"></div>
+            <div id="drawer-importance-bar" class="bg-indigo-500 h-1.5 rounded-full transition-all duration-500" style="width:0%"></div>
           </div>
         </div>
-
-        <!-- Technical Depth -->
-        <div class="bg-[#0c0e18] border border-gray-900 rounded-xl p-4 flex flex-col justify-between">
+        <div class="bg-[#0c0e18] border border-gray-900 rounded-xl p-4">
           <span class="text-gray-500 text-[10px] uppercase font-bold tracking-wider">Technical Depth</span>
           <div class="text-lg font-bold text-white mt-2 flex items-center gap-2">
             <span class="h-2 w-2 rounded-full bg-cyan-400 flex-shrink-0"></span>
-            <span id="drawer-depth" class="truncate">Deep Technical</span>
+            <span id="drawer-depth" class="truncate">Standard</span>
           </div>
           <span class="text-[9px] text-gray-500 mt-1 block">Architecture focused</span>
         </div>
-
-        <!-- Relevance -->
-        <div class="bg-[#0c0e18] border border-gray-900 rounded-xl p-4 flex flex-col justify-between">
+        <div class="bg-[#0c0e18] border border-gray-900 rounded-xl p-4">
           <span class="text-gray-500 text-[10px] uppercase font-bold tracking-wider">AI Relevancy</span>
           <div class="text-lg font-bold text-emerald-400 mt-2 flex items-center gap-2">
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             <span>Verified</span>
           </div>
           <span class="text-[9px] text-gray-500 mt-1 block">Meets strict filters</span>
         </div>
       </div>
 
-      <!-- LLM Justification Reason -->
+      <!-- Classification -->
       <div class="bg-indigo-950/10 border border-indigo-900/20 rounded-xl p-4 sm:p-5">
         <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-300 mb-2">Classification Assessment</h3>
-        <p id="drawer-reason" class="text-xs text-gray-400 leading-relaxed font-sans">
-          This publication outlines critical breakthroughs in long-context transformer efficiency.
-        </p>
+        <p id="drawer-reason" class="text-xs text-gray-400 leading-relaxed">Pending analysis.</p>
       </div>
 
-      <!-- Deep Insights Section -->
-      <div id="drawer-insights-container" class="space-y-6">
-        <!-- Headline -->
+      <!-- Insights -->
+      <div id="drawer-insights-container" class="space-y-6 hidden">
         <div class="border-l-2 border-indigo-500 pl-4">
           <h4 class="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Key Discovery Headline</h4>
-          <p id="drawer-headline" class="text-sm font-bold text-white mt-1">Linear-Complexity Sliding Window Attention</p>
+          <p id="drawer-headline" class="text-sm font-bold text-white mt-1">—</p>
         </div>
-
-        <!-- TL;DR Bullets -->
         <div>
-          <h4 class="text-[10px] uppercase font-bold text-gray-500 tracking-wider mb-2">Technical TL;DR Summaries</h4>
-          <ul id="drawer-tldr" class="space-y-2 text-xs text-gray-400 leading-relaxed list-disc pl-4">
-            <li>Loading...</li>
-          </ul>
+          <h4 class="text-[10px] uppercase font-bold text-gray-500 tracking-wider mb-2">Technical TL;DR</h4>
+          <ul id="drawer-tldr" class="space-y-2 text-xs text-gray-400 leading-relaxed list-disc pl-4"></ul>
         </div>
-
-        <!-- Practical Utility -->
         <div>
-          <h4 class="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Practical Utility & Execution</h4>
-          <p id="drawer-utility" class="text-xs text-gray-400 leading-relaxed mt-1 font-sans">Loading...</p>
+          <h4 class="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Practical Utility</h4>
+          <p id="drawer-utility" class="text-xs text-gray-400 leading-relaxed mt-1">—</p>
         </div>
-
-        <!-- Ecosystem Impact -->
         <div>
-          <h4 class="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Ecosystem Impact Assessment</h4>
-          <p id="drawer-impact" class="text-xs text-gray-400 leading-relaxed mt-1 font-sans">Loading...</p>
+          <h4 class="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Ecosystem Impact</h4>
+          <p id="drawer-impact" class="text-xs text-gray-400 leading-relaxed mt-1">—</p>
         </div>
       </div>
 
-      <!-- Entities Extracted -->
+      <!-- Entities -->
       <div>
         <h4 class="text-[10px] uppercase font-bold text-gray-500 tracking-wider mb-2">Extracted Entities & Concepts</h4>
         <div id="drawer-entities" class="flex flex-wrap gap-1.5">
-          <span class="px-2 py-1 rounded bg-gray-900 border border-gray-800 text-[10px] text-gray-400 font-mono">Loading...</span>
+          <span class="text-xs text-gray-600">No named entities mapped.</span>
         </div>
       </div>
     </div>
 
-    <!-- Interactive Footer and Feedback loops -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5 border-t border-gray-900 bg-[#070911]/90 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+    <!-- Drawer Footer -->
+    <div class="px-4 sm:px-6 py-4 border-t border-gray-900 bg-[#070911] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 flex-shrink-0">
       <a id="drawer-external-link" href="#" target="_blank" class="flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 font-semibold transition">
         <span>View Original source</span>
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
       </a>
-      
-      <!-- Rating widget -->
       <div class="flex items-center gap-2" id="drawer-feedback-widget">
-        <button id="btn-feedback-good" class="flex items-center gap-1 bg-emerald-500/10 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 text-xs px-3 py-1.5 rounded-lg font-semibold transition duration-150">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <button onclick="submitFeedback('good')" id="btn-feedback-good" class="flex items-center gap-1 bg-emerald-500/10 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 text-xs px-3 py-1.5 rounded-lg font-semibold transition duration-150">
+          <svg class="w-3.5 h-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           <span>Keep Signal</span>
         </button>
-        <button id="btn-feedback-noise" class="flex items-center gap-1 bg-rose-500/10 hover:bg-rose-500/25 border border-rose-500/30 text-rose-400 text-xs px-3 py-1.5 rounded-lg font-semibold transition duration-150">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <button onclick="submitFeedback('noise')" id="btn-feedback-noise" class="flex items-center gap-1 bg-rose-500/10 hover:bg-rose-500/25 border border-rose-500/30 text-rose-400 text-xs px-3 py-1.5 rounded-lg font-semibold transition duration-150">
+          <svg class="w-3.5 h-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           <span>Filter Noise</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Footer -->
+  <!-- ═══════════ FOOTER ═══════════ -->
   <footer class="w-full border-t border-gray-900 py-6 mt-12 bg-[#05060b]">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-500">
       <div class="flex items-center gap-2">
@@ -529,676 +458,514 @@
     </div>
   </footer>
 
-  <!-- ========================================================================= -->
-  <!-- APPLICATION LOGIC (Fully event-delegated, no inline onclick) -->
-  <!-- ========================================================================= -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- APPLICATION LOGIC -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
   <script>
-    // ── Supabase Configuration ──
-    const SUPABASE_URL = "https://ekamfrtwruungwxirkxp.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_oXct52-KAg8HHugD0a5h5A_Daxsg9Gv";
+    "use strict";
 
-    const supabaseHeaders = {
+    /* ── Config ── */
+    var SUPABASE_URL = "https://ekamfrtwruungwxirkxp.supabase.co";
+    var SUPABASE_KEY = "sb_publishable_oXct52-KAg8HHugD0a5h5A_Daxsg9Gv";
+    var supabaseHeaders = {
       "apikey": SUPABASE_KEY,
-      "Authorization": `Bearer ${SUPABASE_KEY}`,
+      "Authorization": "Bearer " + SUPABASE_KEY,
       "Content-Type": "application/json"
     };
 
-    // ── Application State ──
-    let articleStore = [];
-    let currentCategoryFilter = 'all';
-    let activeDrawerArticleId = null;
+    /* ── State ── */
+    var articleStore = [];
+    var currentCategoryFilter = "all";
+    var activeDrawerArticleId = null;
 
-    // ── Utility: HTML-escape to prevent XSS ──
+    /* ── XSS-safe text escaper ── */
     function esc(str) {
-      const div = document.createElement('div');
-      div.textContent = str || '';
-      return div.innerHTML;
+      if (!str) return "";
+      var d = document.createElement("div");
+      d.textContent = String(str);
+      return d.innerHTML;
     }
 
-    // ══════════════════════════════════════════════════════════════════════
-    // 1. TAB SWITCHING — event delegation on the nav
-    // ══════════════════════════════════════════════════════════════════════
-    document.getElementById('main-nav').addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-tab]');
-      if (!btn) return;
+    /* ═══════════════════════════════════════════════
+       TAB SWITCHING
+       ═══════════════════════════════════════════════ */
+    function switchTab(tabId) {
+      // update nav
+      var tabs = document.querySelectorAll(".nav-tab");
+      for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
+      var activeBtn = document.querySelector('[data-tab="' + tabId + '"]');
+      if (activeBtn) activeBtn.classList.add("active");
 
-      const tabId = btn.dataset.tab;
+      // show/hide views
+      var views = document.querySelectorAll(".tab-view");
+      for (var i = 0; i < views.length; i++) views[i].classList.add("hidden");
+      var target = document.getElementById("view-" + tabId);
+      if (target) target.classList.remove("hidden");
 
-      // Update nav active states
-      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-      btn.classList.add('active');
-
-      // Show/hide content sections
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-      const target = document.getElementById(`view-${tabId}`);
-      if (target) target.classList.remove('hidden');
-
-      // Lazy-load data for each tab
-      if (tabId === 'feed' && articleStore.length === 0) fetchFeedData();
-      else if (tabId === 'health') fetchHealthData();
-      else if (tabId === 'sources') fetchSourcesData();
-    });
-
-    // ══════════════════════════════════════════════════════════════════════
-    // 2. INTELLIGENCE FEED — fetch, render, filter
-    // ══════════════════════════════════════════════════════════════════════
-    async function fetchFeedData() {
-      const feedContainer = document.getElementById("feed-container");
-      feedContainer.innerHTML = `
-        <div class="col-span-full text-center py-20 text-gray-500">
-          <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500 mb-4"></div>
-          <p class="text-sm font-semibold">Retrieving intelligence corpus...</p>
-        </div>
-      `;
-
-      try {
-        const response = await fetch(
-          `${SUPABASE_URL}/rest/v1/articles?select=*,classifications(*),insights(*),user_feedback(rating)&order=scraped_at.desc&limit=100`,
-          { headers: supabaseHeaders }
-        );
-
-        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-        
-        articleStore = await response.json();
-        renderFeed();
-      } catch (err) {
-        console.error('Feed fetch error:', err);
-        feedContainer.innerHTML = `
-          <div class="col-span-full text-center py-20 text-rose-500">
-            <p class="text-sm font-bold">Failed to load active intelligence feed</p>
-            <p class="text-xs text-gray-500 mt-1">${esc(err.message)}</p>
-          </div>
-        `;
-      }
+      // lazy load
+      if (tabId === "feed" && articleStore.length === 0) fetchFeedData();
+      else if (tabId === "health") fetchHealthData();
+      else if (tabId === "sources") fetchSourcesData();
     }
 
-    function renderFeed() {
-      const feedContainer = document.getElementById("feed-container");
-      const query = document.getElementById("feed-search").value.toLowerCase().trim();
-      
-      const filtered = articleStore.filter(article => {
-        // Category filter
-        const classification = article.classifications?.[0];
-        const category = (classification?.category || "").toLowerCase();
-        if (currentCategoryFilter !== 'all' && category !== currentCategoryFilter) return false;
-
-        // Search query filter
-        if (query) {
-          const title = (article.title || "").toLowerCase();
-          const cleanText = (article.clean_text || "").toLowerCase();
-          const headline = (article.insights?.[0]?.headline || "").toLowerCase();
-          const tags = (article.insights?.[0]?.tags || []).join(" ").toLowerCase();
-          if (!title.includes(query) && !cleanText.includes(query) && !headline.includes(query) && !tags.includes(query)) {
-            return false;
-          }
-        }
-        return true;
-      });
-
-      if (filtered.length === 0) {
-        feedContainer.innerHTML = `
-          <div class="col-span-full text-center py-24 text-gray-500">
-            <svg class="w-10 h-10 mx-auto text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            <p class="text-sm font-semibold">No curation signals found matching criteria.</p>
-          </div>
-        `;
-        return;
-      }
-
-      // Build ALL card HTML in a single string, then assign once (no innerHTML +=)
-      const cardsHtml = filtered.map((article, idx) => {
-        const classification = article.classifications?.[0] || {};
-        const insight = article.insights?.[0] || {};
-        const feedback = article.user_feedback?.[0] || {};
-        
-        const importance = classification.importance ?? 0;
-        const category = classification.category || "General";
-        const publishedDate = article.published_at 
-          ? new Date(article.published_at).toLocaleDateString(undefined, {month: 'short', day: 'numeric'}) 
-          : "Recently";
-
-        // Dot color based on importance
-        let dotColor = "bg-gray-500 shadow-gray-500/20";
-        let cardGlow = "";
-        if (importance >= 75) {
-          dotColor = "bg-emerald-400 shadow-emerald-400/35";
-          cardGlow = "hover:border-emerald-500/20";
-        } else if (importance >= 50) {
-          dotColor = "bg-indigo-400 shadow-indigo-400/35";
-          cardGlow = "hover:border-indigo-500/20";
-        } else if (importance > 0) {
-          dotColor = "bg-amber-400 shadow-amber-400/35";
-          cardGlow = "hover:border-amber-500/20";
-        }
-
-        // Feedback badge
-        let feedbackBadge = "";
-        if (feedback.rating === 'good') {
-          feedbackBadge = `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">Saved</span>`;
-        } else if (feedback.rating === 'noise') {
-          feedbackBadge = `<span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">Muted</span>`;
-        }
-
-        const tagsHtml = (insight.tags || []).slice(0, 3).map(tag => 
-          `<span class="bg-gray-900 border border-gray-800 text-gray-500 text-[9px] px-2 py-0.5 rounded">${esc(tag)}</span>`
-        ).join("");
-
-        const delay = Math.min(idx * 40, 400);
-
-        return `
-          <div class="glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between card-clickable ${cardGlow} fade-in-up"
-               data-article-id="${esc(article.id)}" 
-               style="animation-delay: ${delay}ms"
-               role="button" tabindex="0" aria-label="View details for ${esc(article.title)}">
-            <div>
-              <div class="flex items-center justify-between gap-3 mb-4">
-                <div class="flex items-center gap-2">
-                  <span class="inline-flex h-2 w-2 rounded-full ${dotColor} flex-shrink-0"></span>
-                  <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">${esc(category)}</span>
-                </div>
-                <div class="flex items-center gap-2 flex-shrink-0">
-                  ${feedbackBadge}
-                  <span class="text-[10px] text-gray-500 font-mono">${esc(publishedDate)}</span>
-                </div>
-              </div>
-              
-              <h3 class="text-sm font-bold text-white line-clamp-2 leading-snug mb-2">${esc(article.title || "No Title Available")}</h3>
-              <p class="text-xs text-gray-400 line-clamp-3 mb-4 leading-relaxed font-sans">${esc(insight.headline || classification.reason || "Structured summary pending pipeline run.")}</p>
-            </div>
-
-            <div class="pt-4 border-t border-gray-900 flex items-center justify-between gap-2">
-              <div class="flex items-center gap-1.5 flex-wrap min-w-0">
-                ${tagsHtml}
-              </div>
-              <div class="flex items-baseline gap-0.5 flex-shrink-0">
-                <span class="text-sm font-extrabold text-white">${importance}</span>
-                <span class="text-[9px] text-gray-600 font-bold">/100</span>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      feedContainer.innerHTML = cardsHtml;
-    }
-
-    // ── Feed event delegation: card clicks + search input ──
-    document.getElementById('feed-container').addEventListener('click', (e) => {
-      const card = e.target.closest('[data-article-id]');
-      if (card) openDrawer(card.dataset.articleId);
+    // Nav delegation
+    document.getElementById("main-nav").addEventListener("click", function(e) {
+      var btn = e.target;
+      while (btn && !btn.dataset.tab && btn !== e.currentTarget) btn = btn.parentElement;
+      if (btn && btn.dataset.tab) switchTab(btn.dataset.tab);
     });
 
-    // Keyboard accessibility: Enter/Space on feed cards
-    document.getElementById('feed-container').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        const card = e.target.closest('[data-article-id]');
-        if (card) { e.preventDefault(); openDrawer(card.dataset.articleId); }
-      }
-    });
-
-    // Debounced search input
-    let searchTimeout = null;
-    document.getElementById('feed-search').addEventListener('input', () => {
-      clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(renderFeed, 200);
-    });
-
-    // ── Category filter: event delegation ──
-    document.getElementById('category-filters').addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-category]');
-      if (!btn) return;
-
-      currentCategoryFilter = btn.dataset.category;
-
-      // Update pill visuals
-      document.querySelectorAll('#category-filters .cat-pill').forEach(p => {
-        p.classList.remove('cat-pill-active');
-        p.classList.add('cat-pill-inactive');
-      });
-      btn.classList.remove('cat-pill-inactive');
-      btn.classList.add('cat-pill-active');
-
-      renderFeed();
-    });
-
-    // ══════════════════════════════════════════════════════════════════════
-    // 3. DRAWER CONTROL
-    // ══════════════════════════════════════════════════════════════════════
+    /* ═══════════════════════════════════════════════
+       DRAWER — open / close
+       ═══════════════════════════════════════════════ */
     function openDrawer(articleId) {
-      const article = articleStore.find(a => a.id === articleId);
+      var article = null;
+      for (var i = 0; i < articleStore.length; i++) {
+        if (articleStore[i].id === articleId) { article = articleStore[i]; break; }
+      }
       if (!article) return;
 
       activeDrawerArticleId = articleId;
 
-      const classification = article.classifications?.[0] || {};
-      const insight = article.insights?.[0] || {};
-      const feedback = article.user_feedback?.[0] || {};
+      var cls = (article.classifications && article.classifications[0]) || {};
+      var ins = (article.insights && article.insights[0]) || {};
+      var fb  = (article.user_feedback && article.user_feedback[0]) || {};
 
-      // Hydrate values
+      // Title & meta
       document.getElementById("drawer-title").textContent = article.title || "No Title";
-      
       try {
         document.getElementById("drawer-source").textContent = article.url ? new URL(article.url).hostname : "Static Data";
-      } catch { 
-        document.getElementById("drawer-source").textContent = "Source"; 
+      } catch(e) {
+        document.getElementById("drawer-source").textContent = "Source";
       }
+      document.getElementById("drawer-date").textContent = article.published_at
+        ? "Ingested on " + new Date(article.published_at).toLocaleString()
+        : "Archived on " + new Date(article.scraped_at).toLocaleDateString();
 
-      document.getElementById("drawer-date").textContent = article.published_at 
-        ? `Ingested on ${new Date(article.published_at).toLocaleString()}` 
-        : `Archived on ${new Date(article.scraped_at).toLocaleDateString()}`;
+      // Category badge
+      var cat = cls.category || "General";
+      var catEl = document.getElementById("drawer-category");
+      catEl.textContent = cat;
+      catEl.className = "px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border flex-shrink-0";
+      var cl = cat.toLowerCase();
+      if (cl === "paper")        catEl.classList.add("bg-indigo-500/10", "border-indigo-500/20", "text-indigo-400");
+      else if (cl === "tool")    catEl.classList.add("bg-cyan-500/10", "border-cyan-500/20", "text-cyan-400");
+      else if (cl === "product") catEl.classList.add("bg-purple-500/10", "border-purple-500/20", "text-purple-400");
+      else if (cl === "company") catEl.classList.add("bg-amber-500/10", "border-amber-500/20", "text-amber-400");
+      else                       catEl.classList.add("bg-gray-800", "border-gray-700", "text-gray-400");
 
-      const category = classification.category || "General";
-      const drawerCategory = document.getElementById("drawer-category");
-      drawerCategory.textContent = category;
-      drawerCategory.className = "px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border";
-      if (category.toLowerCase() === 'paper') {
-        drawerCategory.classList.add("bg-indigo-500/10", "border-indigo-500/20", "text-indigo-400");
-      } else if (category.toLowerCase() === 'tool') {
-        drawerCategory.classList.add("bg-cyan-500/10", "border-cyan-500/20", "text-cyan-400");
-      } else if (category.toLowerCase() === 'product') {
-        drawerCategory.classList.add("bg-purple-500/10", "border-purple-500/20", "text-purple-400");
-      } else if (category.toLowerCase() === 'company') {
-        drawerCategory.classList.add("bg-amber-500/10", "border-amber-500/20", "text-amber-400");
-      } else {
-        drawerCategory.classList.add("bg-gray-800", "border-gray-700", "text-gray-400");
-      }
+      // Importance
+      var imp = cls.importance != null ? cls.importance : 0;
+      document.getElementById("drawer-importance").textContent = imp;
+      document.getElementById("drawer-importance-bar").style.width = imp + "%";
 
-      const importance = classification.importance ?? 0;
-      document.getElementById("drawer-importance").textContent = importance;
-      document.getElementById("drawer-importance-bar").style.width = `${importance}%`;
-      document.getElementById("drawer-depth").textContent = classification.technical_depth 
-        ? classification.technical_depth.charAt(0).toUpperCase() + classification.technical_depth.slice(1)
-        : "Standard Depth";
+      // Depth
+      var depth = cls.technical_depth || "standard";
+      document.getElementById("drawer-depth").textContent = depth.charAt(0).toUpperCase() + depth.slice(1);
 
-      document.getElementById("drawer-reason").textContent = classification.reason || "Classification pending analysis.";
+      // Reason
+      document.getElementById("drawer-reason").textContent = cls.reason || "Classification pending analysis.";
 
-      // Deep Insights
-      if (insight.headline) {
+      // Insights
+      if (ins.headline) {
         document.getElementById("drawer-insights-container").classList.remove("hidden");
-        document.getElementById("drawer-headline").textContent = insight.headline;
-        
-        const tldrContainer = document.getElementById("drawer-tldr");
-        tldrContainer.innerHTML = "";
-        const bullets = insight.tldr && insight.tldr.length > 0 ? insight.tldr : ["No technical TL;DR defined."];
-        bullets.forEach(bullet => {
-          const li = document.createElement('li');
-          li.textContent = bullet;
-          tldrContainer.appendChild(li);
-        });
+        document.getElementById("drawer-headline").textContent = ins.headline;
 
-        document.getElementById("drawer-utility").textContent = insight.practical_utility || "Practical execution notes omitted.";
-        document.getElementById("drawer-impact").textContent = insight.ecosystem_impact || "Ecosystem changes not computed.";
+        var tldr = document.getElementById("drawer-tldr");
+        tldr.innerHTML = "";
+        var bullets = (ins.tldr && ins.tldr.length > 0) ? ins.tldr : ["No technical TL;DR defined."];
+        for (var j = 0; j < bullets.length; j++) {
+          var li = document.createElement("li");
+          li.textContent = bullets[j];
+          tldr.appendChild(li);
+        }
+
+        document.getElementById("drawer-utility").textContent = ins.practical_utility || "Practical notes omitted.";
+        document.getElementById("drawer-impact").textContent = ins.ecosystem_impact || "Ecosystem changes not computed.";
       } else {
         document.getElementById("drawer-insights-container").classList.add("hidden");
       }
 
-      // Entities tags
-      const entitiesContainer = document.getElementById("drawer-entities");
-      entitiesContainer.innerHTML = "";
-      const allTags = [...(insight.tags || []), ...(insight.related_entities || [])];
+      // Entities
+      var entEl = document.getElementById("drawer-entities");
+      entEl.innerHTML = "";
+      var allTags = [].concat(ins.tags || []).concat(ins.related_entities || []);
       if (allTags.length > 0) {
-        allTags.forEach(tag => {
-          const span = document.createElement('span');
-          span.className = "px-2 py-1 rounded bg-[#0b0f19] border border-gray-800 text-[10px] text-gray-400 font-mono";
-          span.textContent = tag;
-          entitiesContainer.appendChild(span);
-        });
+        for (var k = 0; k < allTags.length; k++) {
+          var sp = document.createElement("span");
+          sp.className = "px-2 py-1 rounded bg-[#0b0f19] border border-gray-800 text-[10px] text-gray-400 font-mono";
+          sp.textContent = allTags[k];
+          entEl.appendChild(sp);
+        }
       } else {
-        entitiesContainer.innerHTML = `<span class="text-xs text-gray-600">No named entities mapped.</span>`;
+        entEl.innerHTML = '<span class="text-xs text-gray-600">No named entities mapped.</span>';
       }
 
-      // External link
+      // Link
       document.getElementById("drawer-external-link").href = article.url || "#";
 
-      // Feedback button states
-      updateFeedbackButtonsState(feedback.rating);
+      // Feedback state
+      updateFeedbackButtons(fb.rating);
 
-      // Slide-in animation
-      const backdrop = document.getElementById("drawer-backdrop");
-      const drawer = document.getElementById("detail-drawer");
+      // ── SHOW DRAWER ──
+      var backdrop = document.getElementById("drawer-backdrop");
+      var drawer   = document.getElementById("detail-drawer");
+
       backdrop.classList.remove("hidden");
-      // Force reflow for animation
-      backdrop.offsetHeight;
-      requestAnimationFrame(() => {
-        backdrop.classList.add("opacity-100");
-        drawer.classList.remove("drawer-closed");
-        drawer.classList.add("drawer-open");
-      });
+      // Force reflow so transition animates
+      void backdrop.offsetHeight;
+      backdrop.classList.add("is-visible");
+      drawer.classList.add("is-open");
+
+      // Prevent body scroll
+      document.body.style.overflow = "hidden";
     }
 
     function closeDrawer() {
-      const drawer = document.getElementById("detail-drawer");
-      const backdrop = document.getElementById("drawer-backdrop");
-      
-      drawer.classList.remove("drawer-open");
-      drawer.classList.add("drawer-closed");
-      backdrop.classList.remove("opacity-100");
-      
-      setTimeout(() => {
+      var backdrop = document.getElementById("drawer-backdrop");
+      var drawer   = document.getElementById("detail-drawer");
+
+      drawer.classList.remove("is-open");
+      backdrop.classList.remove("is-visible");
+
+      // Restore body scroll
+      document.body.style.overflow = "";
+
+      setTimeout(function() {
         backdrop.classList.add("hidden");
         activeDrawerArticleId = null;
-      }, 300);
+      }, 350);
     }
 
-    // Drawer close: backdrop click + close button + Escape key
-    document.getElementById("drawer-backdrop").addEventListener('click', closeDrawer);
-    document.getElementById("btn-close-drawer").addEventListener('click', closeDrawer);
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && activeDrawerArticleId) closeDrawer();
+    // Escape key closes drawer
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape" && activeDrawerArticleId != null) closeDrawer();
     });
 
-    // ══════════════════════════════════════════════════════════════════════
-    // 4. FEEDBACK
-    // ══════════════════════════════════════════════════════════════════════
-    async function submitFeedback(rating) {
+    /* ═══════════════════════════════════════════════
+       FEEDBACK
+       ═══════════════════════════════════════════════ */
+    function submitFeedback(rating) {
       if (!activeDrawerArticleId) return;
+      updateFeedbackButtons(rating);
 
-      updateFeedbackButtonsState(rating);
-
-      try {
-        const response = await fetch(
-          `${SUPABASE_URL}/rest/v1/user_feedback`,
-          {
-            method: "POST",
-            headers: {
-              ...supabaseHeaders,
-              "Prefer": "resolution=merge-duplicates"
-            },
-            body: JSON.stringify({
-              article_id: activeDrawerArticleId,
-              rating: rating
-            })
+      fetch(SUPABASE_URL + "/rest/v1/user_feedback", {
+        method: "POST",
+        headers: Object.assign({}, supabaseHeaders, { "Prefer": "resolution=merge-duplicates" }),
+        body: JSON.stringify({ article_id: activeDrawerArticleId, rating: rating })
+      }).then(function(res) {
+        if (!res.ok) throw new Error("Failed");
+        for (var i = 0; i < articleStore.length; i++) {
+          if (articleStore[i].id === activeDrawerArticleId) {
+            articleStore[i].user_feedback = [{ rating: rating }];
+            break;
           }
-        );
-
-        if (!response.ok) throw new Error("Failed to post feedback record.");
-
-        // Locally update the article's rating in state
-        const idx = articleStore.findIndex(a => a.id === activeDrawerArticleId);
-        if (idx !== -1) {
-          articleStore[idx].user_feedback = [{ rating: rating }];
-          renderFeed();
         }
-      } catch (err) {
-        console.error('Feedback error:', err);
-        // Show inline error instead of alert
-        const widget = document.getElementById("drawer-feedback-widget");
-        const errSpan = document.createElement('span');
-        errSpan.className = "text-[10px] text-rose-400 font-mono";
-        errSpan.textContent = "Error saving";
-        widget.appendChild(errSpan);
-        setTimeout(() => errSpan.remove(), 3000);
+        renderFeed();
+      }).catch(function(err) {
+        console.error("Feedback error:", err);
+      });
+    }
+
+    function updateFeedbackButtons(rating) {
+      var good  = document.getElementById("btn-feedback-good");
+      var noise = document.getElementById("btn-feedback-noise");
+
+      good.className  = "flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-semibold transition duration-150 border border-emerald-500/30 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/25";
+      noise.className = "flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-semibold transition duration-150 border border-rose-500/30 text-rose-400 bg-rose-500/10 hover:bg-rose-500/25";
+
+      if (rating === "good") {
+        good.className = "flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-semibold transition duration-150 border border-emerald-500/40 text-white bg-emerald-600 glow-emerald";
+      } else if (rating === "noise") {
+        noise.className = "flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-semibold transition duration-150 border border-rose-500/40 text-white bg-rose-600 glow-amber";
       }
     }
 
-    function updateFeedbackButtonsState(currentRating) {
-      const goodBtn = document.getElementById("btn-feedback-good");
-      const noiseBtn = document.getElementById("btn-feedback-noise");
+    /* ═══════════════════════════════════════════════
+       INTELLIGENCE FEED
+       ═══════════════════════════════════════════════ */
+    function fetchFeedData() {
+      var fc = document.getElementById("feed-container");
+      fc.innerHTML = '<div class="col-span-full text-center py-20 text-gray-500"><div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500 mb-4"></div><p class="text-sm font-semibold">Retrieving intelligence corpus...</p></div>';
 
-      // Reset both
-      goodBtn.className = "flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-semibold transition duration-150 border border-emerald-500/30 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/25";
-      noiseBtn.className = "flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-semibold transition duration-150 border border-rose-500/30 text-rose-400 bg-rose-500/10 hover:bg-rose-500/25";
-
-      if (currentRating === 'good') {
-        goodBtn.className = "flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-semibold transition duration-150 border border-emerald-500/40 text-white bg-emerald-600 glow-emerald";
-      } else if (currentRating === 'noise') {
-        noiseBtn.className = "flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-semibold transition duration-150 border border-rose-500/40 text-white bg-rose-600 glow-amber";
-      }
+      fetch(SUPABASE_URL + "/rest/v1/articles?select=*,classifications(*),insights(*),user_feedback(rating)&order=scraped_at.desc&limit=100", { headers: supabaseHeaders })
+        .then(function(res) {
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          return res.json();
+        })
+        .then(function(data) {
+          articleStore = data;
+          renderFeed();
+        })
+        .catch(function(err) {
+          console.error("Feed error:", err);
+          fc.innerHTML = '<div class="col-span-full text-center py-20 text-rose-500"><p class="text-sm font-bold">Failed to load intelligence feed</p><p class="text-xs text-gray-500 mt-1">' + esc(err.message) + '</p></div>';
+        });
     }
 
-    // Feedback button event listeners
-    document.getElementById("btn-feedback-good").addEventListener('click', () => submitFeedback('good'));
-    document.getElementById("btn-feedback-noise").addEventListener('click', () => submitFeedback('noise'));
+    function renderFeed() {
+      var fc = document.getElementById("feed-container");
+      var query = (document.getElementById("feed-search").value || "").toLowerCase().trim();
 
-    // ══════════════════════════════════════════════════════════════════════
-    // 5. QUERY TERMINAL
-    // ══════════════════════════════════════════════════════════════════════
-    document.getElementById("terminal-input").addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') runTerminalSearch();
-    });
-    document.getElementById("btn-terminal-search").addEventListener('click', runTerminalSearch);
+      var filtered = [];
+      for (var i = 0; i < articleStore.length; i++) {
+        var a = articleStore[i];
+        var cls = (a.classifications && a.classifications[0]) || {};
+        var cat = (cls.category || "").toLowerCase();
 
-    async function runTerminalSearch() {
-      const query = document.getElementById("terminal-input").value.trim();
-      const resultsContainer = document.getElementById("terminal-results");
+        if (currentCategoryFilter !== "all" && cat !== currentCategoryFilter) continue;
 
-      if (!query) {
-        resultsContainer.innerHTML = `<div class="text-center py-8 text-gray-500 font-mono text-xs">// Error: Empty search vector supplied.</div>`;
+        if (query) {
+          var t = (a.title || "").toLowerCase();
+          var ct = (a.clean_text || "").toLowerCase();
+          var hl = ((a.insights && a.insights[0] && a.insights[0].headline) || "").toLowerCase();
+          var tg = ((a.insights && a.insights[0] && a.insights[0].tags) || []).join(" ").toLowerCase();
+          if (t.indexOf(query) === -1 && ct.indexOf(query) === -1 && hl.indexOf(query) === -1 && tg.indexOf(query) === -1) continue;
+        }
+        filtered.push(a);
+      }
+
+      if (filtered.length === 0) {
+        fc.innerHTML = '<div class="col-span-full text-center py-24 text-gray-500"><svg class="w-10 h-10 mx-auto text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><p class="text-sm font-semibold">No signals found matching criteria.</p></div>';
         return;
       }
 
-      resultsContainer.innerHTML = `
-        <div class="text-center py-12 text-indigo-400 font-mono text-xs">
-          <div class="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-indigo-500 mb-2"></div>
-          <div>executing: SELECT * FROM articles WHERE title ILIKE '%${esc(query)}%'...</div>
-        </div>
-      `;
+      // Build FULL html string, then assign once
+      var html = "";
+      for (var i = 0; i < filtered.length; i++) {
+        var a = filtered[i];
+        var cls = (a.classifications && a.classifications[0]) || {};
+        var ins = (a.insights && a.insights[0]) || {};
+        var fb  = (a.user_feedback && a.user_feedback[0]) || {};
 
-      try {
-        const response = await fetch(
-          `${SUPABASE_URL}/rest/v1/articles?select=*,classifications(*),insights(*),user_feedback(rating)&or=(title.ilike.*${encodeURIComponent(query)}*,clean_text.ilike.*${encodeURIComponent(query)}*)&limit=10`,
-          { headers: supabaseHeaders }
-        );
+        var imp = cls.importance != null ? cls.importance : 0;
+        var cat = cls.category || "General";
+        var pd  = a.published_at ? new Date(a.published_at).toLocaleDateString(undefined, {month:"short",day:"numeric"}) : "Recently";
 
-        if (!response.ok) throw new Error("Search RPC execution failed.");
+        var dot = "bg-gray-500"; var glow = "";
+        if (imp >= 75) { dot = "bg-emerald-400"; glow = "hover:border-emerald-500/20"; }
+        else if (imp >= 50) { dot = "bg-indigo-400"; glow = "hover:border-indigo-500/20"; }
+        else if (imp > 0) { dot = "bg-amber-400"; glow = "hover:border-amber-500/20"; }
 
-        const matches = await response.json();
+        var badge = "";
+        if (fb.rating === "good") badge = '<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">Saved</span>';
+        else if (fb.rating === "noise") badge = '<span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">Muted</span>';
 
-        if (matches.length === 0) {
-          resultsContainer.innerHTML = `
-            <div class="bg-[#0b0f19]/35 border border-gray-900 rounded-xl p-8 text-center text-gray-500 font-mono text-xs">
-              // SQL execution completed successfully. Zero rows returned.
-            </div>
-          `;
-          return;
+        var tags = (ins.tags || []).slice(0,3);
+        var tagsHtml = "";
+        for (var j = 0; j < tags.length; j++) {
+          tagsHtml += '<span class="bg-gray-900 border border-gray-800 text-gray-500 text-[9px] px-2 py-0.5 rounded">' + esc(tags[j]) + '</span>';
         }
 
-        // Build results as single HTML string
-        const header = `<p class="font-mono text-xs text-gray-500 mb-4">// Query returned ${matches.length} matching rows:</p>`;
-        const resultsHtml = matches.map(item => {
-          const classification = item.classifications?.[0] || {};
-          const insight = item.insights?.[0] || {};
-          const sub = classification.subcategory ? ` > ${esc(classification.subcategory)}` : "";
-          const linkStr = item.url ? `<a href="${esc(item.url)}" target="_blank" class="text-indigo-400 hover:underline">Link</a>` : "";
+        var delay = Math.min(i * 40, 400);
 
-          return `
-            <div class="bg-[#080b15]/65 border border-gray-900 rounded-xl p-5 hover:border-gray-800 transition fade-in-up">
-              <div class="flex items-center justify-between text-[10px] text-gray-500 font-mono mb-2 flex-wrap gap-1">
-                <span>[ID: ${esc(item.id.substring(0,8))}] ${esc(classification.category || "UNCATEGORIZED")}${sub}</span>
-                <span>Importance: ${classification.importance ?? "--"}</span>
-              </div>
-              <h4 class="text-sm font-bold text-white mb-2">${esc(item.title)}</h4>
-              <p class="text-xs text-gray-400 leading-relaxed font-sans mb-3">${esc(insight.headline || classification.reason || "Unstructured textual body matches keyword filters.")}</p>
-              <div class="flex items-center justify-between border-t border-gray-900 pt-3 text-[10px] font-mono text-gray-500 flex-wrap gap-2">
-                <span>scraped_at: ${new Date(item.scraped_at).toLocaleString()}</span>
-                ${linkStr}
-              </div>
-            </div>
-          `;
-        }).join("");
-
-        resultsContainer.innerHTML = header + resultsHtml;
-
-      } catch (err) {
-        console.error('Terminal search error:', err);
-        resultsContainer.innerHTML = `
-          <div class="bg-rose-950/10 border border-rose-900/30 rounded-xl p-6 text-center text-rose-400 font-mono text-xs">
-            // SQL ERROR: Failed to interface database cluster.
-            <div class="text-gray-500 mt-2">${esc(err.message)}</div>
-          </div>
-        `;
+        html += '<div class="feed-card glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between ' + glow + ' fade-in" data-id="' + esc(a.id) + '" style="animation-delay:' + delay + 'ms" role="button" tabindex="0">'
+          + '<div>'
+          + '<div class="flex items-center justify-between gap-3 mb-4">'
+          + '<div class="flex items-center gap-2"><span class="inline-flex h-2 w-2 rounded-full ' + dot + ' flex-shrink-0"></span><span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">' + esc(cat) + '</span></div>'
+          + '<div class="flex items-center gap-2 flex-shrink-0">' + badge + '<span class="text-[10px] text-gray-500 font-mono">' + esc(pd) + '</span></div>'
+          + '</div>'
+          + '<h3 class="text-sm font-bold text-white line-clamp-2 leading-snug mb-2">' + esc(a.title || "No Title") + '</h3>'
+          + '<p class="text-xs text-gray-400 line-clamp-3 mb-4 leading-relaxed">' + esc(ins.headline || cls.reason || "Structured summary pending.") + '</p>'
+          + '</div>'
+          + '<div class="pt-4 border-t border-gray-900 flex items-center justify-between gap-2">'
+          + '<div class="flex items-center gap-1.5 flex-wrap min-w-0">' + tagsHtml + '</div>'
+          + '<div class="flex items-baseline gap-0.5 flex-shrink-0"><span class="text-sm font-extrabold text-white">' + imp + '</span><span class="text-[9px] text-gray-600 font-bold">/100</span></div>'
+          + '</div></div>';
       }
+      fc.innerHTML = html;
     }
 
-    // ══════════════════════════════════════════════════════════════════════
-    // 6. PIPELINE OPERATIONS
-    // ══════════════════════════════════════════════════════════════════════
-    document.getElementById("btn-refresh-health").addEventListener('click', fetchHealthData);
-
-    async function fetchHealthData() {
-      const runsTbody = document.getElementById("runs-tbody");
-      runsTbody.innerHTML = `
-        <tr>
-          <td colspan="8" class="text-center py-12 text-gray-500 font-mono">Loading operations matrix...</td>
-        </tr>
-      `;
-
-      try {
-        const response = await fetch(
-          `${SUPABASE_URL}/rest/v1/pipeline_health?select=*,pipeline_runs(*)&order=created_at.desc&limit=20`,
-          { headers: supabaseHeaders }
-        );
-
-        if (!response.ok) throw new Error(`HTTP Error: ${response.statusText}`);
-
-        const data = await response.json();
-        
-        if (!data || data.length === 0) {
-          runsTbody.innerHTML = `
-            <tr>
-              <td colspan="8" class="text-center py-12 text-gray-500 font-mono">No execution runs found.</td>
-            </tr>
-          `;
-          return;
-        }
-
-        // Hydrate Stats Panels
-        const latest = data[0];
-        const healthScoreElem = document.getElementById("stat-health-score");
-        healthScoreElem.textContent = `${Math.round(latest.health_score * 100)}%`;
-        healthScoreElem.className = "text-2xl sm:text-3xl font-extrabold mt-2";
-        if (latest.health_score >= 0.8) healthScoreElem.classList.add("text-emerald-400");
-        else if (latest.health_score >= 0.5) healthScoreElem.classList.add("text-amber-400");
-        else healthScoreElem.classList.add("text-rose-400");
-
-        document.getElementById("stat-source-rate").textContent = `${latest.sources_successful}/${latest.sources_total}`;
-        document.getElementById("stat-new-signals").textContent = `${latest.new_signals}`;
-        document.getElementById("stat-llm-success").textContent = `${Math.round(latest.llm_success_rate * 100)}%`;
-
-        // Build table rows as single string
-        const rowsHtml = data.map(row => {
-          const run = row.pipeline_runs || {};
-          const rawDate = new Date(row.created_at);
-          const dateStr = rawDate.toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short' });
-          const shortRunId = row.run_id ? row.run_id.substring(0, 8) : "N/A";
-          
-          let healthBadgeColor = "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
-          if (row.health_score < 0.5) healthBadgeColor = "text-rose-400 bg-rose-500/10 border-rose-500/20";
-          else if (row.health_score < 0.8) healthBadgeColor = "text-amber-400 bg-amber-500/10 border-amber-500/20";
-
-          return `
-            <tr class="hover:bg-[#0b0f19]/30 transition">
-              <td class="px-4 sm:px-6 py-4 font-semibold text-white">${esc(dateStr)}</td>
-              <td class="px-4 sm:px-6 py-4 font-mono text-xs text-gray-500">${esc(shortRunId)}...</td>
-              <td class="px-4 sm:px-6 py-4 text-center text-gray-400">${run.ingested ?? 0}</td>
-              <td class="px-4 sm:px-6 py-4 text-center text-gray-400">${run.embedded ?? 0}</td>
-              <td class="px-4 sm:px-6 py-4 text-center text-gray-400 hidden sm:table-cell">${run.duplicates ?? 0}</td>
-              <td class="px-4 sm:px-6 py-4 text-center text-indigo-400 font-bold">${row.new_signals ?? 0}</td>
-              <td class="px-4 sm:px-6 py-4 text-center text-gray-500 hidden sm:table-cell">${run.duration_s ?? 0}s</td>
-              <td class="px-4 sm:px-6 py-4 text-right">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${healthBadgeColor}">
-                  ${Math.round(row.health_score * 100)}%
-                </span>
-              </td>
-            </tr>
-          `;
-        }).join("");
-
-        runsTbody.innerHTML = rowsHtml;
-
-      } catch (err) {
-        console.error('Health fetch error:', err);
-        runsTbody.innerHTML = `
-          <tr>
-            <td colspan="8" class="text-center py-12 text-rose-500 font-mono">Error querying operational logs: ${esc(err.message)}</td>
-          </tr>
-        `;
+    // Feed card delegation
+    document.getElementById("feed-container").addEventListener("click", function(e) {
+      var card = e.target;
+      while (card && !card.dataset.id && card !== e.currentTarget) card = card.parentElement;
+      if (card && card.dataset.id) openDrawer(card.dataset.id);
+    });
+    document.getElementById("feed-container").addEventListener("keydown", function(e) {
+      if (e.key === "Enter" || e.key === " ") {
+        var card = e.target;
+        while (card && !card.dataset.id && card !== e.currentTarget) card = card.parentElement;
+        if (card && card.dataset.id) { e.preventDefault(); openDrawer(card.dataset.id); }
       }
+    });
+
+    // Search debounce
+    var searchTimer = null;
+    document.getElementById("feed-search").addEventListener("input", function() {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(renderFeed, 200);
+    });
+
+    // Category filters
+    document.getElementById("category-filters").addEventListener("click", function(e) {
+      var btn = e.target;
+      while (btn && !btn.dataset.category && btn !== e.currentTarget) btn = btn.parentElement;
+      if (!btn || !btn.dataset.category) return;
+
+      currentCategoryFilter = btn.dataset.category;
+
+      var pills = document.querySelectorAll("#category-filters .cat-pill");
+      for (var i = 0; i < pills.length; i++) pills[i].classList.remove("is-active");
+      btn.classList.add("is-active");
+
+      renderFeed();
+    });
+
+    /* ═══════════════════════════════════════════════
+       TERMINAL SEARCH
+       ═══════════════════════════════════════════════ */
+    document.getElementById("terminal-input").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") runTerminalSearch();
+    });
+
+    function runTerminalSearch() {
+      var query = (document.getElementById("terminal-input").value || "").trim();
+      var rc = document.getElementById("terminal-results");
+
+      if (!query) {
+        rc.innerHTML = '<div class="text-center py-8 text-gray-500 font-mono text-xs">// Error: Empty search vector supplied.</div>';
+        return;
+      }
+
+      rc.innerHTML = '<div class="text-center py-12 text-indigo-400 font-mono text-xs"><div class="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-indigo-500 mb-2"></div><div>executing: SELECT * FROM articles WHERE title ILIKE \'%' + esc(query) + '%\'...</div></div>';
+
+      fetch(SUPABASE_URL + "/rest/v1/articles?select=*,classifications(*),insights(*),user_feedback(rating)&or=(title.ilike.*" + encodeURIComponent(query) + "*,clean_text.ilike.*" + encodeURIComponent(query) + "*)&limit=10", { headers: supabaseHeaders })
+        .then(function(res) { if (!res.ok) throw new Error("Search failed"); return res.json(); })
+        .then(function(matches) {
+          if (matches.length === 0) {
+            rc.innerHTML = '<div class="bg-[#0b0f19]/35 border border-gray-900 rounded-xl p-8 text-center text-gray-500 font-mono text-xs">// SQL completed. Zero rows returned.</div>';
+            return;
+          }
+          var html = '<p class="font-mono text-xs text-gray-500 mb-4">// Query returned ' + matches.length + ' matching rows:</p>';
+          for (var i = 0; i < matches.length; i++) {
+            var m = matches[i];
+            var c = (m.classifications && m.classifications[0]) || {};
+            var ins = (m.insights && m.insights[0]) || {};
+            var sub = c.subcategory ? " &gt; " + esc(c.subcategory) : "";
+            var link = m.url ? '<a href="' + esc(m.url) + '" target="_blank" class="text-indigo-400 hover:underline">Link</a>' : "";
+
+            html += '<div class="bg-[#080b15]/65 border border-gray-900 rounded-xl p-5 hover:border-gray-800 transition fade-in" style="animation-delay:' + (i*60) + 'ms">'
+              + '<div class="flex items-center justify-between text-[10px] text-gray-500 font-mono mb-2 flex-wrap gap-1">'
+              + '<span>[ID: ' + esc(m.id.substring(0,8)) + '] ' + esc(c.category || "UNCATEGORIZED") + sub + '</span>'
+              + '<span>Importance: ' + (c.importance != null ? c.importance : "--") + '</span></div>'
+              + '<h4 class="text-sm font-bold text-white mb-2">' + esc(m.title) + '</h4>'
+              + '<p class="text-xs text-gray-400 leading-relaxed mb-3">' + esc(ins.headline || c.reason || "Matches keyword filters.") + '</p>'
+              + '<div class="flex items-center justify-between border-t border-gray-900 pt-3 text-[10px] font-mono text-gray-500 flex-wrap gap-2">'
+              + '<span>scraped_at: ' + new Date(m.scraped_at).toLocaleString() + '</span>' + link + '</div></div>';
+          }
+          rc.innerHTML = html;
+        })
+        .catch(function(err) {
+          console.error("Terminal error:", err);
+          rc.innerHTML = '<div class="bg-rose-950/10 border border-rose-900/30 rounded-xl p-6 text-center text-rose-400 font-mono text-xs">// SQL ERROR: ' + esc(err.message) + '</div>';
+        });
     }
 
-    // ══════════════════════════════════════════════════════════════════════
-    // 7. SOURCES REGISTRY
-    // ══════════════════════════════════════════════════════════════════════
-    document.getElementById("btn-sync-sources").addEventListener('click', fetchSourcesData);
+    /* ═══════════════════════════════════════════════
+       PIPELINE HEALTH
+       ═══════════════════════════════════════════════ */
+    function fetchHealthData() {
+      var tb = document.getElementById("runs-tbody");
+      tb.innerHTML = '<tr><td colspan="8" class="text-center py-12 text-gray-500 font-mono">Loading operations matrix...</td></tr>';
 
-    async function fetchSourcesData() {
-      const grid = document.getElementById("sources-grid");
-      grid.innerHTML = `
-        <div class="col-span-full text-center py-20 text-gray-500 font-mono text-xs">
-          Gathering registry components...
-        </div>
-      `;
+      fetch(SUPABASE_URL + "/rest/v1/pipeline_health?select=*,pipeline_runs(*)&order=created_at.desc&limit=20", { headers: supabaseHeaders })
+        .then(function(res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
+        .then(function(data) {
+          if (!data || data.length === 0) {
+            tb.innerHTML = '<tr><td colspan="8" class="text-center py-12 text-gray-500 font-mono">No execution runs found.</td></tr>';
+            return;
+          }
+          var latest = data[0];
+          var hs = document.getElementById("stat-health-score");
+          hs.textContent = Math.round(latest.health_score * 100) + "%";
+          hs.className = "text-2xl sm:text-3xl font-extrabold mt-2";
+          if (latest.health_score >= 0.8) hs.classList.add("text-emerald-400");
+          else if (latest.health_score >= 0.5) hs.classList.add("text-amber-400");
+          else hs.classList.add("text-rose-400");
 
-      try {
-        const response = await fetch(
-          `${SUPABASE_URL}/rest/v1/sources?select=*&order=created_at.asc`,
-          { headers: supabaseHeaders }
-        );
+          document.getElementById("stat-source-rate").textContent = latest.sources_successful + "/" + latest.sources_total;
+          document.getElementById("stat-new-signals").textContent = String(latest.new_signals);
+          document.getElementById("stat-llm-success").textContent = Math.round(latest.llm_success_rate * 100) + "%";
 
-        if (!response.ok) throw new Error("Registry search failed.");
+          var html = "";
+          for (var i = 0; i < data.length; i++) {
+            var r = data[i];
+            var run = r.pipeline_runs || {};
+            var ds = new Date(r.created_at).toLocaleString(undefined, {dateStyle:"short",timeStyle:"short"});
+            var rid = r.run_id ? r.run_id.substring(0,8) : "N/A";
+            var bc = "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
+            if (r.health_score < 0.5) bc = "text-rose-400 bg-rose-500/10 border-rose-500/20";
+            else if (r.health_score < 0.8) bc = "text-amber-400 bg-amber-500/10 border-amber-500/20";
 
-        const sources = await response.json();
-
-        if (sources.length === 0) {
-          grid.innerHTML = `
-            <div class="col-span-full text-center py-20 text-gray-500 font-mono text-xs">
-              No scraping data streams registered.
-            </div>
-          `;
-          return;
-        }
-
-        // Build all cards as single string
-        const cardsHtml = sources.map(stream => {
-          const scraperType = stream.type || "httpx";
-          const activeBadge = stream.active 
-            ? `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">Active</span>`
-            : `<span class="bg-gray-800 text-gray-500 border border-gray-700 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">Muted</span>`;
-
-          let typeColor = "text-indigo-400 bg-indigo-500/5 border-indigo-500/10";
-          if (scraperType === 'playwright') typeColor = "text-cyan-400 bg-cyan-500/5 border-cyan-500/10";
-          else if (scraperType === 'rss') typeColor = "text-emerald-400 bg-emerald-500/5 border-emerald-500/10";
-
-          const category = stream.category || "General";
-          let parsedUrl = "Unknown stream";
-          try { parsedUrl = stream.url ? new URL(stream.url).hostname : "Unknown stream"; } catch {}
-
-          return `
-            <div class="glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between fade-in-up">
-              <div>
-                <div class="flex items-center justify-between mb-4">
-                  <span class="px-2 py-0.5 rounded text-[9px] font-bold border uppercase ${typeColor}">${esc(scraperType)}</span>
-                  ${activeBadge}
-                </div>
-                
-                <h3 class="text-sm font-bold text-white mb-1 line-clamp-1">${esc(stream.name)}</h3>
-                <a href="${esc(stream.url)}" target="_blank" class="text-[10px] text-gray-500 font-mono hover:text-indigo-400 transition block mb-4 truncate">${esc(parsedUrl)}</a>
-              </div>
-
-              <div class="pt-4 border-t border-gray-900 flex items-center justify-between text-[9px] font-mono text-gray-400 flex-wrap gap-1">
-                <span>CAT: ${esc(category.toUpperCase())}</span>
-                <span>Last Run: ${stream.last_scraped ? new Date(stream.last_scraped).toLocaleDateString() : "Never"}</span>
-              </div>
-            </div>
-          `;
-        }).join("");
-
-        grid.innerHTML = cardsHtml;
-
-      } catch (err) {
-        console.error('Sources fetch error:', err);
-        grid.innerHTML = `
-          <div class="col-span-full text-center py-20 text-rose-500 font-mono text-xs">
-            Failed to load data streams: ${esc(err.message)}
-          </div>
-        `;
-      }
+            html += '<tr class="hover:bg-[#0b0f19]/30 transition">'
+              + '<td class="px-4 sm:px-6 py-4 font-semibold text-white">' + esc(ds) + '</td>'
+              + '<td class="px-4 sm:px-6 py-4 font-mono text-xs text-gray-500">' + esc(rid) + '...</td>'
+              + '<td class="px-4 sm:px-6 py-4 text-center text-gray-400">' + (run.ingested || 0) + '</td>'
+              + '<td class="px-4 sm:px-6 py-4 text-center text-gray-400">' + (run.embedded || 0) + '</td>'
+              + '<td class="px-4 sm:px-6 py-4 text-center text-gray-400 hidden sm:table-cell">' + (run.duplicates || 0) + '</td>'
+              + '<td class="px-4 sm:px-6 py-4 text-center text-indigo-400 font-bold">' + (r.new_signals || 0) + '</td>'
+              + '<td class="px-4 sm:px-6 py-4 text-center text-gray-500 hidden sm:table-cell">' + (run.duration_s || 0) + 's</td>'
+              + '<td class="px-4 sm:px-6 py-4 text-right"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border ' + bc + '">' + Math.round(r.health_score*100) + '%</span></td>'
+              + '</tr>';
+          }
+          tb.innerHTML = html;
+        })
+        .catch(function(err) {
+          console.error("Health error:", err);
+          tb.innerHTML = '<tr><td colspan="8" class="text-center py-12 text-rose-500 font-mono">Error: ' + esc(err.message) + '</td></tr>';
+        });
     }
 
-    // ══════════════════════════════════════════════════════════════════════
-    // INITIALIZE
-    // ══════════════════════════════════════════════════════════════════════
-    window.addEventListener("DOMContentLoaded", () => {
+    /* ═══════════════════════════════════════════════
+       SOURCES REGISTRY
+       ═══════════════════════════════════════════════ */
+    function fetchSourcesData() {
+      var grid = document.getElementById("sources-grid");
+      grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-500 font-mono text-xs">Gathering registry components...</div>';
+
+      fetch(SUPABASE_URL + "/rest/v1/sources?select=*&order=created_at.asc", { headers: supabaseHeaders })
+        .then(function(res) { if (!res.ok) throw new Error("Registry failed"); return res.json(); })
+        .then(function(sources) {
+          if (sources.length === 0) {
+            grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-500 font-mono text-xs">No data streams registered.</div>';
+            return;
+          }
+          var html = "";
+          for (var i = 0; i < sources.length; i++) {
+            var s = sources[i];
+            var st = s.type || "httpx";
+            var ab = s.active
+              ? '<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">Active</span>'
+              : '<span class="bg-gray-800 text-gray-500 border border-gray-700 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">Muted</span>';
+            var tc = "text-indigo-400 bg-indigo-500/5 border-indigo-500/10";
+            if (st === "playwright") tc = "text-cyan-400 bg-cyan-500/5 border-cyan-500/10";
+            else if (st === "rss") tc = "text-emerald-400 bg-emerald-500/5 border-emerald-500/10";
+            var host = "Unknown";
+            try { if (s.url) host = new URL(s.url).hostname; } catch(e) {}
+            var cat = s.category || "General";
+
+            html += '<div class="glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between fade-in" style="animation-delay:' + (i*50) + 'ms">'
+              + '<div><div class="flex items-center justify-between mb-4">'
+              + '<span class="px-2 py-0.5 rounded text-[9px] font-bold border uppercase ' + tc + '">' + esc(st) + '</span>' + ab + '</div>'
+              + '<h3 class="text-sm font-bold text-white mb-1 line-clamp-1">' + esc(s.name) + '</h3>'
+              + '<a href="' + esc(s.url) + '" target="_blank" class="text-[10px] text-gray-500 font-mono hover:text-indigo-400 transition block mb-4 truncate">' + esc(host) + '</a></div>'
+              + '<div class="pt-4 border-t border-gray-900 flex items-center justify-between text-[9px] font-mono text-gray-400 flex-wrap gap-1">'
+              + '<span>CAT: ' + esc(cat.toUpperCase()) + '</span>'
+              + '<span>Last Run: ' + (s.last_scraped ? new Date(s.last_scraped).toLocaleDateString() : "Never") + '</span></div></div>';
+          }
+          grid.innerHTML = html;
+        })
+        .catch(function(err) {
+          console.error("Sources error:", err);
+          grid.innerHTML = '<div class="col-span-full text-center py-20 text-rose-500 font-mono text-xs">Failed to load: ' + esc(err.message) + '</div>';
+        });
+    }
+
+    /* ═══════════════════════════════════════════════
+       INIT
+       ═══════════════════════════════════════════════ */
+    document.addEventListener("DOMContentLoaded", function() {
       fetchFeedData();
     });
   </script>
