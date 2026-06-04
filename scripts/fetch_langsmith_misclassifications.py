@@ -114,31 +114,31 @@ def _extract_run_fields(run) -> dict:
 # Supabase / Postgres feedback join
 # ---------------------------------------------------------------------------
 
-def fetch_feedback_map(supabase_db_url: Optional[str]) -> dict:
+def fetch_feedback_map() -> dict:
     """
     Returns a dict  {article_id: feedback_label}
     where feedback_label is 'good' or 'noise'.
     Falls back to empty dict if DB unavailable.
     """
-    if not supabase_db_url:
-        print("[INFO] SUPABASE_DB_URL not set — skipping feedback join.")
-        return {}
-    if psycopg2 is None:
-        print("[WARN] psycopg2 not installed — skipping feedback join.")
+    supabase_url = os.getenv("SUPABASE_URL")
+    supabase_key = os.getenv("SUPABASE_SERVICE_KEY")
+    if not supabase_url or not supabase_key:
+        print("[INFO] SUPABASE_URL or SUPABASE_SERVICE_KEY not set — skipping feedback join.")
         return {}
 
+    from supabase import create_client
     feedback_map: dict = {}
     try:
-        conn = psycopg2.connect(supabase_db_url)
-        cur  = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cur.execute(
-            "SELECT article_id, feedback FROM user_feedback WHERE feedback IN ('good', 'noise')"
+        supabase = create_client(supabase_url, supabase_key)
+        # Fetch user feedback rating column (which holds good/noise)
+        res = (
+            supabase.table("user_feedback")
+            .select("article_id, rating")
+            .in_("rating", ["good", "noise"])
+            .execute()
         )
-        rows = cur.fetchall()
-        for row in rows:
-            feedback_map[str(row["article_id"])] = row["feedback"]
-        cur.close()
-        conn.close()
+        for row in (res.data or []):
+            feedback_map[str(row["article_id"])] = row["rating"]
         print(f"[INFO] Loaded {len(feedback_map)} feedback entries from Supabase.")
     except Exception as exc:
         print(f"[WARN] Could not connect to Supabase: {exc}")
@@ -308,8 +308,7 @@ def main() -> None:
         )
         sys.exit(1)
 
-    supabase_db_url = os.getenv("SUPABASE_DB_URL")
-    feedback_map    = fetch_feedback_map(supabase_db_url)
+    feedback_map    = fetch_feedback_map()
 
     runs     = fetch_runs(client, args.project, args.days, args.limit)
     patterns = build_pattern_report(runs, feedback_map)

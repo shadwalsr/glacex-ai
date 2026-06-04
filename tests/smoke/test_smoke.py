@@ -1,6 +1,7 @@
 import os
 import psycopg2
 import httpx
+import pytest
 from playwright.sync_api import sync_playwright
 import google.generativeai as genai
 from groq import Groq
@@ -14,6 +15,9 @@ DB_URL = os.getenv("SUPABASE_DB_URL")
 if DB_URL:
     DB_URL = DB_URL.replace(" ", "%20")
 
+IS_CI = os.getenv("CI") == "true"
+
+@pytest.mark.skipif(IS_CI, reason="Direct database connections are IPv6-only and not supported in IPv4-only GitHub Actions runners")
 def test_db_connection():
     assert DB_URL is not None, "SUPABASE_DB_URL is not set"
     conn = psycopg2.connect(DB_URL)
@@ -24,6 +28,7 @@ def test_db_connection():
     cur.close()
     conn.close()
 
+@pytest.mark.skipif(IS_CI, reason="Direct database connections are IPv6-only and not supported in IPv4-only GitHub Actions runners")
 def test_pgvector_insert():
     assert DB_URL is not None
     conn = psycopg2.connect(DB_URL)

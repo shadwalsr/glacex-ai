@@ -112,51 +112,72 @@ class PromptResult:
 # Supabase: fetch eval set
 # ---------------------------------------------------------------------------
 
-def fetch_eval_set(supabase_db_url: str, limit: int) -> list[EvalArticle]:
+def fetch_eval_set(limit: int) -> list[EvalArticle]:
     """
     Fetch articles that have BOTH a classification AND a user_feedback entry.
     These form the 'human-verified' evaluation set.
     """
-    if psycopg2 is None:
-        print("[ERROR] psycopg2 not installed. Install with: pip install psycopg2-binary")
+    supabase_url = os.getenv("SUPABASE_URL")
+    supabase_key = os.getenv("SUPABASE_SERVICE_KEY")
+    if not supabase_url or not supabase_key:
+        print("[ERROR] SUPABASE_URL or SUPABASE_SERVICE_KEY environment variable is not set.")
         sys.exit(1)
 
-    sql = """
-        SELECT
-            a.id          AS article_id,
-            a.title,
-            a.text,
-            uf.feedback,
-            uf.correct_category
-        FROM articles a
-        JOIN classifications c  ON c.article_id = a.id
-        JOIN user_feedback   uf ON uf.article_id = a.id
-        WHERE uf.feedback IN ('good', 'noise')
-          AND c.importance IS NOT NULL
-        ORDER BY uf.created_at DESC
-        LIMIT %(limit)s
-    """
+    from supabase import create_client
     try:
-        conn = psycopg2.connect(supabase_db_url)
-        cur  = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cur.execute(sql, {"limit": limit})
-        rows = cur.fetchall()
-        cur.close()
-        conn.close()
+        supabase = create_client(supabase_url, supabase_key)
+        
+        # 1. Fetch user feedback
+        res_fb = (
+            supabase.table("user_feedback")
+            .select("article_id, rating")
+            .in_("rating", ["good", "noise"])
+            .order("rated_at", desc=True)
+            .limit(limit)
+            .execute()
+        )
+        feedbacks = res_fb.data or []
+        if not feedbacks:
+            return []
+
+        article_ids = [f["article_id"] for f in feedbacks]
+
+        # 2. Fetch corresponding articles
+        res_art = (
+            supabase.table("articles")
+            .select("id, title, clean_text")
+            .in_("id", article_ids)
+            .execute()
+        )
+        articles_map = {a["id"]: a for a in (res_art.data or [])}
+
+        # 3. Fetch corresponding classifications
+        res_cl = (
+            supabase.table("classifications")
+            .select("article_id, importance")
+            .in_("article_id", article_ids)
+            .not_.is_("importance", "null")
+            .execute()
+        )
+        class_map = {c["article_id"]: c for c in (res_cl.data or [])}
+
     except Exception as exc:
         print(f"[ERROR] Failed to fetch eval set from Supabase: {exc}")
         sys.exit(1)
 
     articles = []
-    for row in rows:
-        text = row.get("text") or ""
-        articles.append(EvalArticle(
-            article_id      = str(row["article_id"]),
-            title           = row.get("title") or "",
-            text_snippet    = text[:TEXT_SNIPPET_CHARS],
-            feedback        = row["feedback"],
-            correct_category= row.get("correct_category"),
-        ))
+    for f in feedbacks:
+        art_id = f["article_id"]
+        if art_id in articles_map and art_id in class_map:
+            art = articles_map[art_id]
+            text = art.get("clean_text") or ""
+            articles.append(EvalArticle(
+                article_id      = art_id,
+                title           = art.get("title") or "",
+                text_snippet    = text[:TEXT_SNIPPET_CHARS],
+                feedback        = f["rating"],
+                correct_category= None,
+            ))
 
     print(f"[INFO] Eval set size: {len(articles)} articles.")
     return articles
@@ -349,12 +370,7 @@ def main() -> None:
             sys.exit(1)
 
     # Fetch eval set
-    supabase_db_url = os.getenv("SUPABASE_DB_URL") or os.getenv("DATABASE_URL")
-    if not supabase_db_url:
-        print("[ERROR] SUPABASE_DB_URL environment variable is not set.")
-        sys.exit(1)
-
-    eval_set = fetch_eval_set(supabase_db_url, args.limit)
+    eval_set = fetch_eval_set(args.limit)
 
     if len(eval_set) < 5:
         print(
