@@ -16,6 +16,7 @@ CREATE INDEX IF NOT EXISTS idx_user_feedback_rating   ON public.user_feedback (r
 
 ALTER TABLE public.user_feedback ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow service_role full access to user_feedback" ON public.user_feedback;
 CREATE POLICY "Allow service_role full access to user_feedback"
     ON public.user_feedback
     FOR ALL

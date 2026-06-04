@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS public.run_checkpoints (
 
 ALTER TABLE public.run_checkpoints ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow service_role full access to run_checkpoints" ON public.run_checkpoints;
 CREATE POLICY "Allow service_role full access to run_checkpoints"
     ON public.run_checkpoints
     FOR ALL
