@@ -527,9 +527,9 @@
 
       activeDrawerArticleId = articleId;
 
-      var cls = (article.classifications && article.classifications[0]) || {};
-      var ins = (article.insights && article.insights[0]) || {};
-      var fb  = (article.user_feedback && article.user_feedback[0]) || {};
+      var cls = Array.isArray(article.classifications) ? (article.classifications[0] || {}) : (article.classifications || {});
+      var ins = Array.isArray(article.insights) ? (article.insights[0] || {}) : (article.insights || {});
+      var fb  = Array.isArray(article.user_feedback) ? (article.user_feedback[0] || {}) : (article.user_feedback || {});
 
       // Title & meta
       document.getElementById("drawer-title").textContent = article.title || "No Title";
@@ -710,7 +710,7 @@
       var filtered = [];
       for (var i = 0; i < articleStore.length; i++) {
         var a = articleStore[i];
-        var cls = (a.classifications && a.classifications[0]) || {};
+        var cls = Array.isArray(a.classifications) ? (a.classifications[0] || {}) : (a.classifications || {});
         var cat = (cls.category || "").toLowerCase();
 
         if (currentCategoryFilter !== "all" && cat !== currentCategoryFilter) continue;
@@ -718,8 +718,9 @@
         if (query) {
           var t = (a.title || "").toLowerCase();
           var ct = (a.clean_text || "").toLowerCase();
-          var hl = ((a.insights && a.insights[0] && a.insights[0].headline) || "").toLowerCase();
-          var tg = ((a.insights && a.insights[0] && a.insights[0].tags) || []).join(" ").toLowerCase();
+          var insObj = Array.isArray(a.insights) ? (a.insights[0] || {}) : (a.insights || {});
+          var hl = (insObj.headline || "").toLowerCase();
+          var tg = (insObj.tags || []).join(" ").toLowerCase();
           if (t.indexOf(query) === -1 && ct.indexOf(query) === -1 && hl.indexOf(query) === -1 && tg.indexOf(query) === -1) continue;
         }
         filtered.push(a);
@@ -734,9 +735,9 @@
       var html = "";
       for (var i = 0; i < filtered.length; i++) {
         var a = filtered[i];
-        var cls = (a.classifications && a.classifications[0]) || {};
-        var ins = (a.insights && a.insights[0]) || {};
-        var fb  = (a.user_feedback && a.user_feedback[0]) || {};
+        var cls = Array.isArray(a.classifications) ? (a.classifications[0] || {}) : (a.classifications || {});
+        var ins = Array.isArray(a.insights) ? (a.insights[0] || {}) : (a.insights || {});
+        var fb  = Array.isArray(a.user_feedback) ? (a.user_feedback[0] || {}) : (a.user_feedback || {});
 
         var imp = cls.importance != null ? cls.importance : 0;
         var cat = cls.category || "General";
@@ -840,8 +841,8 @@
           var html = '<p class="font-mono text-xs text-gray-500 mb-4">// Query returned ' + matches.length + ' matching rows:</p>';
           for (var i = 0; i < matches.length; i++) {
             var m = matches[i];
-            var c = (m.classifications && m.classifications[0]) || {};
-            var ins = (m.insights && m.insights[0]) || {};
+            var c = Array.isArray(m.classifications) ? (m.classifications[0] || {}) : (m.classifications || {});
+            var ins = Array.isArray(m.insights) ? (m.insights[0] || {}) : (m.insights || {});
             var sub = c.subcategory ? " &gt; " + esc(c.subcategory) : "";
             var link = m.url ? '<a href="' + esc(m.url) + '" target="_blank" class="text-indigo-400 hover:underline">Link</a>' : "";
 
