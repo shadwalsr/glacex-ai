@@ -60,6 +60,7 @@ jobs:
       if: steps.venv-cache.outputs.cache-hit != 'true'
       run: |
         uv sync
+        uv pip install pip
         uv run python -m spacy download en_core_web_sm
 
     - name: Install Playwright OS dependencies
