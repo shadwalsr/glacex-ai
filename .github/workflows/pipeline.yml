@@ -54,7 +54,7 @@ jobs:
     - name: Set up Python 3.11
       uses: actions/setup-python@v5
       with:
-        python-version-file: "pyproject.toml"
+        python-version: "3.11"
 
     - name: Install OS dependencies for lxml
       run: sudo apt-get update && sudo apt-get install -y libxml2-dev libxslt-dev
