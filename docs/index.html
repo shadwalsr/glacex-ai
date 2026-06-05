@@ -688,7 +688,7 @@
       var fc = document.getElementById("feed-container");
       fc.innerHTML = '<div class="col-span-full text-center py-20 text-gray-500"><div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500 mb-4"></div><p class="text-sm font-semibold">Retrieving intelligence corpus...</p></div>';
 
-      fetch(SUPABASE_URL + "/rest/v1/articles?select=*,classifications(*),insights(*),user_feedback(rating)&order=scraped_at.desc&limit=100", { headers: supabaseHeaders })
+      fetch(SUPABASE_URL + "/rest/v1/articles?select=*,classifications!classifications_article_id_fkey(*),insights!insights_article_id_fkey(*),user_feedback!user_feedback_article_id_fkey(rating)&order=scraped_at.desc&limit=100", { headers: supabaseHeaders })
         .then(function(res) {
           if (!res.ok) throw new Error("HTTP " + res.status);
           return res.json();
@@ -831,7 +831,7 @@
 
       rc.innerHTML = '<div class="text-center py-12 text-indigo-400 font-mono text-xs"><div class="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-indigo-500 mb-2"></div><div>executing: SELECT * FROM articles WHERE title ILIKE \'%' + esc(query) + '%\'...</div></div>';
 
-      fetch(SUPABASE_URL + "/rest/v1/articles?select=*,classifications(*),insights(*),user_feedback(rating)&or=(title.ilike.*" + encodeURIComponent(query) + "*,clean_text.ilike.*" + encodeURIComponent(query) + "*)&limit=10", { headers: supabaseHeaders })
+      fetch(SUPABASE_URL + "/rest/v1/articles?select=*,classifications!classifications_article_id_fkey(*),insights!insights_article_id_fkey(*),user_feedback!user_feedback_article_id_fkey(rating)&or=(title.ilike.*" + encodeURIComponent(query) + "*,clean_text.ilike.*" + encodeURIComponent(query) + "*)&limit=10", { headers: supabaseHeaders })
         .then(function(res) { if (!res.ok) throw new Error("Search failed"); return res.json(); })
         .then(function(matches) {
           if (matches.length === 0) {
@@ -870,7 +870,7 @@
       var tb = document.getElementById("runs-tbody");
       tb.innerHTML = '<tr><td colspan="8" class="text-center py-12 text-gray-500 font-mono">Loading operations matrix...</td></tr>';
 
-      fetch(SUPABASE_URL + "/rest/v1/pipeline_health?select=*,pipeline_runs(*)&order=created_at.desc&limit=20", { headers: supabaseHeaders })
+      fetch(SUPABASE_URL + "/rest/v1/pipeline_health?select=*,pipeline_runs!pipeline_health_run_id_fkey(*)&order=created_at.desc&limit=20", { headers: supabaseHeaders })
         .then(function(res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
         .then(function(data) {
           if (!data || data.length === 0) {
