@@ -553,9 +553,12 @@ def run_llm_analysis():
     # Run Gemini extraction asynchronously
     successful_gemini_extractions = 0
     if GEMINI_API_KEY:
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
-            # If loop is already running (e.g. inside tests/async context), await it
+        try:
+            running_loop = asyncio.get_running_loop()
+        except RuntimeError:
+            running_loop = None
+
+        if running_loop:
             raise RuntimeError("Event loop already running, cannot execute run_llm_analysis sync.")
         else:
             successful_gemini_extractions = asyncio.run(run_gemini_extraction_async())
