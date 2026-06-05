@@ -14,6 +14,12 @@ CREATE TABLE IF NOT EXISTS pipeline_health (
   updated_at           TIMESTAMPTZ DEFAULT now()
 );
 
+-- Ensure foreign key constraint exists even if table existed before
+ALTER TABLE public.pipeline_health
+  DROP CONSTRAINT IF EXISTS fk_pipeline_health_run;
+ALTER TABLE public.pipeline_health
+  ADD CONSTRAINT fk_pipeline_health_run FOREIGN KEY (run_id) REFERENCES public.pipeline_runs(id) ON DELETE CASCADE;
+
 DROP TRIGGER IF EXISTS update_pipeline_health_updated_at ON pipeline_health;
 CREATE TRIGGER update_pipeline_health_updated_at
 BEFORE UPDATE ON pipeline_health

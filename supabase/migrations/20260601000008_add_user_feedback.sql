@@ -11,6 +11,15 @@ CREATE TABLE IF NOT EXISTS public.user_feedback (
     CONSTRAINT user_feedback_article_id_unique UNIQUE (article_id)
 );
 
+-- Ensure unique constraint and foreign key constraint exist even if table existed before
+ALTER TABLE public.user_feedback
+  DROP CONSTRAINT IF EXISTS fk_user_feedback_article,
+  DROP CONSTRAINT IF EXISTS user_feedback_article_id_unique;
+
+ALTER TABLE public.user_feedback
+  ADD CONSTRAINT fk_user_feedback_article FOREIGN KEY (article_id) REFERENCES public.articles(id) ON DELETE CASCADE,
+  ADD CONSTRAINT user_feedback_article_id_unique UNIQUE (article_id);
+
 CREATE INDEX IF NOT EXISTS idx_user_feedback_rated_at ON public.user_feedback (rated_at);
 CREATE INDEX IF NOT EXISTS idx_user_feedback_rating   ON public.user_feedback (rating);
 

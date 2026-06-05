@@ -5,7 +5,7 @@
 CREATE EXTENSION IF NOT EXISTS vector;
 
 -- 2. Drop existing tables if they exist to start fresh
-DROP TABLE IF EXISTS failed_extractions, token_usage, pipeline_runs, article_entities, entities, insights, classifications, embeddings, raw_ingestion_log, articles, sources CASCADE;
+DROP TABLE IF EXISTS failed_extractions, token_usage, pipeline_runs, article_entities, entities, insights, classifications, embeddings, raw_ingestion_log, articles, sources, pipeline_health, user_feedback CASCADE;
 
 -- 3. Trigger function to auto-update updated_at column
 CREATE OR REPLACE FUNCTION update_updated_at_column()
