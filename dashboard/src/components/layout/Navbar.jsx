@@ -17,6 +17,7 @@ export default function Navbar() {
         <div id="main-nav" className="hidden md:flex items-center gap-stack-lg">
           <NavLink to="/" className={linkClass} end>Home</NavLink>
           <NavLink to="/feed" className={linkClass}>Feed</NavLink>
+          <NavLink to="/saved" className={linkClass}>Saved</NavLink>
           <NavLink to="/health" className={linkClass}>Architecture</NavLink>
           <NavLink to="/terminal" className={linkClass}>Research</NavLink>
           <NavLink to="/sources" className={linkClass}>Sources</NavLink>

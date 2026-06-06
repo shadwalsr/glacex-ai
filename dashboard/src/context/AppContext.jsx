@@ -58,9 +58,6 @@ export function AppProvider({ children }) {
       setArticlesError(err.message);
     } finally {
       setArticlesLoading(false);
-    }
-  }, []);
-
   return (
     <AppContext.Provider
       value={{
