@@ -111,7 +111,18 @@ export default function DetailDrawer() {
 
           <DrawerInsights insights={ins} />
 
-          <div className="border-t border-border-subtle pt-4">
+          {article.clean_text && (
+            <div className="border-t border-border-subtle pt-4 mt-6">
+              <h4 className="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider mb-2">Extracted Content</h4>
+              <div className="bg-[#05060b] border border-border-subtle rounded p-4 max-h-80 overflow-y-auto">
+                <p className="text-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap">
+                  {article.clean_text}
+                </p>
+              </div>
+            </div>
+          )}
+
+          <div className="border-t border-border-subtle pt-4 mt-6">
             <h4 className="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider mb-2">Extracted Entities & Concepts</h4>
             <div className="flex flex-wrap gap-1.5">
               <EntityTags tags={cls.entities || []} />
