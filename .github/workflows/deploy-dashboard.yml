@@ -5,6 +5,9 @@ on:
     paths: ['dashboard/**']
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,6 +26,9 @@ jobs:
 
       - name: Build dashboard
         run: npm run build
+
+      - name: Create 404 fallback
+        run: cp ../docs/index.html ../docs/404.html
 
       - name: Commit built dashboard to docs/
         uses: stefanzweifel/git-auto-commit-action@v5
