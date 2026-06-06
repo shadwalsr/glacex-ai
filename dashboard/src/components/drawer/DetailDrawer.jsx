@@ -102,7 +102,7 @@ export default function DetailDrawer() {
             </p>
           </div>
 
-          <DrawerMetrics importance={cls.importance_score || 0} depth={cls.technical_depth || 'Standard'} />
+          <DrawerMetrics importance={cls.importance || 0} depth={cls.technical_depth || 'Standard'} />
 
           <div className="bg-surface-elevated border border-border-subtle rounded p-4">
             <h3 className="text-xs font-bold uppercase tracking-wider text-primary mb-1.5">Classification Assessment</h3>

@@ -40,7 +40,7 @@ export default function LatestPreview() {
         <div className="space-y-4">
           {topArticles.map((a, i) => {
             const { cls, ins } = getArticleData(a);
-            const imp = cls.importance_score || 0;
+            const imp = cls.importance || 0;
             let impLabel = 'Low Impact';
             let impClass = 'bg-signal-low/10 border-signal-low/20 text-signal-low';
             if (imp >= 75) {

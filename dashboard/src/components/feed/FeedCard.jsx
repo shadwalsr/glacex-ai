@@ -7,7 +7,7 @@ function getArticleData(article) {
 
 export default function FeedCard({ article, onClick, delay = 0 }) {
   const { cls, ins, fb } = getArticleData(article);
-  const imp = cls.importance_score || 0;
+  const imp = cls.importance || 0;
   
   let impClass = 'text-signal-low border-signal-low/20';
   if (imp >= 75) {

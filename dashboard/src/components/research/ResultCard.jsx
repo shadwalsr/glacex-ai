@@ -6,7 +6,7 @@ function getArticleData(article) {
 
 export default function ResultCard({ article, index, onOpenDrawer }) {
   const { cls, ins } = getArticleData(article);
-  const score = cls.importance_score || 0;
+  const score = cls.importance || 0;
   
   let barColorClass = 'bg-signal-low';
   let signalColorClass = 'text-signal-low border-signal-low/20';

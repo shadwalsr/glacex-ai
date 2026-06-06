@@ -14,7 +14,7 @@ export default function SpotlightPanel({ article }) {
   }
 
   const { cls, ins } = getArticleData(article);
-  const imp = cls.importance_score || 0;
+  const imp = cls.importance || 0;
   
   let impClass = 'text-signal-low';
   if (imp >= 75) {
