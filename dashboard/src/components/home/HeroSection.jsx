@@ -7,10 +7,7 @@ export default function HeroSection({ children }) {
     <section className="relative min-h-[700px] flex flex-col items-center justify-center px-margin-mobile md:px-margin-desktop bg-grid-pattern hero-glow">
       <div className="hero-glow-orb"></div>
       <div className="max-w-4xl text-center space-y-stack-lg z-10 pt-12">
-        <div className="hero-reveal hero-delay-1 inline-flex items-center gap-stack-sm px-stack-md py-unit bg-surface-elevated border border-border-subtle rounded-full mb-stack-md">
-          <span className="w-2 h-2 rounded-full bg-signal-high"></span>
-          <span className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">System Online v2.4</span>
-        </div>
+
         <h1 className="hero-reveal hero-delay-2 font-display-lg text-display-lg text-primary text-4xl md:text-6xl lg:text-7xl leading-tight">
           <span className="hero-shimmer block">
             Autonomous Intelligence.<br/>
