@@ -22,7 +22,7 @@ export default function LatestPreview() {
   }
 
   return (
-    <div className="hero-reveal hero-delay-5 hero-float mt-20 w-full max-w-3xl relative z-10 px-4">
+    <div className="hero-reveal hero-delay-5 hero-float mt-20 w-full max-w-3xl relative z-10 px-4 hover-lift">
       <div className="absolute inset-0 bg-primary/5 blur-3xl rounded-full"></div>
       <div className="relative bg-surface-elevated/80 backdrop-blur-md border border-border-medium rounded-xl p-stack-lg shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/20 to-transparent"></div>

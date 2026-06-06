@@ -17,7 +17,7 @@ export default function SourceCard({ source, index }) {
 
   return (
     <div 
-      className="bg-surface-elevated border border-border-subtle rounded-lg p-5 hover:border-border-medium transition-colors group inner-glow flex flex-col justify-between fade-in" 
+      className="bg-surface-elevated border border-border-subtle rounded-lg p-5 hover:border-border-medium transition-colors group inner-glow flex flex-col justify-between fade-in hover-lift" 
       style={{ animationDelay: `${index * 40}ms` }}
     >
       <div>

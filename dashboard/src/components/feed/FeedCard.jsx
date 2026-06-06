@@ -29,7 +29,7 @@ export default function FeedCard({ article, onClick, delay = 0 }) {
   return (
     <div 
       onClick={onClick}
-      className="interactive-row border-b border-border-subtle py-stack-md px-2 flex flex-col md:flex-row gap-4 justify-between items-start cursor-pointer group fade-in"
+      className="interactive-row border-b border-border-subtle py-stack-md px-2 flex flex-col md:flex-row gap-4 justify-between items-start cursor-pointer group fade-in hover-lift"
       style={{ animationDelay: `${delay}ms` }}
     >
       <div className="flex-grow">

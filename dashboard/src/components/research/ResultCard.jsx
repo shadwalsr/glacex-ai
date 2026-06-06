@@ -21,7 +21,7 @@ export default function ResultCard({ article, index, onOpenDrawer }) {
   return (
     <div 
       onClick={onOpenDrawer} 
-      className="bg-surface-elevated border border-border-subtle rounded-lg p-stack-md hover:border-border-medium transition-colors group cursor-pointer inner-glow relative overflow-hidden fade-in" 
+      className="bg-surface-elevated border border-border-subtle rounded-lg p-stack-md hover:border-border-medium transition-colors group cursor-pointer inner-glow relative overflow-hidden fade-in hover-lift" 
       style={{ animationDelay: `${index * 45}ms` }}
     >
       <div className={`absolute left-0 top-0 bottom-0 w-1 ${barColorClass} opacity-50 group-hover:opacity-100 transition-opacity`}></div>

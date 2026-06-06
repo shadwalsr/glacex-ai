@@ -1,6 +1,6 @@
 export default function PipelineStage({ number, title, description, status, tools }) {
   return (
-    <section className="bg-surface-elevated border border-border-subtle rounded p-stack-md relative glow-edge group hover:border-border-medium transition-colors">
+    <section className="bg-surface-elevated border border-border-subtle rounded p-stack-md relative glow-edge group hover:border-border-medium transition-colors hover-glow">
       <div className="flex items-center justify-between mb-stack-md">
         <h2 className="font-headline-md text-headline-md text-primary flex items-center gap-stack-sm">
           <span className="font-label-md text-label-md text-on-surface-variant">{number}.</span> {title}
