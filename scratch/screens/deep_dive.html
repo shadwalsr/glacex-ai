@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GlaceX.ai Architecture</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-high": "#2a2a2a",
+                      "on-secondary-fixed-variant": "#00468d",
+                      "on-surface": "#e2e2e2",
+                      "error": "#ffb4ab",
+                      "error-container": "#93000a",
+                      "tertiary-container": "#f6d9ff",
+                      "on-background": "#e2e2e2",
+                      "signal-low": "#FF453A",
+                      "surface-container-highest": "#353535",
+                      "surface-container": "#1f1f1f",
+                      "on-error": "#690005",
+                      "surface-tint": "#c6c6c7",
+                      "background": "#131313",
+                      "signal-medium": "#FFD60A",
+                      "on-primary-fixed-variant": "#454747",
+                      "inverse-surface": "#e2e2e2",
+                      "on-primary-container": "#636565",
+                      "tertiary": "#ffffff",
+                      "tertiary-fixed": "#f6d9ff",
+                      "surface-elevated": "#0C0C0C",
+                      "on-primary": "#2f3131",
+                      "glass-bg": "rgba(10, 10, 10, 0.7)",
+                      "on-tertiary-fixed-variant": "#7200a3",
+                      "on-primary-fixed": "#1a1c1c",
+                      "surface-container-low": "#1b1b1b",
+                      "on-secondary-container": "#002957",
+                      "secondary-fixed": "#d6e3ff",
+                      "surface-bright": "#393939",
+                      "surface-dim": "#131313",
+                      "on-error-container": "#ffdad6",
+                      "on-secondary-fixed": "#001b3e",
+                      "secondary-fixed-dim": "#aac7ff",
+                      "signal-high": "#32D74B",
+                      "inverse-primary": "#5d5f5f",
+                      "primary": "#ffffff",
+                      "primary-container": "#e2e2e2",
+                      "on-tertiary-container": "#972fca",
+                      "surface-variant": "#353535",
+                      "inverse-on-surface": "#303030",
+                      "on-surface-variant": "#c4c7c8",
+                      "border-subtle": "rgba(255, 255, 255, 0.08)",
+                      "primary-fixed-dim": "#c6c6c7",
+                      "secondary": "#aac7ff",
+                      "on-secondary": "#003064",
+                      "outline-variant": "#444748",
+                      "surface-base": "#000000",
+                      "primary-fixed": "#e2e2e2",
+                      "outline": "#8e9192",
+                      "on-tertiary": "#510074",
+                      "border-medium": "rgba(255, 255, 255, 0.15)",
+                      "surface-container-lowest": "#0e0e0e",
+                      "tertiary-fixed-dim": "#e9b3ff",
+                      "surface": "#131313",
+                      "surface-overlay": "#161616",
+                      "on-tertiary-fixed": "#310048",
+                      "secondary-container": "#3e90ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "container-max": "1440px",
+                      "unit": "4px",
+                      "stack-sm": "8px",
+                      "margin-mobile": "16px",
+                      "stack-md": "16px",
+                      "stack-lg": "32px",
+                      "margin-desktop": "40px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "label-md": [
+                              "JetBrains Mono"
+                      ],
+                      "label-sm": [
+                              "JetBrains Mono"
+                      ],
+                      "stats-number": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.04em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "stats-number": [
+                              "20px",
+                              {
+                                      "lineHeight": "24px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        body {
+            background-color: theme('colors.surface-base');
+            color: theme('colors.on-surface');
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .code-block {
+            background-color: theme('colors.surface-elevated');
+            border: 1px solid theme('colors.border-subtle');
+            border-radius: theme('borderRadius.DEFAULT');
+            padding: theme('spacing.stack-md');
+            font-family: theme('fontFamily.label-sm');
+            color: theme('colors.on-surface-variant');
+            overflow-x: auto;
+        }
+
+        .terminal-log {
+            font-family: theme('fontFamily.label-sm');
+            color: theme('colors.signal-high');
+        }
+
+        .glow-edge {
+            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        .connector-line {
+            width: 2px;
+            background: linear-gradient(to bottom, theme('colors.border-subtle'), transparent);
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body class="bg-surface-base text-on-surface min-h-screen flex flex-col">
+<!-- TopNavBar Shell -->
+<nav class="fixed top-0 w-full z-50 bg-glass-bg backdrop-blur-md border-b border-border-subtle">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 w-full max-w-container-max mx-auto">
+<div class="font-headline-md text-headline-md font-bold text-primary tracking-tight">
+                GlaceX.ai
+            </div>
+<div class="hidden md:flex gap-gutter items-center">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70 font-body-md text-body-md" href="#">Home</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70 font-body-md text-body-md" href="#">Feed</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70 font-body-md text-body-md" href="#">Architecture</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70 font-body-md text-body-md" href="#">Research</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70 font-body-md text-body-md" href="#">Enterprise</a>
+</div>
+<div class="flex items-center gap-stack-md">
+<button class="hidden md:block bg-primary text-surface-base font-label-md text-label-md px-stack-md py-unit rounded-DEFAULT cursor-pointer active:opacity-70">
+                    Sign In
+                </button>
+<button class="md:hidden text-primary">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-32 pb-stack-lg px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full">
+<!-- Header -->
+<header class="mb-stack-lg border-b border-border-subtle pb-stack-md">
+<h1 class="font-display-lg text-display-lg text-primary mb-stack-sm">System Architecture</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-3xl">
+                A deep dive into the technical intelligence pipeline. Designed for high-throughput, low-latency ingestion and semantic processing.
+            </p>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Main Content Area -->
+<div class="lg:col-span-8 flex flex-col gap-stack-lg relative">
+<!-- 01. Ingestion Layer -->
+<section class="bg-surface-elevated border border-border-subtle rounded-DEFAULT p-stack-md relative glow-edge group hover:border-border-medium transition-colors">
+<div class="flex items-center justify-between mb-stack-md">
+<h2 class="font-headline-md text-headline-md text-primary flex items-center gap-stack-sm">
+<span class="font-label-md text-label-md text-on-surface-variant">01.</span> Ingestion Layer
+                        </h2>
+<div class="flex items-center gap-unit px-stack-sm py-unit bg-surface-container rounded-full border border-border-subtle">
+<div class="w-2 h-2 rounded-full bg-signal-high"></div>
+<span class="font-label-sm text-label-sm text-signal-high uppercase">Active</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-stack-md">
+                        The primary collection gateway utilizing concurrent asynchronous workers. Handles heterogeneous data sources including raw HTTP(S), RSS feeds, and dynamic JS-rendered DOMs.
+                    </p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-stack-sm mb-stack-md">
+<div class="bg-surface-container p-stack-sm border border-border-subtle rounded-DEFAULT text-center">
+<span class="font-label-md text-label-md text-primary block mb-unit">HTTPX</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Async Requests</span>
+</div>
+<div class="bg-surface-container p-stack-sm border border-border-subtle rounded-DEFAULT text-center">
+<span class="font-label-md text-label-md text-primary block mb-unit">Playwright</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Headless Browser</span>
+</div>
+<div class="bg-surface-container p-stack-sm border border-border-subtle rounded-DEFAULT text-center">
+<span class="font-label-md text-label-md text-primary block mb-unit">RSS/Atom</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Feed Parsers</span>
+</div>
+</div>
+<div class="code-block">
+<pre><code><span class="text-secondary">async def</span> <span class="text-primary">fetch_payload</span>(url: str, strategy: Strategy) -&gt; Dict:
+    <span class="text-secondary">if</span> strategy == Strategy.DYNAMIC:
+        <span class="text-on-surface-variant"># Dispatch to Playwright cluster</span>
+        <span class="text-secondary">return await</span> playwright_cluster.render(url)
+    <span class="text-secondary">else</span>:
+        <span class="text-on-surface-variant"># Fast path via httpx</span>
+        <span class="text-secondary">async with</span> httpx.AsyncClient() <span class="text-secondary">as</span> client:
+            <span class="text-secondary">return await</span> client.get(url)</code></pre>
+</div>
+</section>
+<div class="connector-line h-8"></div>
+<!-- 02. NLP & NER -->
+<section class="bg-surface-elevated border border-border-subtle rounded-DEFAULT p-stack-md relative glow-edge group hover:border-border-medium transition-colors">
+<div class="flex items-center justify-between mb-stack-md">
+<h2 class="font-headline-md text-headline-md text-primary flex items-center gap-stack-sm">
+<span class="font-label-md text-label-md text-on-surface-variant">02.</span> NLP &amp; NER
+                        </h2>
+<div class="flex items-center gap-unit px-stack-sm py-unit bg-surface-container rounded-full border border-border-subtle">
+<div class="w-2 h-2 rounded-full bg-signal-high"></div>
+<span class="font-label-sm text-label-sm text-signal-high uppercase">Active</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-stack-md">
+                        Initial structuring and entity extraction via fine-tuned spaCy pipelines. Focuses on identifying technical terminology, organizations, and specific technology stacks.
+                    </p>
+<div class="code-block">
+<pre><code><span class="text-on-surface-variant"># Load optimized transformer model</span>
+nlp = spacy.load(<span class="text-signal-medium">"en_core_web_trf"</span>)
+
+<span class="text-secondary">def</span> <span class="text-primary">extract_entities</span>(text: str) -&gt; List[Entity]:
+    doc = nlp(text)
+    <span class="text-secondary">return</span> [
+        Entity(label=ent.label_, text=ent.text)
+        <span class="text-secondary">for</span> ent <span class="text-secondary">in</span> doc.ents 
+        <span class="text-secondary">if</span> ent.label_ <span class="text-secondary">in</span> TARGET_ENTITIES
+    ]</code></pre>
+</div>
+</section>
+<div class="connector-line h-8"></div>
+<!-- 03. Deduplication -->
+<section class="bg-surface-elevated border border-border-subtle rounded-DEFAULT p-stack-md relative glow-edge group hover:border-border-medium transition-colors">
+<div class="flex items-center justify-between mb-stack-md">
+<h2 class="font-headline-md text-headline-md text-primary flex items-center gap-stack-sm">
+<span class="font-label-md text-label-md text-on-surface-variant">03.</span> Deduplication Vector Search
+                        </h2>
+<div class="flex items-center gap-unit px-stack-sm py-unit bg-surface-container rounded-full border border-border-subtle">
+<div class="w-2 h-2 rounded-full bg-signal-high"></div>
+<span class="font-label-sm text-label-sm text-signal-high uppercase">Active</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-stack-md">
+                        Semantic deduplication using pgvector. Computes embeddings for incoming texts and performs cosine similarity checks against recent historical data to prevent duplicate signal processing.
+                    </p>
+<div class="code-block">
+<pre><code><span class="text-on-surface-variant">-- pgvector similarity threshold check</span>
+<span class="text-secondary">SELECT</span> id, title, embedding <span class="text-secondary">&lt;=&gt;</span> :new_embedding <span class="text-secondary">AS</span> distance
+<span class="text-secondary">FROM</span> documents
+<span class="text-secondary">WHERE</span> embedding <span class="text-secondary">&lt;=&gt;</span> :new_embedding &lt; <span class="text-signal-medium">0.15</span>
+<span class="text-secondary">ORDER BY</span> distance <span class="text-secondary">ASC</span>
+<span class="text-secondary">LIMIT</span> <span class="text-signal-medium">1</span>;</code></pre>
+</div>
+</section>
+<div class="connector-line h-8"></div>
+<!-- 04. LLM Analysis Layer -->
+<section class="bg-surface-elevated border border-border-subtle rounded-DEFAULT p-stack-md relative glow-edge group hover:border-border-medium transition-colors">
+<div class="flex items-center justify-between mb-stack-md">
+<h2 class="font-headline-md text-headline-md text-primary flex items-center gap-stack-sm">
+<span class="font-label-md text-label-md text-on-surface-variant">04.</span> LLM Analysis Layer
+                        </h2>
+<div class="flex items-center gap-unit px-stack-sm py-unit bg-surface-container rounded-full border border-border-subtle">
+<div class="w-2 h-2 rounded-full bg-signal-high"></div>
+<span class="font-label-sm text-label-sm text-signal-high uppercase">Active</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-stack-md">
+                        Deep semantic analysis using a combination of fast inference endpoints (Groq) for initial triage and high-parameter models (Gemini) for complex reasoning and summarization.
+                    </p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-stack-sm mb-stack-md">
+<div class="bg-surface-container p-stack-sm border border-border-subtle rounded-DEFAULT">
+<span class="font-label-md text-label-md text-primary block mb-unit">Groq (Llama 3)</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant block mb-unit">Triage &amp; Categorization</span>
+<div class="h-1 w-full bg-surface-variant rounded-full mt-stack-sm">
+<div class="h-1 bg-signal-high rounded-full" style="width: 95%;"></div>
+</div>
+</div>
+<div class="bg-surface-container p-stack-sm border border-border-subtle rounded-DEFAULT">
+<span class="font-label-md text-label-md text-primary block mb-unit">Gemini 1.5 Pro</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant block mb-unit">Deep Analysis</span>
+<div class="h-1 w-full bg-surface-variant rounded-full mt-stack-sm">
+<div class="h-1 bg-signal-medium rounded-full" style="width: 70%;"></div>
+</div>
+</div>
+</div>
+<div class="code-block">
+<pre><code><span class="text-secondary">async def</span> <span class="text-primary">analyze_signal</span>(document: Document) -&gt; Insight:
+    <span class="text-on-surface-variant"># 1. Fast triage via Groq</span>
+    category = <span class="text-secondary">await</span> groq_client.categorize(document.text)
+    
+    <span class="text-secondary">if</span> category.relevance_score &gt; <span class="text-signal-medium">0.8</span>:
+        <span class="text-on-surface-variant"># 2. Deep analysis via Gemini</span>
+        <span class="text-secondary">return await</span> gemini_client.analyze(
+            text=document.text,
+            context=category.context
+        )</code></pre>
+</div>
+</section>
+</div>
+<!-- Sidebar / Terminal Log -->
+<div class="lg:col-span-4 flex flex-col">
+<div class="sticky top-24 bg-surface-elevated border border-border-subtle rounded-DEFAULT p-stack-md h-[600px] flex flex-col glow-edge">
+<div class="flex items-center justify-between border-b border-border-subtle pb-stack-sm mb-stack-sm">
+<h3 class="font-label-md text-label-md text-primary font-bold">Terminal</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant">tail -f ingestion.log</span>
+</div>
+<div class="flex-grow overflow-y-auto bg-surface-base p-stack-sm rounded-DEFAULT border border-border-subtle font-label-sm text-label-sm terminal-log whitespace-pre-wrap" id="terminal-output">
+[10:42:01] INFO Worker-3: Fetching RSS feed https://tech.blog/feed
+[10:42:02] INFO Worker-3: Parsed 15 new items
+[10:42:02] WARN NLP: Entity extraction confidence low for 'QuantumX'
+[10:42:03] INFO VectorDB: pgvector check complete. 1 duplicate found.
+[10:42:03] INFO LLM: Routing to Groq endpoint...
+[10:42:04] SUCCESS: Analyzed signal ID-8829. Relevance: 0.92
+[10:42:05] INFO Worker-1: Playwright rendering https://corp.ai/releases
+...waiting for new signals...
+                    </div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Shell -->
+<footer class="w-full py-stack-lg bg-surface-base border-t border-border-subtle mt-auto">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-mobile md:px-margin-desktop w-full max-w-container-max mx-auto gap-gutter">
+<div class="font-label-md text-label-md font-bold text-primary">
+                © 2024 GlaceX.ai. Technical Intelligence for the Obsidian Era.
+            </div>
+<div class="flex gap-stack-md flex-wrap justify-center">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer" href="#">Documentation</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer" href="#">System Status</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer" href="#">API Reference</a>
+</div>
+</div>
+</footer>
+<script>
+        // Simple script to simulate terminal output
+        const terminal = document.getElementById('terminal-output');
+        const logs = [
+            "[10:45:12] INFO Worker-2: Initializing HTTPX client pool...",
+            "[10:45:14] INFO NLP: Loaded en_core_web_trf model in 2.1s",
+            "[10:45:15] INFO VectorDB: Connected to pgvector instance.",
+            "[10:45:18] SUCCESS: Processed batch 409A. 24 entities extracted.",
+            "[10:45:22] INFO LLM: Gemini inference latency: 850ms",
+            "[10:45:25] WARN Worker-1: Rate limit approaching for source X.",
+            "[10:45:30] INFO Pipeline: 120 signals processed this minute."
+        ];
+        
+        let logIndex = 0;
+        setInterval(() => {
+            if(logIndex < logs.length) {
+                terminal.innerHTML += '\n' + logs[logIndex];
+                terminal.scrollTop = terminal.scrollHeight;
+                logIndex++;
+            } else {
+                logIndex = 0; // Loop for effect
+            }
+        }, 3000);
+    </script>
+</body></html>

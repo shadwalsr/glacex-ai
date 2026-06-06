@@ -1,0 +1,220 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base Styles ── */
+body {
+  background-color: #000000;
+  color: #e2e2e2;
+  overflow-x: hidden;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Custom Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+::-webkit-scrollbar-thumb {
+  background: #353535;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #444748;
+}
+
+/* ── Grid & Glow Patterns ── */
+.bg-grid-pattern {
+  background-size: 40px 40px;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+.hero-glow {
+  background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
+}
+
+.ambient-glow {
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+}
+
+.inner-glow-top {
+  box-shadow: inset 0 0.5px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+.inner-glow {
+  box-shadow: inset 0 0.5px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+/* ── Interactive Rows ── */
+.interactive-row {
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.interactive-row:hover {
+  background-color: #0C0C0C;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ── Pulse Live Indicator ── */
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 0.4; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+.pulse-glow { animation: pulse-ring 2s infinite ease-in-out; }
+
+/* ── Category Pills ── */
+.cat-pill { cursor: pointer; }
+.cat-pill.is-active {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border-color: #ffffff !important;
+}
+
+/* ── Close Button ── */
+.close-btn {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: #c4c7c8;
+  transition: all 0.15s ease;
+  background: transparent;
+  border: none;
+}
+.close-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+.close-btn:active {
+  transform: scale(0.9);
+}
+
+/* ── Staggered Fade-in ── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeInUp 0.35s ease-out both; }
+
+/* ── Hero Entrance Animations ── */
+@keyframes heroReveal {
+  from { opacity: 0; transform: translateY(24px); filter: blur(4px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+}
+.hero-reveal {
+  opacity: 0;
+  animation: heroReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.hero-delay-1 { animation-delay: 0.1s; }
+.hero-delay-2 { animation-delay: 0.3s; }
+.hero-delay-3 { animation-delay: 0.5s; }
+.hero-delay-4 { animation-delay: 0.7s; }
+.hero-delay-5 { animation-delay: 1.0s; }
+
+/* ── Text Shimmer ── */
+@keyframes textShimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.hero-shimmer {
+  background: linear-gradient(
+    90deg,
+    #ffffff 0%,
+    rgba(255,255,255,0.5) 40%,
+    #ffffff 50%,
+    rgba(255,255,255,0.5) 60%,
+    #ffffff 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmer 2.4s ease-in-out 0.6s 1 forwards;
+}
+.hero-shimmer .hero-subtitle {
+  -webkit-text-fill-color: #c4c7c8;
+}
+
+/* ── Gentle Float ── */
+@keyframes gentleFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+.hero-float {
+  animation: gentleFloat 6s ease-in-out infinite;
+}
+
+/* ── Glow Pulse Orb ── */
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.06; transform: scale(1); }
+  50%      { opacity: 0.12; transform: scale(1.05); }
+}
+.hero-glow-orb {
+  position: absolute;
+  width: 600px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255,255,255,0.15), transparent 70%);
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: glowPulse 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ── Code & Terminal ── */
+.code-block {
+  background-color: #0C0C0C;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.25rem;
+  padding: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #c4c7c8;
+  overflow-x: auto;
+}
+
+.terminal-log {
+  font-family: 'JetBrains Mono', monospace;
+  color: #32D74B;
+}
+
+/* ── Connector Lines ── */
+.connector-line {
+  width: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 0 auto;
+}
+
+/* ── UMAP Grid ── */
+.umap-grid {
+  background-size: 20px 20px;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+/* ── Drawer Transitions ── */
+.drawer-backdrop {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.drawer-backdrop.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.detail-drawer {
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+.detail-drawer.is-open {
+  transform: translateX(0) !important;
+}

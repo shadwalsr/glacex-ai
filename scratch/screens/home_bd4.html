@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GlaceX.ai | Autonomous Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#c4c7c8",
+                        "secondary-container": "#3e90ff",
+                        "surface": "#131313",
+                        "on-secondary-fixed-variant": "#00468d",
+                        "background": "#131313",
+                        "surface-container-high": "#2a2a2a",
+                        "on-secondary-container": "#002957",
+                        "secondary": "#aac7ff",
+                        "surface-elevated": "#0C0C0C",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary": "#510074",
+                        "border-medium": "rgba(255, 255, 255, 0.15)",
+                        "secondary-fixed": "#d6e3ff",
+                        "primary-fixed": "#e2e2e2",
+                        "on-primary-fixed": "#1a1c1c",
+                        "surface-bright": "#393939",
+                        "signal-high": "#32D74B",
+                        "on-tertiary-fixed-variant": "#7200a3",
+                        "tertiary-fixed": "#f6d9ff",
+                        "surface-container-lowest": "#0e0e0e",
+                        "surface-container-highest": "#353535",
+                        "on-secondary": "#003064",
+                        "on-tertiary-container": "#972fca",
+                        "surface-container-low": "#1b1b1b",
+                        "on-secondary-fixed": "#001b3e",
+                        "on-error": "#690005",
+                        "on-tertiary-fixed": "#310048",
+                        "surface-variant": "#353535",
+                        "on-surface": "#e2e2e2",
+                        "primary-container": "#e2e2e2",
+                        "tertiary-container": "#f6d9ff",
+                        "surface-tint": "#c6c6c7",
+                        "surface-dim": "#131313",
+                        "outline-variant": "#444748",
+                        "surface-overlay": "#161616",
+                        "border-subtle": "rgba(255, 255, 255, 0.08)",
+                        "inverse-on-surface": "#303030",
+                        "primary-fixed-dim": "#c6c6c7",
+                        "on-primary-container": "#636565",
+                        "on-primary": "#2f3131",
+                        "inverse-surface": "#e2e2e2",
+                        "secondary-fixed-dim": "#aac7ff",
+                        "primary": "#ffffff",
+                        "tertiary-fixed-dim": "#e9b3ff",
+                        "inverse-primary": "#5d5f5f",
+                        "on-background": "#e2e2e2",
+                        "surface-container": "#1f1f1f",
+                        "on-primary-fixed-variant": "#454747",
+                        "surface-base": "#000000",
+                        "signal-low": "#FF453A",
+                        "error-container": "#93000a",
+                        "outline": "#8e9192",
+                        "error": "#ffb4ab",
+                        "glass-bg": "rgba(10, 10, 10, 0.7)",
+                        "tertiary": "#ffffff",
+                        "signal-medium": "#FFD60A"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "8px",
+                        "stack-lg": "32px",
+                        "gutter": "24px",
+                        "container-max": "1440px",
+                        "margin-desktop": "40px",
+                        "stack-md": "16px",
+                        "margin-mobile": "16px",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "stats-number": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["JetBrains Mono"],
+                        "label-sm": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "stats-number": ["20px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.surface-base');
+            color: theme('colors.on-surface');
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .bg-grid-pattern {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+        .hero-glow {
+            background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-body-md relative overflow-x-hidden">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-glass-bg backdrop-blur-xl border-b border-border-subtle transition-all duration-300 ease-in-out">
+<div class="flex justify-between items-center h-16 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="flex items-center gap-gutter">
+<a class="font-headline-md text-headline-md font-bold tracking-tight text-primary" href="#">GlaceX.ai</a>
+<div class="hidden md:flex gap-gutter items-center ml-stack-lg">
+<a class="font-body-md text-body-md text-primary font-medium border-b-2 border-primary pb-1" href="#">Intelligence</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors hover:opacity-80" href="#">Architecture</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors hover:opacity-80" href="#">Research</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors hover:opacity-80" href="#">Enterprise</a>
+</div>
+</div>
+<div class="flex items-center gap-stack-md">
+<button class="hidden md:block font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors px-stack-md py-stack-sm border border-transparent hover:border-border-subtle rounded">Sign In</button>
+<button class="font-body-md text-body-md bg-primary text-surface-base px-stack-md py-stack-sm rounded font-medium hover:opacity-90 transition-opacity">Get Started</button>
+</div>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="flex-grow pt-24 pb-stack-lg">
+<!-- Hero Section -->
+<section class="relative min-h-[819px] flex flex-col items-center justify-center px-margin-mobile md:px-margin-desktop bg-grid-pattern hero-glow">
+<div class="max-w-4xl text-center space-y-stack-lg z-10">
+<div class="inline-flex items-center gap-stack-sm px-stack-md py-unit bg-surface-elevated border border-border-subtle rounded-full mb-stack-md">
+<span class="w-2 h-2 rounded-full bg-signal-high"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">System Online v2.4</span>
+</div>
+<h1 class="font-display-lg text-display-lg text-primary text-4xl md:text-6xl lg:text-7xl">
+                    Autonomous Intelligence.<br/>
+<span class="text-on-surface-variant">Curated for the Technical Mind.</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+                    The engine that crawls, parses, and delivers high-signal AI developments directly to you. Built for architects who demand clarity without the noise.
+                </p>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-stack-md pt-stack-md">
+<button class="w-full sm:w-auto font-body-md text-body-md bg-primary text-surface-base px-stack-lg py-stack-sm rounded hover:opacity-90 transition-opacity">Initialize Engine</button>
+<button class="w-full sm:w-auto font-body-md text-body-md bg-transparent border border-border-subtle text-primary px-stack-lg py-stack-sm rounded hover:bg-surface-elevated transition-colors">Read Documentation</button>
+</div>
+</div>
+<!-- Glassmorphism Preview Card -->
+<div class="mt-stack-lg md:mt-24 w-full max-w-3xl relative z-10">
+<div class="absolute inset-0 bg-primary/5 blur-3xl rounded-full"></div>
+<div class="relative bg-surface-elevated/80 backdrop-blur-md border border-border-medium rounded-xl p-stack-lg shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/20 to-transparent"></div>
+<!-- Header -->
+<div class="flex justify-between items-center border-b border-border-subtle pb-stack-sm mb-stack-md">
+<h3 class="font-label-md text-label-md text-on-surface uppercase tracking-wider">Latest Intelligence</h3>
+<div class="flex gap-unit">
+<div class="w-2 h-2 rounded-full bg-surface-variant"></div>
+<div class="w-2 h-2 rounded-full bg-surface-variant"></div>
+<div class="w-2 h-2 rounded-full bg-surface-variant"></div>
+</div>
+</div>
+<!-- Feed Items -->
+<div class="space-y-stack-md">
+<!-- Item 1 -->
+<div class="group flex flex-col md:flex-row gap-stack-md p-stack-sm rounded-lg hover:bg-surface transition-colors cursor-pointer border border-transparent hover:border-border-subtle">
+<div class="flex flex-col gap-unit min-w-[120px]">
+<span class="font-label-sm text-label-sm text-on-surface-variant">10:42 AM</span>
+<span class="inline-flex items-center justify-center px-2 py-1 rounded bg-signal-high/10 border border-signal-high/20 text-signal-high font-label-sm text-[10px] uppercase w-max">High Impact</span>
+</div>
+<div>
+<h4 class="font-headline-md text-headline-md text-base md:text-lg text-primary mb-unit group-hover:text-secondary-fixed-dim transition-colors">Attention Mechanism Optimization in LLMs</h4>
+<p class="font-body-md text-body-md text-sm text-on-surface-variant line-clamp-2">A novel approach to reducing memory overhead during inference by sparsifying the attention matrix, leading to a 30% reduction in VRAM usage.</p>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="group flex flex-col md:flex-row gap-stack-md p-stack-sm rounded-lg hover:bg-surface transition-colors cursor-pointer border border-transparent hover:border-border-subtle">
+<div class="flex flex-col gap-unit min-w-[120px]">
+<span class="font-label-sm text-label-sm text-on-surface-variant">08:15 AM</span>
+<span class="inline-flex items-center justify-center px-2 py-1 rounded bg-secondary-container/10 border border-secondary-container/20 text-secondary-container font-label-sm text-[10px] uppercase w-max">Architecture</span>
+</div>
+<div>
+<h4 class="font-headline-md text-headline-md text-base md:text-lg text-primary mb-unit group-hover:text-secondary-fixed-dim transition-colors">Federated Learning Protocols Updated</h4>
+<p class="font-body-md text-body-md text-sm text-on-surface-variant line-clamp-2">New encryption standards proposed for edge device synchronization, ensuring differential privacy without sacrificing model convergence speed.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Features Bento Grid -->
+<section class="py-24 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-stack-sm">Engineered for Clarity</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto">Discarding the noise to bring you the signal. Our systems are built around three core tenets of information luxury.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Feature 1 -->
+<div class="bg-surface-elevated border border-border-subtle rounded-xl p-stack-lg relative overflow-hidden group hover:border-border-medium transition-colors">
+<div class="absolute top-0 right-0 p-stack-md opacity-20 group-hover:opacity-50 transition-opacity">
+<span class="material-symbols-outlined text-4xl text-primary">filter_alt</span>
+</div>
+<div class="w-12 h-12 bg-surface rounded-lg flex items-center justify-center border border-border-subtle mb-stack-md">
+<span class="material-symbols-outlined text-primary">tune</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-lg text-primary mb-stack-sm">High Signal-to-Noise</h3>
+<p class="font-body-md text-body-md text-sm text-on-surface-variant">Algorithms calibrated to ignore superficial updates, focusing exclusively on substantive architectural shifts and technical breakthroughs.</p>
+</div>
+<!-- Feature 2 -->
+<div class="bg-surface-elevated border border-border-subtle rounded-xl p-stack-lg relative overflow-hidden group hover:border-border-medium transition-colors">
+<div class="absolute top-0 right-0 p-stack-md opacity-20 group-hover:opacity-50 transition-opacity">
+<span class="material-symbols-outlined text-4xl text-primary">layers_clear</span>
+</div>
+<div class="w-12 h-12 bg-surface rounded-lg flex items-center justify-center border border-border-subtle mb-stack-md">
+<span class="material-symbols-outlined text-primary">merge</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-lg text-primary mb-stack-sm">Semantic Deduplication</h3>
+<p class="font-body-md text-body-md text-sm text-on-surface-variant">Multiple sources reporting the same development are synthesized into a single, comprehensive briefing. No repetitive reading.</p>
+</div>
+<!-- Feature 3 -->
+<div class="bg-surface-elevated border border-border-subtle rounded-xl p-stack-lg relative overflow-hidden group hover:border-border-medium transition-colors">
+<div class="absolute top-0 right-0 p-stack-md opacity-20 group-hover:opacity-50 transition-opacity">
+<span class="material-symbols-outlined text-4xl text-primary">battery_charging_full</span>
+</div>
+<div class="w-12 h-12 bg-surface rounded-lg flex items-center justify-center border border-border-subtle mb-stack-md">
+<span class="material-symbols-outlined text-primary">speed</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-lg text-primary mb-stack-sm">Fatigue-Free Delivery</h3>
+<p class="font-body-md text-body-md text-sm text-on-surface-variant">Delivered in a dark-mode, minimalist interface designed to reduce cognitive load and eye strain during extended analytical sessions.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-stack-lg border-t border-border-subtle bg-surface-base">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div>
+<a class="font-headline-sm text-headline-sm font-bold text-primary mb-stack-sm block" href="#">GlaceX.ai</a>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-2">© 2024 GlaceX.ai. Technical Precision for Autonomous Systems.</p>
+</div>
+<div class="flex flex-wrap gap-stack-md md:justify-end items-center">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Documentation</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">System Status</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Contact Support</a>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GlaceX.ai - Intelligence Feed</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-high": "#2a2a2a",
+                      "on-secondary-fixed-variant": "#00468d",
+                      "on-surface": "#e2e2e2",
+                      "error": "#ffb4ab",
+                      "error-container": "#93000a",
+                      "tertiary-container": "#f6d9ff",
+                      "on-background": "#e2e2e2",
+                      "signal-low": "#FF453A",
+                      "surface-container-highest": "#353535",
+                      "surface-container": "#1f1f1f",
+                      "on-error": "#690005",
+                      "surface-tint": "#c6c6c7",
+                      "background": "#131313",
+                      "signal-medium": "#FFD60A",
+                      "on-primary-fixed-variant": "#454747",
+                      "inverse-surface": "#e2e2e2",
+                      "on-primary-container": "#636565",
+                      "tertiary": "#ffffff",
+                      "tertiary-fixed": "#f6d9ff",
+                      "surface-elevated": "#0C0C0C",
+                      "on-primary": "#2f3131",
+                      "glass-bg": "rgba(10, 10, 10, 0.7)",
+                      "on-tertiary-fixed-variant": "#7200a3",
+                      "on-primary-fixed": "#1a1c1c",
+                      "surface-container-low": "#1b1b1b",
+                      "on-secondary-container": "#002957",
+                      "secondary-fixed": "#d6e3ff",
+                      "surface-bright": "#393939",
+                      "surface-dim": "#131313",
+                      "on-error-container": "#ffdad6",
+                      "on-secondary-fixed": "#001b3e",
+                      "secondary-fixed-dim": "#aac7ff",
+                      "signal-high": "#32D74B",
+                      "inverse-primary": "#5d5f5f",
+                      "primary": "#ffffff",
+                      "primary-container": "#e2e2e2",
+                      "on-tertiary-container": "#972fca",
+                      "surface-variant": "#353535",
+                      "inverse-on-surface": "#303030",
+                      "on-surface-variant": "#c4c7c8",
+                      "border-subtle": "rgba(255, 255, 255, 0.08)",
+                      "primary-fixed-dim": "#c6c6c7",
+                      "secondary": "#aac7ff",
+                      "on-secondary": "#003064",
+                      "outline-variant": "#444748",
+                      "surface-base": "#000000",
+                      "primary-fixed": "#e2e2e2",
+                      "outline": "#8e9192",
+                      "on-tertiary": "#510074",
+                      "border-medium": "rgba(255, 255, 255, 0.15)",
+                      "surface-container-lowest": "#0e0e0e",
+                      "tertiary-fixed-dim": "#e9b3ff",
+                      "surface": "#131313",
+                      "surface-overlay": "#161616",
+                      "on-tertiary-fixed": "#310048",
+                      "secondary-container": "#3e90ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "container-max": "1440px",
+                      "unit": "4px",
+                      "stack-sm": "8px",
+                      "margin-mobile": "16px",
+                      "stack-md": "16px",
+                      "stack-lg": "32px",
+                      "margin-desktop": "40px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "label-md": [
+                              "JetBrains Mono"
+                      ],
+                      "label-sm": [
+                              "JetBrains Mono"
+                      ],
+                      "stats-number": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.04em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "stats-number": [
+                              "20px",
+                              {
+                                      "lineHeight": "24px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: #000000; /* surface-base */
+            color: #e2e2e2; /* on-surface */
+            overflow-x: hidden;
+        }
+        
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .ambient-glow {
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        }
+        
+        .inner-glow-top {
+            box-shadow: inset 0 0.5px 0 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Smooth transitions for interactive elements */
+        .interactive-row {
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .interactive-row:hover {
+            background-color: #0C0C0C; /* surface-elevated */
+            border-color: rgba(255, 255, 255, 0.15); /* border-medium */
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<header class="bg-glass-bg backdrop-blur-md font-body-md text-body-md fixed top-0 w-full z-50 border-b border-border-subtle">
+<div class="flex justify-between items-center px-margin-desktop h-16 w-full max-w-container-max mx-auto">
+<div class="font-headline-md text-headline-md font-bold text-primary tracking-tight">
+                GlaceX.ai
+            </div>
+<nav class="hidden md:flex gap-gutter items-center">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70" href="#">Home</a>
+<!-- Active State -->
+<a class="text-primary font-bold border-b-2 border-primary pb-1 cursor-pointer active:opacity-70" href="#">Feed</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70" href="#">Architecture</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70" href="#">Research</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70" href="#">Enterprise</a>
+</nav>
+<div class="flex items-center gap-stack-md">
+<button aria-label="Search" class="text-on-surface-variant hover:text-primary transition-colors duration-200 hidden md:flex">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">search</span>
+</button>
+<button class="bg-primary text-on-primary px-4 py-2 rounded font-label-md text-label-md hover:opacity-90 transition-opacity">
+                    Sign In
+                </button>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-grow pt-16 flex w-full max-w-container-max mx-auto relative h-[calc(100vh)] overflow-hidden">
+<!-- Feed Column -->
+<section class="flex-grow flex flex-col h-full overflow-y-auto w-full md:w-2/3 lg:w-3/4 px-margin-mobile md:px-margin-desktop py-stack-lg" style="padding-bottom: 120px;">
+<!-- Feed Header -->
+<div class="flex justify-between items-end mb-stack-lg sticky top-0 bg-surface-base z-10 pb-stack-sm border-b border-border-subtle pt-stack-sm">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">Intelligence Feed</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">High-signal technical developments.</p>
+</div>
+<button class="flex items-center gap-2 text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors border border-border-subtle px-3 py-1.5 rounded bg-surface-dim hover:bg-surface-elevated">
+<span class="material-symbols-outlined" style="font-size: 18px;">tune</span>
+                    Filter
+                </button>
+</div>
+<!-- Feed List -->
+<div class="flex flex-col">
+<!-- Item 1 (Active) -->
+<article class="interactive-row py-stack-md border-b border-border-subtle cursor-pointer group bg-surface-elevated inner-glow-top border-border-medium px-4 -mx-4 rounded-sm">
+<div class="flex gap-stack-md items-start">
+<!-- Score Pill -->
+<div class="flex-shrink-0 flex flex-col items-center justify-center w-12 h-12 rounded bg-[rgba(50,215,75,0.1)] border border-[rgba(50,215,75,0.2)]">
+<span class="font-stats-number text-stats-number text-signal-high leading-none">94</span>
+</div>
+<!-- Content -->
+<div class="flex-grow min-w-0">
+<div class="flex items-center gap-2 mb-1 flex-wrap">
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded border border-border-subtle">Papers</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">·</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2h ago</span>
+</div>
+<h2 class="font-body-lg text-body-lg text-primary font-medium mb-1 truncate">Direct Preference Optimization for LLMs</h2>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">A novel approach replacing RLHF with a simple classification loss, significantly reducing computational overhead while matching or exceeding PPO performance in alignment tasks.</p>
+</div>
+<!-- Actions -->
+<div class="flex-shrink-0 flex flex-col items-end opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary p-2 rounded hover:bg-surface-container transition-colors" title="Keep Signal">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bookmark</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Item 2 -->
+<article class="interactive-row py-stack-md border-b border-border-subtle cursor-pointer group px-4 -mx-4 rounded-sm">
+<div class="flex gap-stack-md items-start">
+<div class="flex-shrink-0 flex flex-col items-center justify-center w-12 h-12 rounded bg-[rgba(255,214,10,0.1)] border border-[rgba(255,214,10,0.2)]">
+<span class="font-stats-number text-stats-number text-signal-medium leading-none">82</span>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex items-center gap-2 mb-1 flex-wrap">
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded border border-border-subtle">Tools</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">·</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">4h ago</span>
+</div>
+<h2 class="font-body-lg text-body-lg text-primary font-medium mb-1 truncate">FlashAttention-3 Released</h2>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">New iteration of the memory-efficient exact attention algorithm, bringing significant speedups for Hopper GPUs and expanding support for FP8 training pipelines.</p>
+</div>
+<div class="flex-shrink-0 flex flex-col items-end opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary p-2 rounded hover:bg-surface-container transition-colors" title="Keep Signal">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">bookmark</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Item 3 -->
+<article class="interactive-row py-stack-md border-b border-border-subtle cursor-pointer group px-4 -mx-4 rounded-sm">
+<div class="flex gap-stack-md items-start">
+<div class="flex-shrink-0 flex flex-col items-center justify-center w-12 h-12 rounded bg-[rgba(50,215,75,0.1)] border border-[rgba(50,215,75,0.2)]">
+<span class="font-stats-number text-stats-number text-signal-high leading-none">88</span>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex items-center gap-2 mb-1 flex-wrap">
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded border border-border-subtle">Architecture</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">·</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">6h ago</span>
+</div>
+<h2 class="font-body-lg text-body-lg text-primary font-medium mb-1 truncate">Mixture of Depths Routing</h2>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">Dynamically allocating compute per token at specific layers. Shows promise in reducing FLOPs during inference without degrading perplexity on major benchmarks.</p>
+</div>
+<div class="flex-shrink-0 flex flex-col items-end opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary p-2 rounded hover:bg-surface-container transition-colors" title="Keep Signal">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">bookmark</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Item 4 -->
+<article class="interactive-row py-stack-md border-b border-border-subtle cursor-pointer group px-4 -mx-4 rounded-sm">
+<div class="flex gap-stack-md items-start">
+<div class="flex-shrink-0 flex flex-col items-center justify-center w-12 h-12 rounded bg-[rgba(255,69,58,0.1)] border border-[rgba(255,69,58,0.2)]">
+<span class="font-stats-number text-stats-number text-signal-low leading-none">45</span>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex items-center gap-2 mb-1 flex-wrap">
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded border border-border-subtle">News</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">·</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">12h ago</span>
+</div>
+<h2 class="font-body-lg text-body-lg text-primary font-medium mb-1 truncate">Regulatory Shift in EU AI Act Compliance</h2>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">Recent amendments clarify requirements for open-source foundational models, potentially increasing documentation overhead for maintainers.</p>
+</div>
+<div class="flex-shrink-0 flex flex-col items-end opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary p-2 rounded hover:bg-surface-container transition-colors" title="Keep Signal">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">bookmark</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Item 5 -->
+<article class="interactive-row py-stack-md border-b border-border-subtle cursor-pointer group px-4 -mx-4 rounded-sm">
+<div class="flex gap-stack-md items-start">
+<div class="flex-shrink-0 flex flex-col items-center justify-center w-12 h-12 rounded bg-[rgba(255,214,10,0.1)] border border-[rgba(255,214,10,0.2)]">
+<span class="font-stats-number text-stats-number text-signal-medium leading-none">75</span>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex items-center gap-2 mb-1 flex-wrap">
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded border border-border-subtle">Datasets</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">·</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">1d ago</span>
+</div>
+<h2 class="font-body-lg text-body-lg text-primary font-medium mb-1 truncate">FineWeb-Edu: Quality Filtered Web Data</h2>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">A high-quality, educational-focused subset of the FineWeb dataset extracted using LLM-based filtering rules, aiming to improve reasoning capabilities in small models.</p>
+</div>
+<div class="flex-shrink-0 flex flex-col items-end opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary p-2 rounded hover:bg-surface-container transition-colors" title="Keep Signal">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">bookmark</span>
+</button>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- Sidebar Insight Drawer (Open) -->
+<aside class="hidden md:flex flex-col w-1/3 lg:w-1/4 h-full bg-glass-bg backdrop-blur-xl border-l border-border-subtle absolute right-0 top-0 inner-glow-top z-20 ambient-glow shadow-[-20px_0_40px_rgba(0,0,0,0.5)] transform translate-x-0 transition-transform duration-300">
+<div class="flex justify-between items-center p-stack-md border-b border-border-subtle">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Insight Drawer</span>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-grow overflow-y-auto p-stack-md flex flex-col gap-stack-lg pb-32">
+<!-- Header Info -->
+<div>
+<h2 class="font-headline-md text-headline-md text-primary font-bold leading-tight mb-2">Direct Preference Optimization for LLMs</h2>
+<div class="flex flex-wrap gap-2 items-center font-label-sm text-label-sm text-on-surface-variant">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined" style="font-size: 14px;">description</span>
+                            ArXiv Pre-print
+                        </span>
+<span>·</span>
+<span>Stanford AI Lab</span>
+</div>
+</div>
+<!-- Metrics -->
+<div class="grid grid-cols-2 gap-unit">
+<div class="bg-surface-container border border-border-subtle p-3 rounded flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Confidence</span>
+<div class="flex items-end gap-2">
+<span class="font-stats-number text-stats-number text-signal-high leading-none">94%</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant pb-0.5">High Signal</span>
+</div>
+</div>
+<div class="bg-surface-container border border-border-subtle p-3 rounded flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Est. Impact</span>
+<div class="flex items-end gap-2">
+<span class="font-stats-number text-stats-number text-primary leading-none">Global</span>
+</div>
+</div>
+</div>
+<!-- TL;DR -->
+<div>
+<h3 class="font-label-md text-label-md text-primary border-b border-border-subtle pb-1 mb-3">TL;DR Analysis</h3>
+<ul class="font-body-md text-body-md text-on-surface-variant space-y-2 list-disc pl-4 marker:text-border-medium">
+<li>Bypasses the reward model and reinforcement learning phases entirely.</li>
+<li>Directly optimizes the policy using a cross-entropy loss over preference pairs.</li>
+<li>Mathematically equivalent to RLHF under specific constraints, but practically much more stable to train.</li>
+<li>Reduces memory footprint during alignment by eliminating the need to load a separate reward model.</li>
+</ul>
+</div>
+<!-- Practical Utility -->
+<div>
+<h3 class="font-label-md text-label-md text-primary border-b border-border-subtle pb-1 mb-3">Practical Utility</h3>
+<div class="bg-surface-elevated border border-border-subtle p-3 rounded font-body-md text-body-md text-on-surface-variant inner-glow-top">
+<p>Highly relevant for enterprise teams currently struggling with PPO instability. Transitioning to DPO can simplify alignment pipelines and reduce compute costs by ~30% during the tuning phase.</p>
+</div>
+</div>
+<!-- Action -->
+<div class="mt-auto pt-stack-md">
+<button class="w-full bg-primary text-on-primary py-3 px-4 rounded font-label-md text-label-md font-bold hover:bg-surface-tint transition-colors flex justify-center items-center gap-2">
+                        Read Full Paper Analysis
+                        <span class="material-symbols-outlined" style="font-size: 18px;">arrow_forward</span>
+</button>
+<button class="w-full mt-2 bg-transparent text-primary py-3 px-4 rounded border border-border-subtle font-label-md text-label-md hover:bg-surface-elevated transition-colors">
+                        Share Insight
+                    </button>
+</div>
+</div>
+</aside>
+</main>
+</body></html>

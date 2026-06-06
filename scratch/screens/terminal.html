@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GlaceX.ai - Research Terminal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#2a2a2a",
+                        "on-secondary-fixed-variant": "#00468d",
+                        "on-surface": "#e2e2e2",
+                        "error": "#ffb4ab",
+                        "error-container": "#93000a",
+                        "tertiary-container": "#f6d9ff",
+                        "on-background": "#e2e2e2",
+                        "signal-low": "#FF453A",
+                        "surface-container-highest": "#353535",
+                        "surface-container": "#1f1f1f",
+                        "on-error": "#690005",
+                        "surface-tint": "#c6c6c7",
+                        "background": "#131313",
+                        "signal-medium": "#FFD60A",
+                        "on-primary-fixed-variant": "#454747",
+                        "inverse-surface": "#e2e2e2",
+                        "on-primary-container": "#636565",
+                        "tertiary": "#ffffff",
+                        "tertiary-fixed": "#f6d9ff",
+                        "surface-elevated": "#0C0C0C",
+                        "on-primary": "#2f3131",
+                        "glass-bg": "rgba(10, 10, 10, 0.7)",
+                        "on-tertiary-fixed-variant": "#7200a3",
+                        "on-primary-fixed": "#1a1c1c",
+                        "surface-container-low": "#1b1b1b",
+                        "on-secondary-container": "#002957",
+                        "secondary-fixed": "#d6e3ff",
+                        "surface-bright": "#393939",
+                        "surface-dim": "#131313",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-fixed": "#001b3e",
+                        "secondary-fixed-dim": "#aac7ff",
+                        "signal-high": "#32D74B",
+                        "inverse-primary": "#5d5f5f",
+                        "primary": "#ffffff",
+                        "primary-container": "#e2e2e2",
+                        "on-tertiary-container": "#972fca",
+                        "surface-variant": "#353535",
+                        "inverse-on-surface": "#303030",
+                        "on-surface-variant": "#c4c7c8",
+                        "border-subtle": "rgba(255, 255, 255, 0.08)",
+                        "primary-fixed-dim": "#c6c6c7",
+                        "secondary": "#aac7ff",
+                        "on-secondary": "#003064",
+                        "outline-variant": "#444748",
+                        "surface-base": "#000000",
+                        "primary-fixed": "#e2e2e2",
+                        "outline": "#8e9192",
+                        "on-tertiary": "#510074",
+                        "border-medium": "rgba(255, 255, 255, 0.15)",
+                        "surface-container-lowest": "#0e0e0e",
+                        "tertiary-fixed-dim": "#e9b3ff",
+                        "surface": "#131313",
+                        "surface-overlay": "#161616",
+                        "on-tertiary-fixed": "#310048",
+                        "secondary-container": "#3e90ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "unit": "4px",
+                        "stack-sm": "8px",
+                        "margin-mobile": "16px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "margin-desktop": "40px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["JetBrains Mono"],
+                        "label-sm": ["JetBrains Mono"],
+                        "stats-number": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "500" }],
+                        "stats-number": ["20px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "500" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #000000;
+            color: #e2e2e2;
+        }
+        /* Custom scrollbar for deep tech feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #000000;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #353535;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #444748;
+        }
+        /* Inner glow utility for cards */
+        .inner-glow {
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        /* Gradient text for brand */
+        .text-gradient {
+            background: linear-gradient(to right, #ffffff, #c4c7c8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-surface-base text-on-surface antialiased min-h-screen flex flex-col font-body-md overflow-x-hidden">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-glass-bg backdrop-blur-md border-b border-border-subtle">
+<div class="flex justify-between items-center px-margin-desktop h-16 w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-gutter">
+<div class="font-headline-md text-headline-md font-bold text-primary tracking-tight text-gradient">GlaceX.ai</div>
+<div class="hidden md:flex items-center gap-stack-md ml-stack-lg">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70 font-body-md text-body-md" href="#">Home</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70 font-body-md text-body-md" href="#">Feed</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70 font-body-md text-body-md" href="#">Architecture</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 cursor-pointer active:opacity-70 font-body-md text-body-md" href="#">Research</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70 font-body-md text-body-md" href="#">Enterprise</a>
+</div>
+</div>
+<div class="flex items-center gap-stack-md">
+<!-- Search icon placeholder if needed on mobile, but full bar is below -->
+<button class="bg-primary text-surface-base font-label-md text-label-md px-4 py-2 rounded font-medium hover:bg-surface-tint transition-colors">Sign In</button>
+</div>
+</div>
+</nav>
+<!-- Main Workspace -->
+<main class="flex-grow pt-24 pb-stack-lg px-margin-desktop w-full max-w-container-max mx-auto grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- Left Column: Search & Signals (Spans 8 cols) -->
+<div class="col-span-1 lg:col-span-8 flex flex-col gap-stack-lg">
+<!-- Query Interface -->
+<div class="bg-surface-elevated border border-border-subtle rounded-lg p-stack-md inner-glow">
+<div class="flex items-center justify-between mb-stack-sm">
+<h2 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Query Terminal</h2>
+<div class="flex items-center gap-2 bg-surface-container-high rounded p-1">
+<button class="px-3 py-1 rounded bg-surface-overlay border border-border-medium text-primary font-label-sm text-label-sm transition-colors">SEMANTIC</button>
+<button class="px-3 py-1 rounded text-on-surface-variant hover:text-primary font-label-sm text-label-sm transition-colors">REGEX</button>
+</div>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">search</span>
+<input class="w-full bg-[#050505] border border-border-subtle rounded-md py-4 pl-12 pr-4 text-primary font-body-md focus:outline-none focus:border-border-medium focus:ring-1 focus:ring-border-medium transition-all shadow-inner placeholder-on-surface-variant/50" placeholder="Enter multi-dimensional semantic query..." type="text"/>
+<button class="absolute right-2 top-1/2 -translate-y-1/2 bg-surface-overlay border border-border-subtle hover:border-border-medium text-primary px-3 py-1.5 rounded font-label-sm text-label-sm transition-colors">EXECUTE</button>
+</div>
+<div class="mt-3 flex gap-4 text-on-surface-variant font-label-sm text-label-sm">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">tune</span> Dimensions: 1536</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">layers</span> Corpus: arXiv-ML-2024</span>
+</div>
+</div>
+<!-- Research Signals Feed -->
+<div class="flex flex-col gap-stack-md">
+<div class="flex items-center justify-between border-b border-border-subtle pb-2">
+<h3 class="font-headline-md text-headline-md font-medium text-primary">Research Signals</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Showing top 3 vectors</span>
+</div>
+<!-- Signal Item 1 -->
+<div class="bg-surface-elevated border border-border-subtle rounded-lg p-stack-md hover:border-border-medium transition-colors group cursor-pointer inner-glow relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-signal-high opacity-50 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex justify-between items-start mb-2 pl-2">
+<div class="flex items-center gap-3">
+<span class="bg-signal-high/10 border border-signal-high text-signal-high px-2 py-0.5 rounded font-label-sm text-label-sm">9.82</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">ID: ax-2401.0129</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">bookmark_add</span>
+</div>
+<h4 class="font-body-lg text-body-lg font-medium text-primary mb-2 pl-2">Emergent Attention Protocols in High-Dimensional Transformer Latents</h4>
+<p class="font-body-md text-body-md text-on-surface-variant pl-2 line-clamp-2">Analysis of self-attention mechanisms reveals spontaneous formation of specialized sub-networks capable of zero-shot routing in highly constrained parameter spaces.</p>
+</div>
+<!-- Signal Item 2 -->
+<div class="bg-surface-elevated border border-border-subtle rounded-lg p-stack-md hover:border-border-medium transition-colors group cursor-pointer inner-glow relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-signal-medium opacity-50 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex justify-between items-start mb-2 pl-2">
+<div class="flex items-center gap-3">
+<span class="bg-signal-medium/10 border border-signal-medium text-signal-medium px-2 py-0.5 rounded font-label-sm text-label-sm">8.45</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">ID: ax-2311.9044</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">bookmark_add</span>
+</div>
+<h4 class="font-body-lg text-body-lg font-medium text-primary mb-2 pl-2">Orthogonal Matrix Decompositions for Efficient Fine-Tuning</h4>
+<p class="font-body-md text-body-md text-on-surface-variant pl-2 line-clamp-2">We propose a novel OMD approach that reduces memory overhead by 40% while maintaining 99% of full-parameter fine-tuning performance on standard benchmarks.</p>
+</div>
+</div>
+</div>
+<!-- Right Column: Visualization & Status (Spans 4 cols) -->
+<div class="col-span-1 lg:col-span-4 flex flex-col gap-stack-lg">
+<!-- UMAP Projection Widget -->
+<div class="bg-surface-elevated border border-border-subtle rounded-lg p-stack-md inner-glow flex flex-col h-[400px]">
+<div class="flex items-center justify-between mb-stack-sm shrink-0">
+<h2 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">UMAP Projection</h2>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">aspect_ratio</span>
+</div>
+<!-- Visualization Area (Dark plane) -->
+<div class="flex-grow bg-[#050505] border border-border-subtle rounded-md relative overflow-hidden group">
+<!-- Simulate nodes with absolutely positioned divs -->
+<div class="absolute top-1/4 left-1/4 w-2 h-2 rounded-full bg-signal-high blur-[1px] group-hover:blur-none transition-all duration-300 shadow-[0_0_8px_#32D74B]"></div>
+<div class="absolute top-[28%] left-[22%] w-1.5 h-1.5 rounded-full bg-signal-high opacity-70"></div>
+<div class="absolute top-[22%] left-[26%] w-1.5 h-1.5 rounded-full bg-signal-high opacity-80"></div>
+<div class="absolute top-1/2 left-2/3 w-2 h-2 rounded-full bg-signal-medium blur-[1px] group-hover:blur-none transition-all duration-300 shadow-[0_0_8px_#FFD60A]"></div>
+<div class="absolute top-[48%] left-[63%] w-1.5 h-1.5 rounded-full bg-signal-medium opacity-60"></div>
+<div class="absolute bottom-1/4 left-1/2 w-2 h-2 rounded-full bg-signal-low blur-[1px] group-hover:blur-none transition-all duration-300 shadow-[0_0_8px_#FF453A]"></div>
+<!-- Crosshair/Grid overlay hint -->
+<div class="absolute inset-0 pointer-events-none opacity-10 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
+<div class="absolute bottom-2 right-2 text-[#444748] font-label-sm text-[10px]">n_neighbors: 15, min_dist: 0.1</div>
+</div>
+</div>
+<!-- System Status Panel -->
+<div class="bg-surface-elevated border border-border-subtle rounded-lg p-stack-md inner-glow">
+<h2 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-stack-md">System Telemetry</h2>
+<div class="flex flex-col gap-4">
+<div class="flex justify-between items-center border-b border-border-subtle pb-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Index Status</span>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-signal-high shadow-[0_0_8px_#32D74B] animate-pulse"></div>
+<span class="font-label-md text-label-md text-primary">ONLINE</span>
+</div>
+</div>
+<div class="flex justify-between items-center border-b border-border-subtle pb-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Last Sync</span>
+<span class="font-stats-number text-stats-number text-primary text-[16px]">0.4s ago</span>
+</div>
+<div class="flex justify-between items-center border-b border-border-subtle pb-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Query Latency</span>
+<span class="font-stats-number text-stats-number text-primary text-[16px]">42ms</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Active Nodes</span>
+<span class="font-stats-number text-stats-number text-primary text-[16px]">12/12</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-base border-t border-border-subtle w-full py-stack-lg mt-auto">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-desktop w-full max-w-container-max mx-auto gap-gutter">
+<div class="font-label-md text-label-md font-bold text-primary">GlaceX.ai</div>
+<div class="text-on-surface-variant font-label-sm text-label-sm">© 2024 GlaceX.ai. Technical Intelligence for the Obsidian Era.</div>
+<div class="flex flex-wrap justify-center gap-stack-md">
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer font-label-sm text-label-sm" href="#">Documentation</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer font-label-sm text-label-sm" href="#">System Status</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer font-label-sm text-label-sm" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer font-label-sm text-label-sm" href="#">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer font-label-sm text-label-sm" href="#">API Reference</a>
+</div>
+</div>
+</footer>
+</body></html>
