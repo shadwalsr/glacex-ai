@@ -9,6 +9,7 @@ import SavedView from './components/feed/SavedView';
 import ArchitectureView from './components/health/ArchitectureView';
 import ResearchView from './components/research/ResearchView';
 import SourcesView from './components/sources/SourcesView';
+import AboutView from './components/about/AboutView';
 import DetailDrawer from './components/drawer/DetailDrawer';
 
 function ScrollToTop() {
@@ -32,6 +33,7 @@ function AppContent() {
           <Route path="/health" element={<ArchitectureView />} />
           <Route path="/terminal" element={<ResearchView />} />
           <Route path="/sources" element={<SourcesView />} />
+          <Route path="/about" element={<AboutView />} />
         </Routes>
       </main>
       <Footer />

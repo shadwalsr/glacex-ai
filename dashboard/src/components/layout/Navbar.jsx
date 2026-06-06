@@ -21,6 +21,7 @@ export default function Navbar() {
           <NavLink to="/health" className={linkClass}>Architecture</NavLink>
           <NavLink to="/terminal" className={linkClass}>Research</NavLink>
           <NavLink to="/sources" className={linkClass}>Sources</NavLink>
+          <NavLink to="/about" className={linkClass}>About</NavLink>
         </div>
         <div className="flex items-center gap-stack-md">
           {/* Status pill */}
