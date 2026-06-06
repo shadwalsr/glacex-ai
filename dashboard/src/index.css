@@ -136,7 +136,7 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: textShimmer 2.4s ease-in-out 0.6s 1 forwards;
+  animation: textShimmer 2.4s ease-in-out 0.6s infinite;
 }
 .hero-shimmer .hero-subtitle {
   -webkit-text-fill-color: #c4c7c8;
