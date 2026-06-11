@@ -39,23 +39,42 @@ DECLARE
   elem JSONB;
 BEGIN
   FOR elem IN SELECT * FROM jsonb_array_elements(p_articles) LOOP
-    INSERT INTO articles (
-      source_id, url, title, raw_html, clean_text, published_at, status, text_hash, last_seen_at, fetch_count
-    ) VALUES (
-      (elem->>'source_id')::UUID,
-      elem->>'url',
-      elem->>'title',
-      elem->>'raw_html',
-      elem->>'clean_text',
-      (elem->>'published_at')::TIMESTAMPTZ,
-      COALESCE(elem->>'status', 'raw'),
-      elem->>'text_hash',
-      NOW(),
-      1
-    )
-    ON CONFLICT (text_hash) DO UPDATE SET
-      last_seen_at = NOW(),
-      fetch_count = articles.fetch_count + 1;
+    -- Try updating by URL first
+    UPDATE articles
+    SET last_seen_at = NOW(),
+        fetch_count = articles.fetch_count + 1
+    WHERE url = elem->>'url';
+    
+    IF NOT FOUND THEN
+      -- Try updating by text_hash next
+      UPDATE articles
+      SET last_seen_at = NOW(),
+          fetch_count = articles.fetch_count + 1
+      WHERE text_hash = elem->>'text_hash';
+      
+      IF NOT FOUND THEN
+        -- Insert new article
+        BEGIN
+          INSERT INTO articles (
+            source_id, url, title, raw_html, clean_text, published_at, status, text_hash, last_seen_at, fetch_count
+          ) VALUES (
+            (elem->>'source_id')::UUID,
+            elem->>'url',
+            elem->>'title',
+            elem->>'raw_html',
+            elem->>'clean_text',
+            (elem->>'published_at')::TIMESTAMPTZ,
+            COALESCE(elem->>'status', 'raw'),
+            elem->>'text_hash',
+            NOW(),
+            1
+          );
+        EXCEPTION WHEN unique_violation THEN
+          -- Fallback/ignore if something concurrently inserted it
+          NULL;
+        END;
+      END IF;
+    END IF;
   END LOOP;
 END;
 $$ LANGUAGE plpgsql;
@@ -94,16 +113,39 @@ RETURNS UUID AS $$
 DECLARE
   v_article_id UUID;
 BEGIN
-  -- A. Upsert core article based on unique text_hash constraint
-  INSERT INTO articles (
-    url, title, raw_html, clean_text, published_at, status, text_hash, source_id, last_seen_at, fetch_count
-  ) VALUES (
-    p_article_url, p_article_title, p_article_raw_html, p_article_clean_text, p_article_published_at, p_article_status, p_article_text_hash, p_source_id, NOW(), 1
-  )
-  ON CONFLICT (text_hash) DO UPDATE SET
-    last_seen_at = NOW(),
-    fetch_count = articles.fetch_count + 1
+  -- A. Try updating core article by URL first
+  UPDATE articles
+  SET last_seen_at = NOW(),
+      fetch_count = articles.fetch_count + 1
+  WHERE url = p_article_url
   RETURNING id INTO v_article_id;
+  
+  IF v_article_id IS NULL THEN
+    -- Try updating by text_hash next
+    UPDATE articles
+    SET last_seen_at = NOW(),
+        fetch_count = articles.fetch_count + 1
+    WHERE text_hash = p_article_text_hash
+    RETURNING id INTO v_article_id;
+    
+    IF v_article_id IS NULL THEN
+      -- Insert new article
+      BEGIN
+        INSERT INTO articles (
+          url, title, raw_html, clean_text, published_at, status, text_hash, source_id, last_seen_at, fetch_count
+        ) VALUES (
+          p_article_url, p_article_title, p_article_raw_html, p_article_clean_text, p_article_published_at, p_article_status, p_article_text_hash, p_source_id, NOW(), 1
+        )
+        RETURNING id INTO v_article_id;
+      EXCEPTION WHEN unique_violation THEN
+        -- If concurrent insert happened, fetch the ID
+        SELECT id INTO v_article_id FROM articles WHERE url = p_article_url;
+        IF v_article_id IS NULL THEN
+          SELECT id INTO v_article_id FROM articles WHERE text_hash = p_article_text_hash;
+        END IF;
+      END;
+    END IF;
+  END IF;
   
   -- B. Upsert classification if category was provided
   IF p_class_category IS NOT NULL THEN

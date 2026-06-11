@@ -23,13 +23,13 @@ def validate_environment():
             missing_vars.append(var)
 
     if missing_vars:
-        print("❌ FATAL: Missing required environment variables:")
+        print("[ERROR] FATAL: Missing required environment variables:")
         for var in missing_vars:
             print(f"   - {var}")
         print("\nPlease ensure these are set in your .env.local file or injected via GitHub Actions secrets.")
         sys.exit(1)
 
-    print("✅ All required environment variables are present.")
+    print("[SUCCESS] All required environment variables are present.")
 
 if __name__ == "__main__":
     validate_environment()
