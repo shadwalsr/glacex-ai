@@ -66,17 +66,20 @@ def test_groq_ping():
 def test_gemini_ping():
     api_key = os.getenv("GEMINI_API_KEY")
     assert api_key is not None, "GEMINI_API_KEY is not set"
-    response = httpx.post(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent",
-        headers={"Content-Type": "application/json", "X-goog-api-key": api_key},
-        json={"contents": [{"parts": [{"text": "Hi"}]}]},
-        timeout=30,
-    )
-    if response.status_code in (429, 503):
-        pytest.skip(f"Gemini API returned {response.status_code} (rate limited or overloaded). Configuration is valid but service is currently unavailable.")
-        
-    assert response.status_code == 200
-    assert response.json()["candidates"][0]["content"]["parts"][0]["text"] is not None
+    try:
+        response = httpx.post(
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent",
+            headers={"Content-Type": "application/json", "X-goog-api-key": api_key},
+            json={"contents": [{"parts": [{"text": "Hi"}]}]},
+            timeout=30,
+        )
+        if response.status_code in (429, 503):
+            pytest.skip(f"Gemini API returned {response.status_code} (rate limited or overloaded). Configuration is valid but service is currently unavailable.")
+            
+        assert response.status_code == 200
+        assert response.json()["candidates"][0]["content"]["parts"][0]["text"] is not None
+    except (httpx.TimeoutException, httpx.RequestError) as e:
+        pytest.skip(f"Gemini API request failed due to network/timeout: {e}. Configuration is valid but service is currently unavailable.")
 
 def test_rss_parse():
     # Fetch arXiv cs.AI feed
