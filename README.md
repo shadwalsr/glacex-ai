@@ -18,7 +18,7 @@ Unique articles are passed to the **LLM Agent**, which leverages powerful models
 * **Insight Generation:** Writes a dense, objective, structured summary explaining the technical impact.
 
 ### 3. Real-time Dashboard
-The frontend is a highly responsive "glassmorphism" React dashboard built with Vite and Tailwind CSS.
+
 * **The Feed:** Renders ranked articles based on their Importance Score and AI relevancy.
 * **Detail Drawer:** Interactive slider providing the LLM's full classification reasoning and the complete article text.
 * **Saved Signals:** A persistent bookmarking system tied to the Supabase database.
