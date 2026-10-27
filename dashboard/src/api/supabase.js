@@ -1,7 +1,8 @@
 import { MOCK_ARTICLES, MOCK_SOURCES, MOCK_HEALTH_DATA } from '../data/mockData';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const rawUrl = (import.meta.env.VITE_SUPABASE_URL || '').trim();
+const SUPABASE_URL = rawUrl.replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
+const SUPABASE_KEY = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim().replace(/^['"]|['"]$/g, '');
 
 const headers = {
   apikey: SUPABASE_KEY,
@@ -75,7 +76,14 @@ export async function fetchArticles() {
     clearTimeout(timeoutId);
 
     if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
+      let detail = `HTTP ${res.status}`;
+      try {
+        const errJson = await res.json();
+        if (errJson?.message) {
+          detail = errJson.message;
+        }
+      } catch {}
+      throw new Error(detail);
     }
 
     const json = await res.json();
