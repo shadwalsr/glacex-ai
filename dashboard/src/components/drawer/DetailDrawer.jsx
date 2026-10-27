@@ -20,6 +20,14 @@ export default function DetailDrawer() {
     }
   }, [drawerArticle]);
 
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsClosing(false);
+      closeDrawer();
+    }, 300); // Wait for transition
+  };
+
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape') handleClose();
@@ -29,14 +37,6 @@ export default function DetailDrawer() {
     }
     return () => window.removeEventListener('keydown', handleEscape);
   }, [isVisible]);
-
-  const handleClose = () => {
-    setIsClosing(true);
-    setTimeout(() => {
-      setIsClosing(false);
-      closeDrawer();
-    }, 300); // Wait for transition
-  };
 
   const handleFeedback = async (rating) => {
     if (!drawerArticle) return;
@@ -64,7 +64,11 @@ export default function DetailDrawer() {
   const catColor = catColors[cls.category] || 'bg-surface-container text-on-surface-variant border-border-subtle';
 
   let host = 'Source';
-  try { if (article.url) host = new URL(article.url).hostname; } catch(e){}
+  try {
+    if (article.url) host = new URL(article.url).hostname;
+  } catch (_err) {
+    // Default to 'Source' if invalid URL
+  }
 
   const showDrawer = isVisible && !isClosing;
 

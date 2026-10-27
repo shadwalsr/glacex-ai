@@ -11,7 +11,9 @@ export default function SourceCard({ source, index }) {
   let host = "Unknown Stream";
   try {
     if (source.url) host = new URL(source.url).hostname;
-  } catch(e) {}
+  } catch (_e) {
+    // Default to 'Unknown Stream' if URL parsing fails
+  }
   
   const cat = source.category || "General";
 

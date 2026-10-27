@@ -38,7 +38,7 @@ export default function LatestPreview() {
         
         {/* Article Items */}
         <div className="space-y-4">
-          {topArticles.map((a, i) => {
+          {topArticles.map((a) => {
             const { cls, ins } = getArticleData(a);
             const imp = cls.importance || 0;
             let impLabel = 'Low Impact';

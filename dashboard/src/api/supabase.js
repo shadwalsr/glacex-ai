@@ -82,7 +82,9 @@ export async function fetchArticles() {
         if (errJson?.message) {
           detail = errJson.message;
         }
-      } catch {}
+      } catch (_parseErr) {
+        // Fall back to default HTTP status text
+      }
       throw new Error(detail);
     }
 

@@ -1,37 +1,69 @@
-name: Build & Deploy Dashboard
+name: Deploy Dashboard & Sync GitHub Pages
 on:
   push:
     branches: [main]
-    paths: ['dashboard/**']
+    paths:
+      - 'dashboard/**'
+      - 'package.json'
+      - 'vercel.json'
+      - '.github/workflows/deploy-dashboard.yml'
   workflow_dispatch:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: false
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: dashboard
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm install
+          npm --prefix dashboard install
 
-      - name: Build dashboard
+      - name: Lint Dashboard
+        run: npm run lint
+
+      - name: Build Dashboard
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://rouejbjbrfknsoavlkjz.supabase.co' }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJvdWVqYmpicmZrbnNvYXZsa2p6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxMjQ2MTUsImV4cCI6MjEwODcwMDYxNX0.2yG7Osl5KZ4ME2MyGPVnPnnLmezIhewxz11dqqRcGsQ' }}
         run: npm run build
 
-      - name: Create 404 fallback
-        run: cp ../docs/index.html ../docs/404.html
+      - name: Create 404 Fallback for SPA routing
+        run: |
+          cp docs/index.html docs/404.html
+          cp dist/index.html dist/404.html
 
-      - name: Commit built dashboard to docs/
+      - name: Commit build artifacts to repository
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore: rebuild dashboard"
-          file_pattern: docs/*
+          commit_message: "chore(ci): build and deploy dashboard [skip ci]"
+          file_pattern: "docs/* dist/*"
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'docs/'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
