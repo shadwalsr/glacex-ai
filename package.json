@@ -8,7 +8,7 @@
   "scripts": {
     "postinstall": "npm --prefix dashboard install",
     "dev": "npm --prefix dashboard run dev",
-    "build": "npm --prefix dashboard run build",
+    "build": "npm --prefix dashboard run build && node -e \"const fs = require('fs'); fs.cpSync('dashboard/dist', 'dist', {recursive: true});\"",
     "lint": "npm --prefix dashboard run lint",
     "preview": "npm --prefix dashboard run preview"
   }

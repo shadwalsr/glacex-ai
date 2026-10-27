@@ -1,11 +1,9 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "docs",
-  "cleanUrls": true,
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": "/"
     }
   ]
 }
