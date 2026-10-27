@@ -1,6 +1,9 @@
 import { NavLink } from 'react-router-dom';
+import { useApp } from '../../context/AppContext';
 
 export default function Navbar() {
+  const { isOffline, articlesLoading } = useApp();
+
   const linkClass = ({ isActive }) =>
     isActive
       ? "nav-tab text-primary font-bold border-b-2 border-primary pb-1 cursor-pointer active:opacity-70 font-body-md text-body-md"
@@ -24,13 +27,29 @@ export default function Navbar() {
           <NavLink to="/about" className={linkClass}>About</NavLink>
         </div>
         <div className="flex items-center gap-stack-md">
-          {/* Status pill */}
+          {/* Status pill reflecting real connection state */}
           <div className="flex items-center gap-2 bg-surface-container border border-border-subtle px-3 py-1.5 rounded-full text-xs">
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-signal-high opacity-75 pulse-glow"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-signal-high"></span>
+              {articlesLoading ? (
+                <>
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-signal-medium opacity-75 animate-ping"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-signal-medium"></span>
+                </>
+              ) : isOffline ? (
+                <>
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-signal-medium opacity-50"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-signal-medium"></span>
+                </>
+              ) : (
+                <>
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-signal-high opacity-75 pulse-glow"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-signal-high"></span>
+                </>
+              )}
             </span>
-            <span className="text-on-surface-variant font-label-sm text-[10px] uppercase tracking-wider">Active</span>
+            <span className="text-on-surface-variant font-label-sm text-[10px] uppercase tracking-wider font-mono">
+              {articlesLoading ? 'Syncing...' : isOffline ? 'Offline Corpus' : 'Data Lake Live'}
+            </span>
           </div>
         </div>
       </div>

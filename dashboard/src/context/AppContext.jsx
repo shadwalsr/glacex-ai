@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { fetchArticles as apiFetchArticles } from '../api/supabase';
+import { fetchArticles as apiFetchArticles, submitFeedback as apiSubmitFeedback, getSupabaseUrl } from '../api/supabase';
 
 const AppContext = createContext(null);
 
@@ -7,20 +7,30 @@ export function AppProvider({ children }) {
   const [articles, setArticles] = useState([]);
   const [articlesLoading, setArticlesLoading] = useState(true);
   const [articlesError, setArticlesError] = useState(null);
+  const [isOffline, setIsOffline] = useState(false);
+  const [connectionError, setConnectionError] = useState(null);
   const [drawerArticle, setDrawerArticle] = useState(null);
+
+  const loadArticles = useCallback(async () => {
+    setArticlesLoading(true);
+    try {
+      const res = await apiFetchArticles();
+      setArticles(res.data || []);
+      setIsOffline(res.isOffline);
+      setConnectionError(res.error);
+      setArticlesError(null);
+    } catch (err) {
+      console.error('Fatal article load exception:', err);
+      setArticlesError(err.message || 'Fatal data lake exception');
+    } finally {
+      setArticlesLoading(false);
+    }
+  }, []);
 
   // Fetch articles on mount
   useEffect(() => {
-    apiFetchArticles()
-      .then((data) => {
-        setArticles(data);
-        setArticlesLoading(false);
-      })
-      .catch((err) => {
-        setArticlesError(err.message);
-        setArticlesLoading(false);
-      });
-  }, []);
+    loadArticles();
+  }, [loadArticles]);
 
   const openDrawer = useCallback(
     (articleId) => {
@@ -38,7 +48,8 @@ export function AppProvider({ children }) {
     document.body.style.overflow = '';
   }, []);
 
-  const updateArticleFeedback = useCallback((articleId, rating) => {
+  const updateArticleFeedback = useCallback(async (articleId, rating) => {
+    // Optimistic UI update
     setArticles((prev) =>
       prev.map((a) =>
         a.id === articleId
@@ -46,20 +57,11 @@ export function AppProvider({ children }) {
           : a
       )
     );
-  }, []);
-
-  const refetchArticles = useCallback(async () => {
-    setArticlesLoading(true);
-    try {
-      const data = await apiFetchArticles();
-      setArticles(data);
-      setArticlesError(null);
-    } catch (err) {
-      setArticlesError(err.message);
-    } finally {
-      setArticlesLoading(false);
+    if (drawerArticle && drawerArticle.id === articleId) {
+      setDrawerArticle((prev) => ({ ...prev, user_feedback: [{ rating }] }));
     }
-  }, []);
+    await apiSubmitFeedback(articleId, rating);
+  }, [drawerArticle]);
 
   return (
     <AppContext.Provider
@@ -68,11 +70,14 @@ export function AppProvider({ children }) {
         setArticles,
         articlesLoading,
         articlesError,
+        isOffline,
+        connectionError,
+        supabaseUrl: getSupabaseUrl(),
         drawerArticle,
         openDrawer,
         closeDrawer,
         updateArticleFeedback,
-        refetchArticles,
+        refetchArticles: loadArticles,
       }}
     >
       {children}
