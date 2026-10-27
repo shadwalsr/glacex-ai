@@ -2,7 +2,11 @@
   "name": "glacex-ai",
   "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "dashboard"
+  ],
   "scripts": {
+    "postinstall": "npm --prefix dashboard install",
     "dev": "npm --prefix dashboard run dev",
     "build": "npm --prefix dashboard run build",
     "lint": "npm --prefix dashboard run lint",
